@@ -158,15 +158,43 @@ public class Data {
     /**
      * Crea e restituisce un oggetto Tuple che modella la i-esima riga in data.
      *
+     * <p>Questo metodo gestisce sia attributi discreti che continui, creando
+     * il tipo appropriato di Item per ciascun attributo:</p>
+     * <ul>
+     *   <li>DiscreteAttribute → DiscreteItem</li>
+     *   <li>ContinuousAttribute → ContinuousItem</li>
+     * </ul>
+     *
      * @param index indice di riga
      * @return tupla corrispondente alla riga
+     * @throws NumberFormatException se un valore continuo non può essere parsato come Double
      */
     public Tuple getItemSet(int index) {
         Tuple tuple = new Tuple(explanatorySet.length);
+
         for (int i = 0; i < explanatorySet.length; i++) {
-            tuple.add(new DiscreteItem((DiscreteAttribute) explanatorySet[i],
-                    (String) data[index][i]), i);
+            Attribute attr = explanatorySet[i];
+            Object value = data[index][i];
+
+            if (attr instanceof DiscreteAttribute) {
+                // Attributo discreto → crea DiscreteItem
+                tuple.add(new DiscreteItem((DiscreteAttribute) attr, (String) value), i);
+
+            } else if (attr instanceof ContinuousAttribute) {
+                // Attributo continuo → crea ContinuousItem
+                Double numValue;
+
+                // Gestione conversione: String → Double o già Double
+                if (value instanceof String) {
+                    numValue = Double.parseDouble((String) value);
+                } else {
+                    numValue = (Double) value;
+                }
+
+                tuple.add(new ContinuousItem((ContinuousAttribute) attr, numValue), i);
+            }
         }
+
         return tuple;
     }
 
