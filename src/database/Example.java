@@ -46,7 +46,7 @@ public class Example implements Comparable<Example> {
         int i = 0;
         for (Object o : ex.example) {
             if (!o.equals(this.example.get(i)))
-                return ((Comparable) o).compareTo(example.get(i));
+                return ((Comparable<Object>) o).compareTo(example.get(i));
             i++;
         }
         return 0;
