@@ -1,9 +1,13 @@
+import java.util.HashSet;
+import java.util.Iterator;
+
 /**
  * Classe che modella un cluster.
+ * Ottimizzata con HashSet per operazioni O(1) invece di O(n).
  */
 class Cluster {
     private Tuple centroid;
-    private ArraySet clusteredData;
+    private HashSet<Integer> clusteredData;
 
     /**
      * Costruttore della classe Cluster.
@@ -12,7 +16,7 @@ class Cluster {
      */
     Cluster(Tuple centroid) {
         this.centroid = centroid;
-        clusteredData = new ArraySet();
+        clusteredData = new HashSet<>();
     }
 
     /**
@@ -26,9 +30,10 @@ class Cluster {
 
     /**
      * Aggiunge una tupla al cluster.
+     * Ottimizzato: O(1) average invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
-     * @return true se la tupla cambia cluster
+     * @return true se la tupla è stata aggiunta (non era già presente)
      */
     boolean addData(int id) {
         return clusteredData.add(id);
@@ -36,21 +41,23 @@ class Cluster {
 
     /**
      * Verifica se una transazione è clusterizzata nel cluster corrente.
+     * Ottimizzato: O(1) average invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
      * @return true se la tupla è nel cluster
      */
     boolean contain(int id) {
-        return clusteredData.get(id);
+        return clusteredData.contains(id);
     }
 
     /**
      * Rimuove una tupla dal cluster.
+     * Ottimizzato: O(1) average invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
      */
     void removeTuple(int id) {
-        clusteredData.delete(id);
+        clusteredData.remove(id);
     }
 
     /**
@@ -64,11 +71,19 @@ class Cluster {
 
     /**
      * Restituisce un array con gli identificativi delle tuple nel cluster.
+     * Converte HashSet in array ordinato.
      *
-     * @return array di identificativi
+     * @return array di identificativi ordinato
      */
     int[] iterator() {
-        return clusteredData.toArray();
+        int[] array = new int[clusteredData.size()];
+        int index = 0;
+        for (Integer id : clusteredData) {
+            array[index++] = id;
+        }
+        // Ordina per consistenza con versione precedente
+        java.util.Arrays.sort(array);
+        return array;
     }
 
     /**
@@ -96,7 +111,7 @@ class Cluster {
         for (int i = 0; i < centroid.getLength(); i++)
             str += centroid.get(i) + " ";
         str += ")\nExamples:\n";
-        int array[] = clusteredData.toArray();
+        int array[] = iterator();  // Usa il metodo iterator() che converte HashSet → array
         for (int i = 0; i < array.length; i++) {
             str += "[";
             for (int j = 0; j < data.getNumberOfExplanatoryAttributes(); j++)

@@ -1,18 +1,33 @@
 /**
  * Classe che implementa l'algoritmo Quality Threshold per il clustering.
+ * Versione ottimizzata con cache delle distanze.
  */
 public class QTMiner {
     private ClusterSet C;
     private double radius;
+    private boolean enableOptimizations;
+    private DistanceCache distanceCache;
 
     /**
-     * Costruttore della classe QTMiner.
+     * Costruttore della classe QTMiner (backwards compatible).
+     * Abilita ottimizzazioni di default.
      *
      * @param radius raggio dei cluster
      */
     public QTMiner(double radius) {
+        this(radius, true);
+    }
+
+    /**
+     * Costruttore con controllo ottimizzazioni.
+     *
+     * @param radius raggio dei cluster
+     * @param enableOptimizations true per abilitare cache e ottimizzazioni
+     */
+    public QTMiner(double radius, boolean enableOptimizations) {
         C = new ClusterSet();
         this.radius = radius;
+        this.enableOptimizations = enableOptimizations;
     }
 
     /**
@@ -25,12 +40,30 @@ public class QTMiner {
     }
 
     /**
+     * Restituisce il cache delle distanze (se abilitato).
+     *
+     * @return cache oppure null se disabilitato
+     */
+    public DistanceCache getDistanceCache() {
+        return distanceCache;
+    }
+
+    /**
      * Esegue l'algoritmo QT per scoprire i cluster.
+     * Versione ottimizzata con cache distanze.
      *
      * @param data insieme di dati
      * @return numero di cluster scoperti
      */
     public int compute(Data data) {
+        // Inizializza cache se ottimizzazioni abilitate
+        if (enableOptimizations) {
+            // Cache distanze fino a 2×radius per efficienza memoria
+            distanceCache = new DistanceCache(data, true, radius * 2.5);
+        } else {
+            distanceCache = new DistanceCache(data, false, 0);
+        }
+
         int numclusters = 0;
         boolean isClustered[] = new boolean[data.getNumberOfExamples()];
         for (int i = 0; i < isClustered.length; i++)
@@ -57,6 +90,7 @@ public class QTMiner {
     /**
      * Costruisce un cluster candidato per ogni tupla non ancora clusterizzata e restituisce il
      * cluster più popoloso.
+     * Versione ottimizzata con cache distanze.
      *
      * @param data insieme di dati
      * @param isClustered informazione sullo stato di clusterizzazione delle tuple
@@ -77,7 +111,14 @@ public class QTMiner {
                 // che distano al più radius dal centroide
                 for (int j = 0; j < data.getNumberOfExamples(); j++) {
                     if (!isClustered[j]) {
-                        double distance = centroid.getDistance(data.getItemSet(j));
+                        // Usa cache se disponibile, altrimenti calcola direttamente
+                        double distance;
+                        if (distanceCache != null && distanceCache.isEnabled()) {
+                            distance = distanceCache.getDistance(i, j);
+                        } else {
+                            distance = centroid.getDistance(data.getItemSet(j));
+                        }
+
                         if (distance <= radius) {
                             candidateCluster.addData(j);
                         }

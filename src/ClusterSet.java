@@ -2,17 +2,21 @@ import exceptions.InvalidFileFormatException;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * Classe che rappresenta un insieme di cluster.
+ * Ottimizzata con ArrayList per operazioni O(1) invece di O(n) copy.
  */
 public class ClusterSet {
-    private Cluster C[] = new Cluster[0];
+    private ArrayList<Cluster> C;
 
     /**
      * Costruttore della classe ClusterSet.
      */
-    public ClusterSet() {}
+    public ClusterSet() {
+        C = new ArrayList<>();
+    }
 
     /**
      * Costruttore che carica un insieme di cluster da file.
@@ -23,20 +27,18 @@ public class ClusterSet {
      * @throws InvalidFileFormatException se il formato del file non è valido
      */
     public ClusterSet(String filename, Data data) throws IOException, InvalidFileFormatException {
+        C = new ArrayList<>();
         loadFromFile(filename, data);
     }
 
     /**
      * Aggiunge un cluster all'insieme.
+     * Ottimizzato: O(1) amortized invece di O(n) array copy.
      *
      * @param c cluster da aggiungere
      */
     public void add(Cluster c) {
-        Cluster tempC[] = new Cluster[C.length + 1];
-        for (int i = 0; i < C.length; i++)
-            tempC[i] = C[i];
-        tempC[C.length] = c;
-        C = tempC;
+        C.add(c);
     }
 
     /**
@@ -46,7 +48,7 @@ public class ClusterSet {
      * @return cluster in posizione i
      */
     public Cluster get(int i) {
-        return C[i];
+        return C.get(i);
     }
 
     /**
@@ -56,13 +58,14 @@ public class ClusterSet {
      */
     @Override
     public String toString() {
-        String str = "";
-        for (int i = 0; i < C.length; i++) {
-            if (C[i] != null) {
-                str += i + ":" + C[i].toString() + "\n";
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < C.size(); i++) {
+            Cluster cluster = C.get(i);
+            if (cluster != null) {
+                str.append(i).append(":").append(cluster.toString()).append("\n");
             }
         }
-        return str;
+        return str.toString();
     }
 
     /**
@@ -72,13 +75,14 @@ public class ClusterSet {
      * @return stringa dettagliata dei cluster
      */
     public String toString(Data data) {
-        String str = "";
-        for (int i = 0; i < C.length; i++) {
-            if (C[i] != null) {
-                str += i + ":" + C[i].toString(data) + "\n";
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < C.size(); i++) {
+            Cluster cluster = C.get(i);
+            if (cluster != null) {
+                str.append(i).append(":").append(cluster.toString(data)).append("\n");
             }
         }
-        return str;
+        return str.toString();
     }
 
     /**
@@ -87,7 +91,7 @@ public class ClusterSet {
      * @return numero di cluster
      */
     public int getNumClusters() {
-        return C.length;
+        return C.size();
     }
 
     /**
@@ -103,7 +107,7 @@ public class ClusterSet {
             writer.write("---\n");
             writer.write("METADATA\n");
             writer.write("radius=" + radius + "\n");
-            writer.write("numClusters=" + C.length + "\n");
+            writer.write("numClusters=" + C.size() + "\n");
 
             // Timestamp
             LocalDateTime now = LocalDateTime.now();
@@ -112,12 +116,13 @@ public class ClusterSet {
             writer.write("---\n");
 
             // Scrivi ogni cluster
-            for (int i = 0; i < C.length; i++) {
-                if (C[i] != null) {
+            for (int i = 0; i < C.size(); i++) {
+                Cluster cluster = C.get(i);
+                if (cluster != null) {
                     writer.write("CLUSTER " + i + "\n");
 
                     // Centroide
-                    Tuple centroid = C[i].getCentroid();
+                    Tuple centroid = cluster.getCentroid();
                     writer.write("centroid=");
                     for (int j = 0; j < centroid.getLength(); j++) {
                         if (j > 0)
@@ -127,7 +132,7 @@ public class ClusterSet {
                     writer.write("\n");
 
                     // ID tuple
-                    int[] tupleIDs = C[i].iterator();
+                    int[] tupleIDs = cluster.iterator();
                     writer.write("tupleIDs=");
                     for (int j = 0; j < tupleIDs.length; j++) {
                         if (j > 0)
