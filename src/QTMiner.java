@@ -10,12 +10,13 @@ public class QTMiner {
 
     /**
      * Costruttore della classe QTMiner (backwards compatible).
-     * Abilita ottimizzazioni di default.
+     * Disabilita caching di default (basato su risultati benchmark).
+     * Le ottimizzazioni strutturali (HashSet/ArrayList) sono sempre attive.
      *
      * @param radius raggio dei cluster
      */
     public QTMiner(double radius) {
-        this(radius, true);
+        this(radius, false);  // Caching disabilitato di default
     }
 
     /**
