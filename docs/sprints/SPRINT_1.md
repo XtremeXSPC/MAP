@@ -1,12 +1,15 @@
 # Sprint 1 - Algoritmo Quality Threshold
 
 ## Obiettivo
+
 Implementare l'algoritmo di clustering Quality Threshold (QT) completo, incluse le classi per gestire cluster individuali e insiemi di cluster.
 
 ## Durata
+
 1 settimana
 
 ## Prerequisiti
+
 - Sprint 0 completato (classi base: Data, Tuple, ArraySet, Attribute, Item)
 
 ---
@@ -14,13 +17,16 @@ Implementare l'algoritmo di clustering Quality Threshold (QT) completo, incluse 
 ## Backlog dello Sprint
 
 ### 1. Classe `Cluster`
+
 **Priorità:** Alta
 **Story Points:** 5
 
 #### Descrizione
+
 Modella un singolo cluster con un centroide e un insieme di tuple clusterizzate.
 
 #### Criteri di Accettazione
+
 - [ ] Implementare costruttore che accetta una tupla come centroide
 - [ ] Gestire insieme di tuple clusterizzate tramite ArraySet
 - [ ] Implementare metodo `addData()` per aggiungere tuple al cluster
@@ -32,6 +38,7 @@ Modella un singolo cluster con un centroide e un insieme di tuple clusterizzate.
 - [ ] Implementare metodo `toString(Data)` dettagliato con tuple e distanze
 
 #### Dettagli Implementativi
+
 ```java
 class Cluster {
     private Tuple centroid;
@@ -50,6 +57,7 @@ class Cluster {
 ```
 
 #### Algoritmo toString(Data)
+
 ```
 Per ogni tupla nel cluster:
     1. Stampare valori attributi
@@ -62,19 +70,23 @@ Per ogni tupla nel cluster:
 ---
 
 ### 2. Classe `ClusterSet`
+
 **Priorità:** Alta
 **Story Points:** 3
 
 #### Descrizione
+
 Modella un insieme di cluster (risultato dell'algoritmo QT).
 
 #### Criteri di Accettazione
+
 - [ ] Implementare array dinamico di cluster
 - [ ] Implementare metodo `add()` per aggiungere cluster
 - [ ] Implementare metodo `get()` per ottenere cluster per indice
 - [ ] Implementare metodo `toString()` per visualizzare tutti i cluster
 
 #### Dettagli Implementativi
+
 ```java
 class ClusterSet {
     private Cluster C[];
@@ -94,13 +106,16 @@ class ClusterSet {
 ---
 
 ### 3. Classe `QTMiner`
+
 **Priorità:** Alta
 **Story Points:** 8
 
 #### Descrizione
+
 Implementa l'algoritmo Quality Threshold per il clustering. Questa è la classe principale che coordina l'intero processo di clustering.
 
 #### Criteri di Accettazione
+
 - [ ] Implementare costruttore che accetta il raggio (radius)
 - [ ] Implementare metodo `compute()` che esegue l'algoritmo QT
 - [ ] Implementare metodo `buildCandidateCluster()` per costruire cluster candidati
@@ -109,6 +124,7 @@ Implementa l'algoritmo Quality Threshold per il clustering. Questa è la classe 
 - [ ] Restituire numero di cluster scoperti
 
 #### Dettagli Implementativi
+
 ```java
 public class QTMiner {
     private ClusterSet C;
@@ -122,6 +138,7 @@ public class QTMiner {
 ```
 
 #### Algoritmo `compute(Data data)`
+
 ```
 Input: Dataset con n tuple, raggio radius
 Output: ClusterSet con cluster scoperti
@@ -140,6 +157,7 @@ Output: ClusterSet con cluster scoperti
 ```
 
 #### Algoritmo `buildCandidateCluster(Data data, boolean[] isClustered)`
+
 ```
 Input: Dataset, stato clusterizzazione
 Output: Cluster candidato con più tuple
@@ -164,13 +182,16 @@ Output: Cluster candidato con più tuple
 ---
 
 ### 4. Classe `MainTest`
+
 **Priorità:** Alta
 **Story Points:** 2
 
 #### Descrizione
+
 Classe main per testare l'intero sistema di clustering con input interattivo.
 
 #### Criteri di Accettazione
+
 - [ ] Caricare dataset tramite classe Data
 - [ ] Richiedere raggio da input utente (Keyboard)
 - [ ] Eseguire algoritmo QT
@@ -178,6 +199,7 @@ Classe main per testare l'intero sistema di clustering con input interattivo.
 - [ ] Stampare dettagli di ogni cluster (centroide, tuple, distanze)
 
 #### Dettagli Implementativi
+
 ```java
 public class MainTest {
     public static void main(String[] args) {
@@ -302,12 +324,14 @@ MainTest          QTMiner        Data         Cluster      ArraySet
 ## Esempio di Esecuzione
 
 ### Input
+
 ```
 Dataset: PlayTennis (14 tuple, 5 attributi)
 Radius: 0
 ```
 
 ### Output Atteso
+
 ```
 Numero di cluster: 11
 
@@ -338,18 +362,22 @@ AvgDistance=0.4
 ### Test Funzionali
 
 #### Test 1: Cluster con Radius = 0
+
 **Input:** `radius = 0`
 **Atteso:** Ogni tupla forma un cluster separato (14 cluster totali)
 
 #### Test 2: Cluster con Radius = 1
+
 **Input:** `radius = 1`
 **Atteso:** Cluster più grandi, numero cluster < 14
 
 #### Test 3: Verifica Centroidi
+
 **Test:** Verificare che ogni cluster abbia un centroide valido
 **Atteso:** Centroide è una tupla del dataset
 
 #### Test 4: Verifica Completezza
+
 **Test:** Sommare le dimensioni di tutti i cluster
 **Atteso:** Somma = 14 (numero totale tuple)
 
@@ -397,19 +425,23 @@ assert cs.get(0).getSize() == 2;
 ### Analisi Temporale
 
 **compute(Data data):**
+
 - Ciclo esterno: O(k) iterazioni, dove k = numero cluster
 - Chiamata a buildCandidateCluster() per iterazione
 
 **buildCandidateCluster(Data data, boolean[] isClustered):**
+
 - Ciclo esterno: O(n) tuple non clusterizzate
 - Ciclo interno: O(n) calcoli di distanza
 - Complessità: O(n²)
 
 **Complessità Totale:** O(k × n²)
+
 - Nel caso peggiore k = n (ogni tupla è un cluster): O(n³)
 - Nel caso medio k << n: O(n²)
 
 ### Analisi Spaziale
+
 - Array isClustered: O(n)
 - ClusterSet: O(k × m), dove m = dimensione media cluster
 - Spazio totale: O(n)
@@ -419,11 +451,13 @@ assert cs.get(0).getSize() == 2;
 ## Note Tecniche
 
 ### Scelta del Radius
+
 - **Radius piccolo (0-0.3):** Molti cluster piccoli, alta precisione
 - **Radius medio (0.4-0.7):** Bilanciamento tra precisione e aggregazione
 - **Radius grande (0.8-1.0):** Pochi cluster grandi, bassa precisione
 
 ### Ottimizzazioni Future
+
 1. **Pruning:** Evitare di considerare tuple troppo distanti
 2. **Caching:** Memorizzare distanze già calcolate
 3. **Parallelizzazione:** Costruire cluster candidati in parallelo
@@ -458,30 +492,33 @@ MAP/
 
 ## Rischi e Mitigazioni
 
-| Rischio | Probabilità | Impatto | Mitigazione |
-|---------|-------------|---------|-------------|
-| Complessità O(n³) per dataset grandi | Alta | Alto | Documentare limitazioni, pianificare ottimizzazioni in Sprint 3 |
-| Bug nel tracciamento tuple clusterizzate | Media | Alto | Test approfonditi con conteggi e verifiche |
-| Overflow in ArraySet | Bassa | Medio | Testare con radius variabile |
-| Cluster vuoti | Bassa | Alto | Verificare che buildCandidateCluster restituisca sempre cluster valido |
+| Rischio                                  | Probabilità | Impatto | Mitigazione                                                            |
+| ---------------------------------------- | ----------- | ------- | ---------------------------------------------------------------------- |
+| Complessità O(n³) per dataset grandi     | Alta        | Alto    | Documentare limitazioni, pianificare ottimizzazioni in Sprint 3        |
+| Bug nel tracciamento tuple clusterizzate | Media       | Alto    | Test approfonditi con conteggi e verifiche                             |
+| Overflow in ArraySet                     | Bassa       | Medio   | Testare con radius variabile                                           |
+| Cluster vuoti                            | Bassa       | Alto    | Verificare che buildCandidateCluster restituisca sempre cluster valido |
 
 ---
 
 ## Retrospettiva
 
 ### Cosa è andato bene
+
 - Algoritmo QT implementato correttamente
 - Separazione chiara tra Cluster e ClusterSet
 - Riuso efficace delle classi dello Sprint 0
 - Output dettagliato con distanze medie
 
 ### Cosa migliorare
+
 - Complessità algoritmica elevata per dataset grandi
 - Nessuna validazione input radius
 - ArraySet potrebbe usare ArrayList
 - Manca gestione errori (es. dataset vuoto)
 
 ### Action Items per Sprint Futuri
+
 - [ ] **Sprint 2:** Aggiungere persistenza cluster su file
 - [ ] **Sprint 3:** Ottimizzare algoritmo con pruning e caching
 - [ ] **Sprint 4:** Aggiungere supporto per attributi continui
@@ -493,17 +530,20 @@ MAP/
 ## Comandi di Compilazione ed Esecuzione
 
 ### Compilazione
+
 ```bash
 cd /home/user/MAP/src
 javac *.java
 ```
 
 ### Esecuzione
+
 ```bash
 java MainTest
 ```
 
 ### Esempio di Sessione
+
 ```
 $ java MainTest
 Outlook,Temperature,Humidity,Wind,PlayTennis
@@ -533,11 +573,13 @@ AvgDistance=0.13333333333333333
 ## Riferimenti
 
 ### Algoritmo Quality Threshold
+
 - Paper originale: Heyer et al., "Exploring Expression Data: Identification and Analysis of Coexpressed Genes" (1999)
 - Complessità: O(n³) nel caso peggiore
 - Vantaggi: Non richiede numero cluster predefinito, garantisce qualità minima cluster
 
 ### Metriche di Distanza
+
 - **Distanza Hamming:** Usata per attributi discreti
 - Formula: d(x,y) = Σ(x[i] ≠ y[i]) / n
 - Valori: [0, 1], dove 0 = identici, 1 = completamente diversi

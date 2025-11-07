@@ -22,17 +22,21 @@
 ## Panoramica Progetto
 
 ### Nome Progetto
+
 **MAP - Quality Threshold Clustering Algorithm**
 
 ### Obiettivo
+
 Implementare l'algoritmo di clustering Quality Threshold (QT) in Java per l'analisi e il raggruppamento di dati categorici.
 
 ### Contesto Accademico
+
 - **Corso:** Metodi Avanzati di Programmazione (MAP)
 - **Linguaggio:** Java (vanilla, senza framework)
 - **Paradigma:** Programmazione Object-Oriented
 
 ### Caratteristiche Principali
+
 - Algoritmo di clustering basato su qualità (quality threshold)
 - Supporto per attributi discreti (categorical data)
 - Calcolo distanze usando metrica di Hamming
@@ -81,13 +85,13 @@ MAP/
 
 ### File Chiave
 
-| File | Ruolo | Priorità |
-|------|-------|----------|
-| `QTMiner.java` | Implementa algoritmo QT principale | 🔴 Critico |
-| `Cluster.java` | Gestisce singolo cluster | 🔴 Critico |
-| `Data.java` | Gestisce dataset PlayTennis | 🔴 Critico |
-| `Tuple.java` | Rappresenta riga dataset | 🟡 Importante |
-| `MainTest.java` | Entry point applicazione | 🟡 Importante |
+| File            | Ruolo                              | Priorità     |
+| --------------- | ---------------------------------- | ------------ |
+| `QTMiner.java`  | Implementa algoritmo QT principale | 🔴 Critico    |
+| `Cluster.java`  | Gestisce singolo cluster           | 🔴 Critico    |
+| `Data.java`     | Gestisce dataset PlayTennis        | 🔴 Critico    |
+| `Tuple.java`    | Rappresenta riga dataset           | 🟡 Importante |
+| `MainTest.java` | Entry point applicazione           | 🟡 Importante |
 
 ---
 
@@ -184,16 +188,16 @@ MAP/
     │ + get(int)   │     │
     └──────────────┘     │
                          ▼
-                  ┌──────────────┐
-                  │   Cluster    │
-                  │──────────────│
-                  │ - centroid   │
+                  ┌──────────-───-─┐
+                  │     Cluster    │
+                  │───────────-─-──│
+                  │ - centroid     │
                   │ - clusteredData│
-                  │──────────────│
-                  │ + addData()  │
-                  │ + getSize()  │
-                  │ + iterator() │
-                  └──────┬───────┘
+                  │────────────────│
+                  │ + addData()    │
+                  │ + getSize()    │
+                  │ + iterator()   │
+                  └──────┬─────────┘
                          │ 1
                          │ uses
                          │
@@ -228,29 +232,36 @@ MAP/
 ## Classi Implementate
 
 ### 1. Attribute (Abstract)
+
 **Scopo:** Rappresenta un attributo generico (colonna del dataset)
 
 **Membri:**
+
 - `name: String` - Nome attributo (es. "Outlook", "Temperature")
 - `index: int` - Indice colonna
 
 **Metodi chiave:**
+
 - `getName()`: Restituisce nome attributo
 - `getIndex()`: Restituisce indice colonna
 
 ---
 
 ### 2. DiscreteAttribute
+
 **Scopo:** Attributo con valori discreti/categorici
 
 **Membri aggiuntivi:**
+
 - `values: String[]` - Array valori possibili
 
 **Metodi chiave:**
+
 - `getNumberOfDistinctValues()`: Conta valori distinti
 - `frequency(Data, Object)`: Conta occorrenze valore
 
 **Esempio:**
+
 ```java
 String[] outLookValues = {"overcast", "rain", "sunny"};
 DiscreteAttribute outlook = new DiscreteAttribute("Outlook", 0, outLookValues);
@@ -259,9 +270,11 @@ DiscreteAttribute outlook = new DiscreteAttribute("Outlook", 0, outLookValues);
 ---
 
 ### 3. ContinuousAttribute
+
 **Scopo:** Attributo con valori continui/numerici
 
 **Membri aggiuntivi:**
+
 - `min: double` - Valore minimo
 - `max: double` - Valore massimo
 
@@ -270,62 +283,77 @@ DiscreteAttribute outlook = new DiscreteAttribute("Outlook", 0, outLookValues);
 ---
 
 ### 4. Item (Abstract)
+
 **Scopo:** Coppia (Attributo, Valore) - singola cella del dataset
 
 **Membri:**
+
 - `attribute: Attribute`
 - `value: Object`
 
 **Metodo astratto:**
+
 - `distance(Object a): double` - Calcola distanza tra due valori
 
 ---
 
 ### 5. DiscreteItem
+
 **Scopo:** Item con valore discreto
 
 **Calcolo distanza:**
+
 ```java
 public double distance(Object a) {
     return this.getValue().equals(a) ? 0 : 1;
 }
 ```
+
 - 0 se valori uguali
 - 1 se valori diversi (distanza di Hamming)
 
 ---
 
 ### 6. Tuple
+
 **Scopo:** Rappresenta una riga del dataset (sequenza di item)
 
 **Membri:**
+
 - `tuple: Item[]` - Array di item
 
 **Metodi chiave:**
+
 - `add(Item c, int i)`: Aggiunge item alla posizione i
 - `get(int i)`: Ottiene item alla posizione i
 - `getDistance(Tuple obj)`: Calcola distanza tra due tuple
+
   ```
   distance = Σ(tuple[i].distance(obj.get(i))) / n
   ```
+
 - `avgDistance(Data data, int[] clusteredData)`: Calcola distanza media da insieme tuple
 
 ---
 
 ### 7. ArraySet
+
 **Scopo:** Insieme di interi senza duplicati (per tracciare ID tuple in cluster)
 
 **Membri:**
+
 - `set: int[]` - Array dinamico
 - `size: int` - Numero elementi
 
 **Metodi chiave:**
+
 - `add(int item): boolean` - Aggiunge se non presente
 - `get(int item): boolean` - Verifica presenza
 - `delete(int item)`: Rimuove elemento
 - `toArray(): int[]` - Converte in array
 
 **Implementazione crescita dinamica:**
+
 ```java
 if (size == set.length) {
     int[] newSet = new int[set.length * 2];
@@ -337,14 +365,17 @@ if (size == set.length) {
 ---
 
 ### 8. Data
+
 **Scopo:** Gestisce dataset PlayTennis (14 tuple, 5 attributi)
 
 **Membri:**
+
 - `data: Object[][]` - Matrice 14×5
 - `numberOfExamples: int` - 14
 - `explanatorySet: Attribute[]` - Schema attributi
 
 **Metodi chiave:**
+
 - `getItemSet(int index): Tuple` - Converte riga in Tuple
 - `getValue(int row, int col): Object` - Accede a cella
 - `getNumberOfExamples(): int` - Restituisce 14
@@ -353,13 +384,16 @@ if (size == set.length) {
 ---
 
 ### 9. Cluster
+
 **Scopo:** Rappresenta un singolo cluster con centroide e tuple
 
 **Membri:**
+
 - `centroid: Tuple` - Centroide cluster
 - `clusteredData: ArraySet` - ID tuple nel cluster
 
 **Metodi chiave:**
+
 - `addData(int id): boolean` - Aggiunge tupla
 - `contain(int id): boolean` - Verifica appartenenza
 - `getSize(): int` - Dimensione cluster
@@ -369,13 +403,16 @@ if (size == set.length) {
 ---
 
 ### 10. ClusterSet
+
 **Scopo:** Insieme di cluster (risultato algoritmo QT)
 
 **Membri:**
+
 - `C: Cluster[]` - Array cluster (max 50)
 - `lastClusterIndex: int` - Prossimo indice libero
 
 **Metodi chiave:**
+
 - `add(Cluster c)`: Aggiunge cluster
 - `get(int i): Cluster` - Ottiene cluster i-esimo
 - `toString(Data data): String` - Stampa tutti cluster
@@ -383,13 +420,16 @@ if (size == set.length) {
 ---
 
 ### 11. QTMiner
+
 **Scopo:** Implementa algoritmo Quality Threshold
 
 **Membri:**
+
 - `C: ClusterSet` - Cluster scoperti
 - `radius: double` - Raggio massimo cluster
 
 **Metodi chiave:**
+
 - `compute(Data data): int` - Esegue algoritmo, restituisce numero cluster
 - `buildCandidateCluster(Data, boolean[]): Cluster` - Costruisce cluster candidato più grande
 
@@ -400,6 +440,7 @@ if (size == set.length) {
 ## Algoritmo Quality Threshold
 
 ### Descrizione
+
 L'algoritmo QT è un metodo di clustering che garantisce una qualità minima dei cluster basata su un raggio massimo.
 
 ### Pseudocodice Completo
@@ -488,12 +529,14 @@ FINE
 ### Complessità Algoritmica
 
 **Temporale:**
+
 - `compute()`: O(k) iterazioni, dove k = numero cluster
 - `buildCandidateCluster()`: O(n²) calcoli distanza
 - **Totale:** O(k × n²)
 - **Caso peggiore:** k = n → O(n³)
 
 **Spaziale:**
+
 - Array isClustered: O(n)
 - ClusterSet: O(k × m), dove m = dimensione media cluster
 - **Totale:** O(n)
@@ -510,37 +553,38 @@ FINE
 ## Dataset PlayTennis
 
 ### Descrizione
+
 Dataset per decidere se giocare a tennis in base alle condizioni meteo.
 
 ### Schema
 
-| Attributo    | Tipo     | Valori                        | Descrizione           |
-|--------------|----------|-------------------------------|-----------------------|
-| Outlook      | Discrete | {overcast, rain, sunny}       | Condizioni cielo      |
-| Temperature  | Discrete | {cool, hot, mild}             | Temperatura           |
-| Humidity     | Discrete | {high, normal}                | Umidità               |
-| Wind         | Discrete | {strong, weak}                | Vento                 |
-| PlayTennis   | Discrete | {no, yes}                     | Decisione (target)    |
+| Attributo   | Tipo     | Valori                  | Descrizione        |
+| ----------- | -------- | ----------------------- | ------------------ |
+| Outlook     | Discrete | {overcast, rain, sunny} | Condizioni cielo   |
+| Temperature | Discrete | {cool, hot, mild}       | Temperatura        |
+| Humidity    | Discrete | {high, normal}          | Umidità            |
+| Wind        | Discrete | {strong, weak}          | Vento              |
+| PlayTennis  | Discrete | {no, yes}               | Decisione (target) |
 
 ### Tuple (14 esempi)
 
 ```
-ID  | Outlook  | Temperature | Humidity | Wind   | PlayTennis
-----|----------|-------------|----------|--------|------------
-1   | sunny    | hot         | high     | weak   | no
-2   | sunny    | hot         | high     | strong | no
-3   | overcast | hot         | high     | weak   | yes
-4   | rain     | mild        | high     | weak   | yes
-5   | rain     | cool        | normal   | weak   | yes
-6   | rain     | cool        | normal   | strong | no
-7   | overcast | cool        | normal   | strong | yes
-8   | sunny    | mild        | high     | weak   | no
-9   | sunny    | cool        | normal   | weak   | yes
-10  | rain     | mild        | normal   | weak   | yes
-11  | sunny    | mild        | normal   | strong | yes
-12  | overcast | mild        | high     | strong | yes
-13  | overcast | hot         | normal   | weak   | yes
-14  | rain     | mild        | high     | strong | no
+| ID  | Outlook  | Temperature | Humidity | Wind   | PlayTennis |
+| --- | -------- | ----------- | -------- | ------ | ---------- |
+| 1   | sunny    | hot         | high     | weak   | no         |
+| 2   | sunny    | hot         | high     | strong | no         |
+| 3   | overcast | hot         | high     | weak   | yes        |
+| 4   | rain     | mild        | high     | weak   | yes        |
+| 5   | rain     | cool        | normal   | weak   | yes        |
+| 6   | rain     | cool        | normal   | strong | no         |
+| 7   | overcast | cool        | normal   | strong | yes        |
+| 8   | sunny    | mild        | high     | weak   | no         |
+| 9   | sunny    | cool        | normal   | weak   | yes        |
+| 10  | rain     | mild        | normal   | weak   | yes        |
+| 11  | sunny    | mild        | normal   | strong | yes        |
+| 12  | overcast | mild        | high     | strong | yes        |
+| 13  | overcast | hot         | normal   | weak   | yes        |
+| 14  | rain     | mild        | high     | strong | no         |
 ```
 
 ### Metrica di Distanza
@@ -552,6 +596,7 @@ distance(tuple1, tuple2) = (numero attributi diversi) / (numero totale attributi
 ```
 
 **Esempio:**
+
 ```
 tuple1 = (sunny, hot, high, weak, no)
 tuple2 = (sunny, hot, high, strong, no)
@@ -565,9 +610,11 @@ distance = 1/5 = 0.2
 ## Sprint Completati
 
 ### ✅ Sprint 0 - Struttura Base
+
 **Stato:** Completato
 
 **Classi implementate:**
+
 - Attribute (abstract), DiscreteAttribute, ContinuousAttribute
 - Item (abstract), DiscreteItem
 - Tuple
@@ -579,15 +626,18 @@ distance = 1/5 = 0.2
 ---
 
 ### ✅ Sprint 1 - Algoritmo QT
+
 **Stato:** Completato
 
 **Classi implementate:**
+
 - Cluster
 - ClusterSet
 - QTMiner
 - MainTest
 
 **Funzionalità:**
+
 - Algoritmo QT completo
 - Calcolo distanze
 - Output dettagliato cluster
@@ -599,13 +649,16 @@ distance = 1/5 = 0.2
 ## Sprint Futuri
 
 ### 🔜 Sprint 2 - Persistenza e I/O
+
 **Obiettivi:**
+
 - Serializzazione cluster su file
 - Caricamento cluster da file
 - Supporto per dataset esterni (CSV)
 - Gestione errori I/O
 
 **Tecnologie:**
+
 - Java Serialization o JSON
 - FileInputStream/FileOutputStream
 - BufferedReader per CSV
@@ -613,20 +666,25 @@ distance = 1/5 = 0.2
 ---
 
 ### 🔜 Sprint 3 - Ottimizzazioni Performance
+
 **Obiettivi:**
+
 - Pruning algoritmo (evitare calcoli inutili)
 - Caching distanze calcolate
 - Strutture dati efficienti (es. R-tree)
 - Parallelizzazione con thread
 
 **Miglioramenti attesi:**
+
 - Complessità da O(n³) a O(n² log n)
 - Gestione dataset > 1000 tuple
 
 ---
 
 ### 🔜 Sprint 4 - Supporto Attributi Continui
+
 **Obiettivi:**
+
 - Implementare ContinuousItem
 - Distanza Euclidea per attributi numerici
 - Normalizzazione valori continui
@@ -635,7 +693,9 @@ distance = 1/5 = 0.2
 ---
 
 ### 🔜 Sprint 5 - Interfaccia Grafica
+
 **Obiettivi:**
+
 - GUI Swing per input parametri
 - Visualizzazione cluster 2D/3D
 - Grafici con JFreeChart
@@ -644,7 +704,9 @@ distance = 1/5 = 0.2
 ---
 
 ### 🔜 Sprint 6 - Metriche Qualità
+
 **Obiettivi:**
+
 - Silhouette coefficient
 - Davies-Bouldin index
 - Calinski-Harabasz index
@@ -653,7 +715,9 @@ distance = 1/5 = 0.2
 ---
 
 ### 🔜 Sprint 7 - Database Integration (JDBC)
+
 **Obiettivi:**
+
 - Lettura dati da database
 - Salvataggio risultati in DB
 - Supporto MySQL/PostgreSQL
@@ -662,7 +726,9 @@ distance = 1/5 = 0.2
 ---
 
 ### 🔜 Sprint 8 - Comunicazione Client-Server (Socket)
+
 **Obiettivi:**
+
 - Server QT multi-client
 - Protocollo comunicazione
 - Clustering distribuito
@@ -692,11 +758,13 @@ java MainTest
 ```
 
 **Input richiesto:**
+
 ```
 Inserisci radius: 0
 ```
 
 **Output tipico:**
+
 ```
 Outlook,Temperature,Humidity,Wind,PlayTennis
 1:sunny,hot,high,weak,no,
@@ -723,27 +791,33 @@ AvgDistance=0.13333333333333333
 ### Test con Diversi Radius
 
 #### Radius = 0 (cluster precisi)
+
 ```bash
 $ java MainTest
 Inserisci radius: 0
 Numero di cluster: 11
 ```
+
 Risultato: Molti cluster piccoli (1-3 tuple)
 
 #### Radius = 0.5 (bilanciato)
+
 ```bash
 $ java MainTest
 Inserisci radius: 0.5
 Numero di cluster: ~5-7
 ```
+
 Risultato: Cluster di dimensione media
 
 #### Radius = 1.0 (cluster aggregati)
+
 ```bash
 $ java MainTest
 Inserisci radius: 1.0
 Numero di cluster: ~2-3
 ```
+
 Risultato: Pochi cluster grandi
 
 ---
@@ -785,12 +859,14 @@ javac *.java && echo "✓ Compilazione OK" || echo "✗ Errori compilazione"
 ### Stile Codice
 
 #### Naming Conventions
+
 - **Classi:** PascalCase (es. `QTMiner`, `ClusterSet`)
 - **Metodi:** camelCase (es. `getDistance`, `addData`)
 - **Variabili:** camelCase (es. `clusteredData`, `radius`)
 - **Costanti:** UPPER_SNAKE_CASE (es. `MAX_CLUSTER`)
 
 #### Visibilità
+
 ```java
 public class Data { ... }           // Pubblico: classi principali
 class Cluster { ... }               // Package-private: classi interne
@@ -802,6 +878,7 @@ private int size;                   // Privato: membri
 ### Javadoc
 
 **Formato standard:**
+
 ```java
 /**
  * Descrizione breve metodo.
@@ -813,6 +890,7 @@ public int metodo(int parametro) { ... }
 ```
 
 **Esempio reale:**
+
 ```java
 /**
  * Calcola la distanza tra due tuple usando la metrica di Hamming.
@@ -836,6 +914,7 @@ public double getDistance(Tuple obj) {
 **Attualmente:** Nessuna gestione errori esplicita
 
 **Best practice per futuri sprint:**
+
 ```java
 // Validazione input
 if (radius < 0) {
@@ -853,10 +932,12 @@ if (index < 0 || index >= size) {
 ### Testing
 
 **Approccio attuale:**
+
 - Test manuali via `MainTest`
 - Verifiche visive output
 
 **Futuri miglioramenti:**
+
 ```java
 // Sprint 2: JUnit tests
 @Test
@@ -915,36 +996,45 @@ public void testClusterSize() {
 ## Risorse Esterne
 
 ### Algoritmo QT
+
 - Paper originale: Heyer et al. (1999) "Exploring Expression Data: Identification and Analysis of Coexpressed Genes"
 - Complessità: O(n³) worst case
 
 ### Distanza di Hamming
-- Wikipedia: https://en.wikipedia.org/wiki/Hamming_distance
+
+- Wikipedia: <https://en.wikipedia.org/wiki/Hamming_distance>
 - Usata per dati categorici/discreti
 
 ### Java Documentation
-- Oracle Java SE Docs: https://docs.oracle.com/javase/8/docs/api/
+
+- Oracle Java SE Docs: <https://docs.oracle.com/javase/8/docs/api/>
 
 ---
 
 ## FAQ per Claude
 
 ### Q: Come aggiungo un nuovo attributo al dataset?
+
 **A:** Modifica `Data.java` costruttore:
+
 1. Aggiungi colonna a `data[][]`
 2. Aggiungi attributo a `explanatorySet[]`
 3. Aggiorna lunghezza array
 
 ### Q: Come cambio il radius predefinito?
+
 **A:** Modifica richiesta in `MainTest.java`, oppure passa come argomento CLI
 
 ### Q: Come supporto dataset esterni?
+
 **A:** Pianificato per Sprint 2 (CSV parsing)
 
 ### Q: Come ottimizzare per dataset grandi?
+
 **A:** Pianificato per Sprint 3 (pruning, caching, parallelizzazione)
 
 ### Q: Dove sono i test unitari?
+
 **A:** Non ancora implementati. Pianificati per Sprint 2 con JUnit
 
 ---

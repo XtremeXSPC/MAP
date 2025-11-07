@@ -1,9 +1,11 @@
 # Sprint 0 - Struttura Base del Progetto
 
 ## Obiettivo
+
 Implementare le classi fondamentali per rappresentare i dati e la struttura base del sistema di clustering Quality Threshold.
 
 ## Durata
+
 1 settimana
 
 ---
@@ -11,18 +13,22 @@ Implementare le classi fondamentali per rappresentare i dati e la struttura base
 ## Backlog dello Sprint
 
 ### 1. Classe `Attribute` (Abstract)
+
 **Priorità:** Alta
 **Story Points:** 2
 
 #### Descrizione
+
 Classe astratta che rappresenta un attributo generico in un sistema di clustering. Fornisce l'interfaccia base per attributi discreti e continui.
 
 #### Criteri di Accettazione
+
 - [ ] Implementare costruttore con nome e indice simbolico
 - [ ] Implementare metodi getter per `name` e `index`
 - [ ] Implementare metodo `toString()` per rappresentazione testuale
 
 #### Dettagli Implementativi
+
 ```java
 public abstract class Attribute {
     private String name;
@@ -37,19 +43,23 @@ public abstract class Attribute {
 ---
 
 ### 2. Classe `DiscreteAttribute`
+
 **Priorità:** Alta
 **Story Points:** 3
 
 #### Descrizione
+
 Estende `Attribute` per rappresentare attributi discreti con un insieme finito di valori possibili (es. "sunny", "overcast", "rain").
 
 #### Criteri di Accettazione
+
 - [ ] Estendere la classe `Attribute`
 - [ ] Gestire array di valori discreti
 - [ ] Implementare metodo per ottenere numero di valori distinti
 - [ ] Implementare metodo per calcolare la frequenza di un valore
 
 #### Dettagli Implementativi
+
 ```java
 public class DiscreteAttribute extends Attribute {
     private String values[];
@@ -65,17 +75,21 @@ public class DiscreteAttribute extends Attribute {
 ---
 
 ### 3. Classe `ContinuousAttribute`
+
 **Priorità:** Alta
 **Story Points:** 2
 
 #### Descrizione
+
 Estende `Attribute` per rappresentare attributi continui con valori numerici (min/max).
 
 #### Criteri di Accettazione
+
 - [ ] Estendere la classe `Attribute`
 - [ ] Gestire valori min e max dell'attributo
 
 #### Dettagli Implementativi
+
 ```java
 public class ContinuousAttribute extends Attribute {
     private double min;
@@ -92,19 +106,23 @@ public class ContinuousAttribute extends Attribute {
 ---
 
 ### 4. Classe `Item` (Abstract)
+
 **Priorità:** Alta
 **Story Points:** 2
 
 #### Descrizione
+
 Classe astratta che modella una coppia (Attributo, Valore). Rappresenta un singolo item in una tupla.
 
 #### Criteri di Accettazione
+
 - [ ] Implementare costruttore con attributo e valore
 - [ ] Implementare getter per attributo e valore
 - [ ] Implementare metodo astratto `distance()` per calcolare la distanza
 - [ ] Implementare `toString()`
 
 #### Dettagli Implementativi
+
 ```java
 public abstract class Item {
     private Attribute attribute;
@@ -119,17 +137,21 @@ public abstract class Item {
 ---
 
 ### 5. Classe `DiscreteItem`
+
 **Priorità:** Alta
 **Story Points:** 2
 
 #### Descrizione
+
 Estende `Item` per rappresentare item con attributi discreti.
 
 #### Criteri di Accettazione
+
 - [ ] Estendere la classe `Item`
 - [ ] Implementare calcolo della distanza (0 se uguali, 1 se diversi)
 
 #### Dettagli Implementativi
+
 ```java
 class DiscreteItem extends Item {
     DiscreteItem(DiscreteAttribute attribute, String value);
@@ -142,13 +164,16 @@ class DiscreteItem extends Item {
 ---
 
 ### 6. Classe `Tuple`
+
 **Priorità:** Alta
 **Story Points:** 3
 
 #### Descrizione
+
 Rappresenta una tupla come sequenza di item (coppie attributo-valore).
 
 #### Criteri di Accettazione
+
 - [ ] Implementare array di `Item`
 - [ ] Implementare metodo `add()` per aggiungere item
 - [ ] Implementare metodo `get()` per ottenere item
@@ -156,6 +181,7 @@ Rappresenta una tupla come sequenza di item (coppie attributo-valore).
 - [ ] Implementare metodo `getDistance()` per calcolare distanza tra tuple
 
 #### Dettagli Implementativi
+
 ```java
 public class Tuple {
     private Item[] tuple;
@@ -170,6 +196,7 @@ public class Tuple {
 ```
 
 **Calcolo Distanza:**
+
 ```
 distance(t1, t2) = Σ(i=0 to n-1) t1[i].distance(t2[i]) / n
 ```
@@ -179,13 +206,16 @@ distance(t1, t2) = Σ(i=0 to n-1) t1[i].distance(t2[i]) / n
 ---
 
 ### 7. Classe `ArraySet`
+
 **Priorità:** Alta
 **Story Points:** 3
 
 #### Descrizione
+
 Modella un insieme di interi senza duplicati, utilizzato per tracciare gli indici delle tuple clusterizzate.
 
 #### Criteri di Accettazione
+
 - [ ] Implementare array dinamico di interi
 - [ ] Implementare metodo `add()` che evita duplicati
 - [ ] Implementare metodo `get()` per verificare presenza
@@ -194,6 +224,7 @@ Modella un insieme di interi senza duplicati, utilizzato per tracciare gli indic
 - [ ] Implementare metodo `toArray()` per conversione in array
 
 #### Dettagli Implementativi
+
 ```java
 class ArraySet {
     private int[] set;
@@ -213,13 +244,16 @@ class ArraySet {
 ---
 
 ### 8. Classe `Data`
+
 **Priorità:** Alta
 **Story Points:** 5
 
 #### Descrizione
+
 Modella l'insieme di transazioni (dataset). Carica e gestisce i dati di esempio per il clustering.
 
 #### Criteri di Accettazione
+
 - [ ] Implementare matrice di dati (Object[][])
 - [ ] Inizializzare dataset PlayTennis (14 esempi, 5 attributi)
 - [ ] Implementare schema attributi (explanatorySet)
@@ -230,8 +264,9 @@ Modella l'insieme di transazioni (dataset). Carica e gestisce i dati di esempio 
 - [ ] Implementare metodo `toString()` per visualizzare dati
 
 #### Dataset PlayTennis
+
 | Outlook  | Temperature | Humidity | Wind   | PlayTennis |
-|----------|-------------|----------|--------|------------|
+| -------- | ----------- | -------- | ------ | ---------- |
 | sunny    | hot         | high     | weak   | no         |
 | sunny    | hot         | high     | strong | no         |
 | overcast | hot         | high     | weak   | yes        |
@@ -248,6 +283,7 @@ Modella l'insieme di transazioni (dataset). Carica e gestisce i dati di esempio 
 | rain     | mild        | high     | strong | no         |
 
 #### Dettagli Implementativi
+
 ```java
 public class Data {
     private Object data[][];
@@ -328,6 +364,7 @@ public class Data {
 ## Test e Validazione
 
 ### Test della classe Data
+
 ```bash
 cd src
 javac *.java
@@ -335,6 +372,7 @@ java Data
 ```
 
 **Output Atteso:**
+
 ```
 Outlook,Temperature,Humidity,Wind,PlayTennis
 1:sunny,hot,high,weak,no,
@@ -344,6 +382,7 @@ Outlook,Temperature,Humidity,Wind,PlayTennis
 ```
 
 ### Test della classe Tuple
+
 ```java
 Data data = new Data();
 Tuple t1 = data.getItemSet(0);
@@ -367,11 +406,13 @@ System.out.println("Distance: " + distance);
 ## Note Tecniche
 
 ### Convenzioni di Codifica
+
 - Visibilità package-private per classi interne (Cluster, ArraySet, etc.)
 - Visibilità public per classi principali (Data, QTMiner)
 - Javadoc completo per tutti i metodi pubblici
 
 ### Struttura del Progetto
+
 ```
 MAP/
 ├── src/
@@ -392,26 +433,29 @@ MAP/
 
 ## Rischi e Mitigazioni
 
-| Rischio | Probabilità | Impatto | Mitigazione |
-|---------|-------------|---------|-------------|
-| Errori nel calcolo della distanza | Media | Alto | Test approfonditi con casi noti |
-| Dataset hardcoded limitante | Bassa | Medio | Documentare per futuri refactoring |
-| Gestione memoria ArraySet | Bassa | Medio | Implementare raddoppio array dinamico |
+| Rischio                           | Probabilità | Impatto | Mitigazione                           |
+| --------------------------------- | ----------- | ------- | ------------------------------------- |
+| Errori nel calcolo della distanza | Media       | Alto    | Test approfonditi con casi noti       |
+| Dataset hardcoded limitante       | Bassa       | Medio   | Documentare per futuri refactoring    |
+| Gestione memoria ArraySet         | Bassa       | Medio   | Implementare raddoppio array dinamico |
 
 ---
 
 ## Retrospettiva
 
 ### Cosa è andato bene
+
 - Struttura chiara e modulare
 - Separazione tra attributi discreti e continui
 - Design pattern Template Method per Item/Attribute
 
 ### Cosa migliorare
+
 - Considerare l'uso di Collections invece di array nativi
 - Aggiungere validazione input nei costruttori
 - Implementare equals() e hashCode() dove appropriato
 
 ### Action Items
+
 - [ ] Valutare refactoring di ArraySet con ArrayList in Sprint futuri
 - [ ] Aggiungere test unitari (JUnit) in Sprint 2
