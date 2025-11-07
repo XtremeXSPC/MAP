@@ -103,10 +103,11 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
      * Implementa l'interfaccia Comparable per ordinamento automatico in TreeSet.
      *
      * <p>Ordine crescente: cluster più piccoli prima dei più grandi.</p>
-     * <p>In caso di parità di dimensione, mantiene ordine di inserimento.</p>
+     * <p>In caso di parità di dimensione, viene utilizzato il confronto tra hashCode per garantire la consistenza dell'ordinamento.
+     * Questo non implica che i cluster siano considerati uguali, ma solo che l'ordinamento è deterministico.</p>
      *
      * @param other cluster da confrontare
-     * @return -1 se questo cluster è più piccolo, +1 se è più grande, 0 se uguale
+     * @return -1 se questo cluster è più piccolo, +1 se è più grande, oppure il risultato del confronto tra hashCode se le dimensioni sono uguali (0 solo se gli hashCode sono uguali)
      */
     @Override
     public int compareTo(Cluster other) {
