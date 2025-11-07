@@ -12,8 +12,8 @@
 |--------|------|-------|--------|---------------|
 | Sprint 0 | Struttura Base | ✅ Completato | 1 settimana | 100% |
 | Sprint 1 | Algoritmo QT | ✅ Completato | 1 settimana | 100% |
-| Sprint 2 | Persistenza e I/O | 🔜 Pianificato | 1 settimana | 0% |
-| Sprint 3 | Ottimizzazioni Performance | 🔜 Pianificato | 2 settimane | 0% |
+| Sprint 2 | Persistenza e I/O | ✅ Completato | 1 settimana | 100% |
+| Sprint 3 | Ottimizzazioni Performance | 🚧 In Corso | 2 settimane | 0% |
 | Sprint 4 | Supporto Attributi Continui | 🔜 Pianificato | 1 settimana | 0% |
 | Sprint 5 | Interfaccia Grafica | 🔜 Pianificato | 2 settimane | 0% |
 | Sprint 6 | Metriche Qualità | 🔜 Pianificato | 1 settimana | 0% |
@@ -22,7 +22,7 @@
 
 ### Timeline Stimata
 - **Fase 1 (Core):** Sprint 0-1 (✅ Completata)
-- **Fase 2 (Estensioni Base):** Sprint 2-4 (🔜 Prossimi 4 settimane)
+- **Fase 2 (Estensioni Base):** Sprint 2 (✅ Completata), Sprint 3-4 (🚧 In corso / 🔜 Prossimi)
 - **Fase 3 (Interfacce):** Sprint 5-6 (🔜 3 settimane)
 - **Fase 4 (Integrazione):** Sprint 7-8 (🔜 4 settimane)
 
@@ -114,56 +114,93 @@ AvgDistance=0.133
 
 ---
 
-## 🔜 Sprint Pianificati
-
-### Sprint 2 - Persistenza e I/O
+### ✅ Sprint 2 - Persistenza e I/O
 
 **Durata:** 1 settimana
-**Stato:** Pianificato
-**Priorità:** 🔴 Alta
+**Stato:** Completato
+**Documentazione:** [`docs/sprints/SPRINT_2.md`](sprints/SPRINT_2.md)
 **Prerequisiti:** Sprint 1
 
 #### Obiettivi
-Implementare funzionalità di persistenza per salvare e caricare cluster da file, e supporto per dataset esterni.
+Implementare funzionalità di persistenza per salvare e caricare risultati del clustering, e supportare dataset esterni in formato CSV.
 
-#### Funzionalità Pianificate
+#### Funzionalità Implementate
 
-##### 1. Serializzazione Cluster
-- Salvare ClusterSet su file (formato JSON o Java Serialization)
-- Caricare ClusterSet da file esistente
-- Metodi: `saveClusterSet(String filename)`, `loadClusterSet(String filename)`
+##### 1. Eccezioni Custom
+- ✅ `InvalidFileFormatException` - File .dmp malformati
+- ✅ `InvalidDataFormatException` - CSV con errori di formato
+- ✅ `IncompatibleClusterException` - Cluster incompatibili con dataset
 
-##### 2. Gestione Dataset Esterni
-- Caricamento dataset da file CSV
-- Parsing automatico di schema attributi
-- Validazione formato dati
+##### 2. Serializzazione Cluster
+- ✅ `ClusterSet.save(filename, radius)` - Salva cluster in formato .dmp testuale
+- ✅ Formato human-readable con metadata (radius, timestamp, numero cluster)
+- ✅ Ogni cluster include centroide e ID tuple
 
-##### 3. Gestione Errori I/O
-- Try-catch per FileNotFoundException
-- Validazione integrità dati caricati
-- Messaggi di errore user-friendly
+##### 3. Caricamento Cluster
+- ✅ `ClusterSet(filename, data)` - Ricostruisce cluster da file .dmp
+- ✅ Validazioni robuste (file esistente, formato valido, compatibilità)
+- ✅ Messaggi di errore chiari e informativi
 
-#### Classi da Modificare/Creare
-- `Data` - Aggiungere costruttore con path file CSV
-- `QTMiner` - Aggiungere metodi save/load
-- `CSVParser` (nuova) - Parsing file CSV
-- `ClusterSerializer` (nuova) - Serializzazione cluster
+##### 4. Supporto Dataset CSV
+- ✅ `Data(csvFilename)` - Parsing automatico di file CSV
+- ✅ Inferenza automatica tipi attributi (discrete vs continuous)
+- ✅ Gestione valori mancanti (`?`, `NA`, celle vuote)
+- ✅ Validazione formato (numero colonne consistente)
 
-#### Tecnologie
-- Java Serialization (ObjectOutputStream/ObjectInputStream)
-- Alternativa: JSON con org.json o Gson
-- BufferedReader per CSV parsing
+##### 5. Menu Interattivo
+- ✅ Tre modalità operative: dataset hardcoded, CSV loading, cluster loading
+- ✅ Input validato con gestione errori
+- ✅ Opzione salvataggio risultati dopo clustering
+- ✅ Loop continuo per operazioni multiple
 
-#### Criteri di Successo
-- [ ] Cluster salvati e ricaricati correttamente
-- [ ] Dataset esterni caricati con successo
-- [ ] Gestione errori robusta
-- [ ] Test con file CSV di esempio
-- [ ] Documentazione formato file
+##### 6. Dataset di Esempio
+- ✅ `data/playtennis.csv` - Dataset originale (14 tuple)
+- ✅ `data/weather.csv` - Dataset esteso (50 tuple)
+- ✅ `data/test_small.csv` - Mini dataset per test (3 tuple)
 
-#### Story Points Stimati: 13
+#### Classi Modificate/Create
+- ✅ `src/exceptions/` - Package con 3 eccezioni custom
+- ✅ `ClusterSet` - Metodi save() e costruttore da file
+- ✅ `Data` - Costruttore CSV con parsing e inferenza tipi
+- ✅ `MainTest` - Menu interattivo completo
+
+#### Tecnologie Utilizzate
+- Java I/O (BufferedReader/BufferedWriter)
+- File format custom testuale (.dmp)
+- CSV parsing con split e validazioni
+- Try-with-resources per gestione stream
+
+#### Risultati Chiave
+- ✅ Cluster salvati e ricaricati correttamente
+- ✅ Dataset CSV caricati con successo
+- ✅ Gestione errori robusta (nessun crash)
+- ✅ Test funzionali tutti passati
+- ✅ Documentazione completa formato file
+
+#### Metriche
+- **Story Points:** 13 (come stimato)
+- **Classi:** 3 nuove + 3 modificate
+- **Linee di codice:** ~1,350 LOC
+- **Test:** 4 scenari funzionali verificati
+
+#### Esempio File .dmp
+```
+---
+METADATA
+radius=0.3
+numClusters=14
+timestamp=2025-11-07T09:02:21
+---
+CLUSTER 0
+centroid=sunny,hot,high,weak,no
+tupleIDs=0
+---
+...
+```
 
 ---
+
+## 🔜 Sprint Pianificati
 
 ### Sprint 3 - Ottimizzazioni Performance
 
@@ -913,6 +950,7 @@ git push
 | Data | Versione | Modifiche |
 |------|----------|-----------|
 | 2025-11-06 | 1.0 | Creazione roadmap completa Sprint 0-8 |
+| 2025-11-07 | 1.1 | Sprint 2 completato, Sprint 3 in corso |
 
 ---
 
