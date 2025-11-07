@@ -26,3 +26,5 @@ replay_pid*
 # Apple macOS
 .DS_Store
 .logs
+*.dmp
+*.class

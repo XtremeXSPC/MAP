@@ -1,3 +1,10 @@
+import exceptions.InvalidDataFormatException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Classe che modella l'insieme di transazioni (tuple).
  */
@@ -58,6 +65,17 @@ public class Data {
     }
 
     /**
+     * Costruttore che carica dataset da file CSV.
+     *
+     * @param csvFilename path del file CSV da caricare
+     * @throws IOException se si verificano errori di I/O
+     * @throws InvalidDataFormatException se il formato dei dati non è valido
+     */
+    public Data(String csvFilename) throws IOException, InvalidDataFormatException {
+        parseCSV(csvFilename);
+    }
+
+    /**
      * Restituisce il numero di esempi.
      *
      * @return cardinalità dell'insieme di transazioni
@@ -82,6 +100,16 @@ public class Data {
      */
     public Attribute[] getAttributeSchema() {
         return explanatorySet;
+    }
+
+    /**
+     * Restituisce l'attributo in posizione index.
+     *
+     * @param index indice dell'attributo
+     * @return attributo in posizione index
+     */
+    public Attribute getExplanatoryAttribute(int index) {
+        return explanatorySet[index];
     }
 
     /**
@@ -141,6 +169,149 @@ public class Data {
                     (String) data[index][i]), i);
         }
         return tuple;
+    }
+
+    /**
+     * Parsa un file CSV e popola il dataset.
+     *
+     * @param filename path del file CSV
+     * @throws IOException se si verificano errori di I/O
+     * @throws InvalidDataFormatException se il formato non è valido
+     */
+    private void parseCSV(String filename) throws IOException, InvalidDataFormatException {
+        File file = new File(filename);
+
+        // Validazioni
+        if (!file.exists()) {
+            throw new FileNotFoundException("File non trovato: " + filename);
+        }
+        if (!file.canRead()) {
+            throw new IOException("File non leggibile: " + filename);
+        }
+
+        List<String[]> rows = new ArrayList<>();
+        String[] headers = null;
+        int lineNumber = 0;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+
+            // Leggi header (prima riga)
+            if ((line = reader.readLine()) != null) {
+                lineNumber++;
+                headers = line.split(",");
+                for (int i = 0; i < headers.length; i++) {
+                    headers[i] = headers[i].trim();
+                }
+            } else {
+                throw new InvalidDataFormatException("File CSV vuoto");
+            }
+
+            // Leggi dati
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+                line = line.trim();
+
+                // Skip righe vuote
+                if (line.isEmpty()) continue;
+
+                String[] values = line.split(",");
+
+                // Trim valori
+                for (int i = 0; i < values.length; i++) {
+                    values[i] = values[i].trim();
+                }
+
+                // Validazione numero colonne
+                if (values.length != headers.length) {
+                    throw new InvalidDataFormatException(
+                        "Numero colonne inconsistente: atteso " + headers.length +
+                        ", trovato " + values.length, lineNumber);
+                }
+
+                rows.add(values);
+            }
+        }
+
+        // Validazione dati caricati
+        if (rows.isEmpty()) {
+            throw new InvalidDataFormatException("Nessun dato trovato nel file CSV");
+        }
+
+        // Inizializza strutture dati
+        numberOfExamples = rows.size();
+        int numAttributes = headers.length;
+
+        // Costruisci array di valori per colonna (per inferenza tipo)
+        List<List<String>> columnValues = new ArrayList<>();
+        for (int i = 0; i < numAttributes; i++) {
+            columnValues.add(new ArrayList<>());
+        }
+
+        for (String[] row : rows) {
+            for (int i = 0; i < numAttributes; i++) {
+                columnValues.get(i).add(row[i]);
+            }
+        }
+
+        // Inferisci tipi attributi
+        explanatorySet = new Attribute[numAttributes];
+        for (int i = 0; i < numAttributes; i++) {
+            explanatorySet[i] = inferAttributeType(headers[i], i, columnValues.get(i));
+        }
+
+        // Popola matrice dati
+        data = new Object[numberOfExamples][numAttributes];
+        for (int i = 0; i < numberOfExamples; i++) {
+            for (int j = 0; j < numAttributes; j++) {
+                data[i][j] = rows.get(i)[j];
+            }
+        }
+    }
+
+    /**
+     * Inferisce il tipo di un attributo dai suoi valori.
+     * Se tutti i valori sono numerici, crea ContinuousAttribute,
+     * altrimenti crea DiscreteAttribute.
+     *
+     * @param name nome dell'attributo
+     * @param index indice dell'attributo
+     * @param values lista di valori dell'attributo
+     * @return attributo inferito
+     */
+    private Attribute inferAttributeType(String name, int index, List<String> values) {
+        boolean allNumeric = true;
+        Set<String> distinctValues = new HashSet<>();
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+
+        for (String value : values) {
+            // Gestione valori mancanti
+            if (value.equals("?") || value.isEmpty() || value.equalsIgnoreCase("NA")) {
+                continue;
+            }
+
+            distinctValues.add(value);
+
+            // Prova a parsare come numero
+            try {
+                double numValue = Double.parseDouble(value);
+                min = Math.min(min, numValue);
+                max = Math.max(max, numValue);
+            } catch (NumberFormatException e) {
+                allNumeric = false;
+            }
+        }
+
+        // Decisione tipo attributo
+        if (allNumeric && distinctValues.size() > 5) {
+            // Attributo continuo
+            return new ContinuousAttribute(name, index, min, max);
+        } else {
+            // Attributo discreto
+            String[] distinctArray = distinctValues.toArray(new String[0]);
+            return new DiscreteAttribute(name, index, distinctArray);
+        }
     }
 
     /**
