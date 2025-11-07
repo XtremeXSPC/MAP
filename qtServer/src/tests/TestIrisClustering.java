@@ -3,7 +3,7 @@ package tests;
 import java.io.IOException;
 import data.Data;
 import data.Tuple;
-import exceptions.InvalidDataFormatException;
+import data.InvalidDataFormatException;
 import mining.Cluster;
 import mining.ClusterSet;
 import mining.QTMiner;

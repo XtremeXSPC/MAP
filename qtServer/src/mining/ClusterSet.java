@@ -1,6 +1,6 @@
 package mining;
 
-import exceptions.InvalidFileFormatException;
+import mining.InvalidFileFormatException;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

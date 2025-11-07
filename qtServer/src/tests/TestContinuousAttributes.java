@@ -5,12 +5,12 @@ import mining.ClusterSet;
 import mining.QTMiner;
 
 /**
- * Test Sprint 6 - Generics e RTTI (QT06) Dimostra le modifiche implementate con
- * Temperature continuo.
+ * Test Attributi Continui - Dimostra il clustering con attributi continui
+ * usando generics e RTTI per discriminare tra DiscreteItem e ContinuousItem.
  */
-public class TestSprint6 {
+public class TestContinuousAttributes {
     public static void main(String[] args) {
-        System.out.println("=== Test Sprint 6 - Generics e RTTI (QT06) ===\n");
+        System.out.println("=== Test Attributi Continui ===\n");
 
         // Crea dataset con Temperature continuo
         Data data = new Data();
@@ -43,6 +43,6 @@ public class TestSprint6 {
 
         System.out.println("New execution?(y/n)n");
 
-        System.out.println("\n=== Test Sprint 6 Completato ===");
+        System.out.println("\n=== Test Completato ===");
     }
 }

@@ -7,7 +7,7 @@ import data.ContinuousItem;
 import data.Data;
 import data.Item;
 import data.Tuple;
-import exceptions.InvalidDataFormatException;
+import data.InvalidDataFormatException;
 
 /**
  * Test rapido per verificare il caricamento del dataset Iris.

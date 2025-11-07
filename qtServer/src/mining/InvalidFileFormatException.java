@@ -1,4 +1,4 @@
-package exceptions;
+package mining;
 
 /**
  * Eccezione lanciata quando il formato di un file non è valido. Usata principalmente per

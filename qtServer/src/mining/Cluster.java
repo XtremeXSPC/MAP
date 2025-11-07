@@ -11,7 +11,7 @@ import data.*;
  * Comparable per ordinamento automatico. Implementa Serializable per permettere la
  * serializzazione binaria.
  */
-class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
+public class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
     private Tuple centroid;
     private Set<Integer> clusteredData;
 
@@ -20,7 +20,7 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
      *
      * @param centroid centroide del cluster
      */
-    Cluster(Tuple centroid) {
+    public Cluster(Tuple centroid) {
         this.centroid = centroid;
         clusteredData = new HashSet<>();
     }
@@ -30,31 +30,31 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
      *
      * @return centroide
      */
-    Tuple getCentroid() {
+    public Tuple getCentroid() {
         return centroid;
     }
 
     /**
      * Aggiunge una tupla al cluster.
-     * 
+     *
      * Ottimizzato: O(1) in media invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
      * @return true se la tupla è stata aggiunta (non era già presente)
      */
-    boolean addData(int id) {
+    public boolean addData(int id) {
         return clusteredData.add(id);
     }
 
     /**
      * Verifica se una transazione è clusterizzata nel cluster corrente.
-     * 
+     *
      * Ottimizzato: O(1) in media invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
      * @return true se la tupla è nel cluster
      */
-    boolean contain(int id) {
+    public boolean contain(int id) {
         return clusteredData.contains(id);
     }
 
@@ -74,7 +74,7 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
      *
      * @return numero di tuple nel cluster
      */
-    int getSize() {
+    public int getSize() {
         return clusteredData.size();
     }
 
@@ -84,7 +84,7 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
      *
      * @return array di identificativi ordinato
      */
-    int[] getTupleIDs() {
+    public int[] getTupleIDs() {
         int[] array = new int[clusteredData.size()];
         int index = 0;
         for (Integer id : clusteredData) {
