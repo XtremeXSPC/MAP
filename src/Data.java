@@ -14,28 +14,27 @@ public class Data {
     private Attribute explanatorySet[];
 
     /**
-     * Costruttore della classe Data.
-     * Inizializza la matrice data con le transazioni di esempio.
+     * Costruttore della classe Data. Inizializza la matrice data con le transazioni di esempio.
      */
     public Data() {
         // Inizializzazione della matrice data con 14 esempi e 5 attributi
         data = new Object[14][5];
 
         // Popolamento della matrice con i dati PlayTennis
-        data[0] = new String[]{"sunny", "hot", "high", "weak", "no"};
-        data[1] = new String[]{"sunny", "hot", "high", "strong", "no"};
-        data[2] = new String[]{"overcast", "hot", "high", "weak", "yes"};
-        data[3] = new String[]{"rain", "mild", "high", "weak", "yes"};
-        data[4] = new String[]{"rain", "cool", "normal", "weak", "yes"};
-        data[5] = new String[]{"rain", "cool", "normal", "strong", "no"};
-        data[6] = new String[]{"overcast", "cool", "normal", "strong", "yes"};
-        data[7] = new String[]{"sunny", "mild", "high", "weak", "no"};
-        data[8] = new String[]{"sunny", "cool", "normal", "weak", "yes"};
-        data[9] = new String[]{"rain", "mild", "normal", "weak", "yes"};
-        data[10] = new String[]{"sunny", "mild", "normal", "strong", "yes"};
-        data[11] = new String[]{"overcast", "mild", "high", "strong", "yes"};
-        data[12] = new String[]{"overcast", "hot", "normal", "weak", "yes"};
-        data[13] = new String[]{"rain", "mild", "high", "strong", "no"};
+        data[0] = new String[] {"sunny", "hot", "high", "weak", "no"};
+        data[1] = new String[] {"sunny", "hot", "high", "strong", "no"};
+        data[2] = new String[] {"overcast", "hot", "high", "weak", "yes"};
+        data[3] = new String[] {"rain", "mild", "high", "weak", "yes"};
+        data[4] = new String[] {"rain", "cool", "normal", "weak", "yes"};
+        data[5] = new String[] {"rain", "cool", "normal", "strong", "no"};
+        data[6] = new String[] {"overcast", "cool", "normal", "strong", "yes"};
+        data[7] = new String[] {"sunny", "mild", "high", "weak", "no"};
+        data[8] = new String[] {"sunny", "cool", "normal", "weak", "yes"};
+        data[9] = new String[] {"rain", "mild", "normal", "weak", "yes"};
+        data[10] = new String[] {"sunny", "mild", "normal", "strong", "yes"};
+        data[11] = new String[] {"overcast", "mild", "high", "strong", "yes"};
+        data[12] = new String[] {"overcast", "hot", "normal", "weak", "yes"};
+        data[13] = new String[] {"rain", "mild", "high", "strong", "no"};
 
         // Numero di esempi
         numberOfExamples = 14;
@@ -44,23 +43,23 @@ public class Data {
         explanatorySet = new Attribute[5];
 
         // Outlook attribute
-        String[] outLookValues = new String[]{"overcast", "rain", "sunny"};
+        String[] outLookValues = new String[] {"overcast", "rain", "sunny"};
         explanatorySet[0] = new DiscreteAttribute("Outlook", 0, outLookValues);
 
         // Temperature attribute
-        String[] temperatureValues = new String[]{"cool", "hot", "mild"};
+        String[] temperatureValues = new String[] {"cool", "hot", "mild"};
         explanatorySet[1] = new DiscreteAttribute("Temperature", 1, temperatureValues);
 
         // Humidity attribute
-        String[] humidityValues = new String[]{"high", "normal"};
+        String[] humidityValues = new String[] {"high", "normal"};
         explanatorySet[2] = new DiscreteAttribute("Humidity", 2, humidityValues);
 
         // Wind attribute
-        String[] windValues = new String[]{"strong", "weak"};
+        String[] windValues = new String[] {"strong", "weak"};
         explanatorySet[3] = new DiscreteAttribute("Wind", 3, windValues);
 
         // PlayTennis attribute
-        String[] playTennisValues = new String[]{"no", "yes"};
+        String[] playTennisValues = new String[] {"no", "yes"};
         explanatorySet[4] = new DiscreteAttribute("PlayTennis", 4, playTennisValues);
     }
 
@@ -213,7 +212,8 @@ public class Data {
                 line = line.trim();
 
                 // Skip righe vuote
-                if (line.isEmpty()) continue;
+                if (line.isEmpty())
+                    continue;
 
                 String[] values = line.split(",");
 
@@ -224,9 +224,8 @@ public class Data {
 
                 // Validazione numero colonne
                 if (values.length != headers.length) {
-                    throw new InvalidDataFormatException(
-                        "Numero colonne inconsistente: atteso " + headers.length +
-                        ", trovato " + values.length, lineNumber);
+                    throw new InvalidDataFormatException("Numero colonne inconsistente: atteso "
+                            + headers.length + ", trovato " + values.length, lineNumber);
                 }
 
                 rows.add(values);
@@ -270,9 +269,8 @@ public class Data {
     }
 
     /**
-     * Inferisce il tipo di un attributo dai suoi valori.
-     * Se tutti i valori sono numerici, crea ContinuousAttribute,
-     * altrimenti crea DiscreteAttribute.
+     * Inferisce il tipo di un attributo dai suoi valori. Se tutti i valori sono numerici, crea
+     * ContinuousAttribute, altrimenti crea DiscreteAttribute.
      *
      * @param name nome dell'attributo
      * @param index indice dell'attributo

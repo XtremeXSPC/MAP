@@ -12,8 +12,7 @@ public class ClusterSet {
     /**
      * Costruttore della classe ClusterSet.
      */
-    public ClusterSet() {
-    }
+    public ClusterSet() {}
 
     /**
      * Costruttore che carica un insieme di cluster da file.
@@ -121,7 +120,8 @@ public class ClusterSet {
                     Tuple centroid = C[i].getCentroid();
                     writer.write("centroid=");
                     for (int j = 0; j < centroid.getLength(); j++) {
-                        if (j > 0) writer.write(",");
+                        if (j > 0)
+                            writer.write(",");
                         writer.write(centroid.get(j).getValue().toString());
                     }
                     writer.write("\n");
@@ -130,7 +130,8 @@ public class ClusterSet {
                     int[] tupleIDs = C[i].iterator();
                     writer.write("tupleIDs=");
                     for (int j = 0; j < tupleIDs.length; j++) {
-                        if (j > 0) writer.write(",");
+                        if (j > 0)
+                            writer.write(",");
                         writer.write(String.valueOf(tupleIDs[j]));
                     }
                     writer.write("\n");
@@ -148,7 +149,8 @@ public class ClusterSet {
      * @throws IOException se si verificano errori di I/O
      * @throws InvalidFileFormatException se il formato non è valido
      */
-    private void loadFromFile(String filename, Data data) throws IOException, InvalidFileFormatException {
+    private void loadFromFile(String filename, Data data)
+            throws IOException, InvalidFileFormatException {
         File file = new File(filename);
 
         // Validazioni
@@ -170,7 +172,8 @@ public class ClusterSet {
                 line = line.trim();
 
                 // Skip linee vuote
-                if (line.isEmpty()) continue;
+                if (line.isEmpty())
+                    continue;
 
                 // Metadata section
                 if (line.equals("METADATA")) {
@@ -181,7 +184,8 @@ public class ClusterSet {
                 // Leggi metadata
                 if (metadataFound && line.startsWith("numClusters=")) {
                     try {
-                        expectedClusters = Integer.parseInt(line.substring("numClusters=".length()));
+                        expectedClusters =
+                                Integer.parseInt(line.substring("numClusters=".length()));
                     } catch (NumberFormatException e) {
                         throw new InvalidFileFormatException("Numero cluster non valido: " + line);
                     }
@@ -203,9 +207,8 @@ public class ClusterSet {
                 throw new InvalidFileFormatException("Header METADATA mancante");
             }
             if (expectedClusters > 0 && clustersLoaded != expectedClusters) {
-                throw new InvalidFileFormatException(
-                    "Numero cluster inconsistente: atteso " + expectedClusters +
-                    ", caricato " + clustersLoaded);
+                throw new InvalidFileFormatException("Numero cluster inconsistente: atteso "
+                        + expectedClusters + ", caricato " + clustersLoaded);
             }
         }
     }
@@ -240,12 +243,12 @@ public class ClusterSet {
         for (int i = 0; i < centroidValues.length; i++) {
             // Recupera attributo da data
             if (i >= data.getNumberOfExplanatoryAttributes()) {
-                throw new InvalidFileFormatException(
-                    "Numero attributi centroide (" + centroidValues.length +
-                    ") non compatibile con dataset (" + data.getNumberOfExplanatoryAttributes() + ")");
+                throw new InvalidFileFormatException("Numero attributi centroide ("
+                        + centroidValues.length + ") non compatibile con dataset ("
+                        + data.getNumberOfExplanatoryAttributes() + ")");
             }
             Attribute attr = data.getExplanatoryAttribute(i);
-            DiscreteItem item = new DiscreteItem((DiscreteAttribute)attr, centroidValues[i]);
+            DiscreteItem item = new DiscreteItem((DiscreteAttribute) attr, centroidValues[i]);
             centroid.add(item, i);
         }
 
@@ -263,9 +266,8 @@ public class ClusterSet {
             try {
                 int id = Integer.parseInt(idStr.trim());
                 if (id < 0 || id >= data.getNumberOfExamples()) {
-                    throw new InvalidFileFormatException(
-                        "ID tupla non valido: " + id + " (dataset ha " +
-                        data.getNumberOfExamples() + " esempi)");
+                    throw new InvalidFileFormatException("ID tupla non valido: " + id
+                            + " (dataset ha " + data.getNumberOfExamples() + " esempi)");
                 }
                 cluster.addData(id);
             } catch (NumberFormatException e) {

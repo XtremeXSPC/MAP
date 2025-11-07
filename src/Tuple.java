@@ -43,8 +43,8 @@ public class Tuple {
     }
 
     /**
-     * Calcola la distanza tra la tupla corrente e un'altra tupla.
-     * La distanza è la somma delle distanze tra gli item nelle stesse posizioni.
+     * Calcola la distanza tra la tupla corrente e un'altra tupla. La distanza è la somma delle
+     * distanze tra gli item nelle stesse posizioni.
      *
      * @param obj tupla con cui calcolare la distanza
      * @return distanza tra le tuple
@@ -58,8 +58,8 @@ public class Tuple {
     }
 
     /**
-     * Calcola la distanza media tra la tupla corrente e le tuple in data
-     * identificate dagli indici in clusteredData.
+     * Calcola la distanza media tra la tupla corrente e le tuple in data identificate dagli indici
+     * in clusteredData.
      *
      * @param data insieme di dati
      * @param clusteredData array di indici delle tuple

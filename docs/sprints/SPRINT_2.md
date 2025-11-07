@@ -97,6 +97,7 @@ class InvalidFileFormatException extends Exception {
 ```
 
 **Validazioni richieste:**
+
 - File esiste e leggibile
 - Formato header valido
 - Numero cluster consistente
@@ -136,6 +137,7 @@ overcast,hot,high,weak,yes
 ```
 
 **Convenzioni:**
+
 - Prima riga: nomi attributi (header)
 - Separatore: virgola (`,`)
 - Encoding: UTF-8
@@ -152,6 +154,7 @@ private Attribute inferAttributeType(String name, int index, List<String> values
 ```
 
 **File CSV di esempio da creare:**
+
 - `data/playtennis.csv` - Dataset originale in formato CSV
 - `data/weather.csv` - Dataset esempio con 50 tuple
 
@@ -198,6 +201,7 @@ class IncompatibleClusterException extends Exception {
 ```
 
 **Validazioni da implementare:**
+
 - File esiste: `if (!file.exists()) throw new FileNotFoundException(...)`
 - File leggibile: `if (!file.canRead()) throw new IOException(...)`
 - Estensione corretta: `.csv` per dataset, `.dmp` per cluster
@@ -237,6 +241,7 @@ Scelta:
 ```
 
 **Flusso opzione 2 (CSV):**
+
 ```
 Inserisci path file CSV: data/weather.csv
 Caricamento in corso...
@@ -319,6 +324,7 @@ File: test_clusters.dmp
 ```
 
 **Criteri successo:**
+
 - File `.dmp` creato correttamente
 - Caricamento ricostruisce cluster identici
 - Metadata corretti
@@ -328,6 +334,7 @@ File: test_clusters.dmp
 #### Test 2: Caricamento CSV
 
 Creare `data/test_small.csv`:
+
 ```csv
 A1,A2,A3
 x,1,high
@@ -347,6 +354,7 @@ Attributi rilevati:
 ```
 
 **Criteri successo:**
+
 - Parsing corretto
 - Tipi attributi inferiti correttamente
 - Gestione duplicati valori
@@ -356,6 +364,7 @@ Attributi rilevati:
 #### Test 3: Gestione Errori
 
 **Test 3a: File non esistente**
+
 ```bash
 $ java MainTest
 Scelta: 2
@@ -365,6 +374,7 @@ File: nonexistent.csv
 
 **Test 3b: CSV malformato**
 Creare `data/bad.csv`:
+
 ```csv
 A,B
 1,2
@@ -379,6 +389,7 @@ File: data/bad.csv
 ```
 
 **Test 3c: Formato .dmp corrotto**
+
 ```bash
 $ java MainTest
 Scelta: 3
@@ -391,11 +402,13 @@ File: corrupted.dmp
 ### Test Performance
 
 **Dataset medio (500 righe):**
+
 - Tempo caricamento CSV: < 1s
 - Tempo salvataggio cluster: < 500ms
 - Tempo caricamento cluster: < 300ms
 
 **Dataset grande (5000 righe):**
+
 - Tempo caricamento CSV: < 5s
 - Memoria usata: < 100MB
 
@@ -448,6 +461,7 @@ Uno story è considerato completato quando:
 **Impatto:** Alto
 
 **Mitigazione:**
+
 - Iniziare con parser semplice (split su virgola)
 - Gestire casi comuni (virgole in stringhe) in iterazioni successive
 - Usare librerie se necessario (es. OpenCSV) - ma non per questo sprint
@@ -460,6 +474,7 @@ Uno story è considerato completato quando:
 **Impatto:** Medio
 
 **Mitigazione:**
+
 - Includere numero versione formato in header
 - Documentare formato in CLAUDE.md
 - Pianificare migrazione formato in sprint futuri
@@ -472,6 +487,7 @@ Uno story è considerato completato quando:
 **Impatto:** Medio
 
 **Mitigazione:**
+
 - Testare con dataset 1000+ righe
 - Profilare codice se necessario
 - Ottimizzazioni rimandate a Sprint 3 se non critiche
@@ -483,12 +499,14 @@ Uno story è considerato completato quando:
 ### Formato File .dmp
 
 **Vantaggi formato testuale:**
+
 - Leggibile da umani
 - Facile debug
 - Versionabile in Git
 - Modificabile con editor testo
 
 **Alternative considerate:**
+
 - Java Serialization: non human-readable
 - JSON: richiede libreria esterna
 - XML: troppo verboso
@@ -515,6 +533,7 @@ boolean isContinuous(List<String> values) {
 ```
 
 **Limitazioni:**
+
 - Attributo con valori `{"1", "2", "3"}` sarà continuous, non discrete
 - Soluzione futura: permettere specifica esplicita tipi in header CSV
 
@@ -531,6 +550,7 @@ boolean isContinuous(List<String> values) {
 - ✅ Tutti i test funzionali passati
 
 **Metriche quantitative:**
+
 - Code coverage metodi pubblici: > 80%
 - Tempo caricamento CSV (100 righe): < 500ms
 - Zero NullPointerException in esecuzione normale

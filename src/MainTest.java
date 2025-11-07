@@ -88,8 +88,8 @@ public class MainTest {
             System.out.println("Caricamento in corso...");
             Data data = new Data(csvPath);
 
-            System.out.println("✓ Dataset caricato: " + data.getNumberOfExamples() +
-                             " esempi, " + data.getNumberOfExplanatoryAttributes() + " attributi");
+            System.out.println("✓ Dataset caricato: " + data.getNumberOfExamples() + " esempi, "
+                    + data.getNumberOfExplanatoryAttributes() + " attributi");
 
             // Mostra attributi rilevati
             System.out.println("\nAttributi rilevati:");

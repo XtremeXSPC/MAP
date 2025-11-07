@@ -55,8 +55,8 @@ public class QTMiner {
     }
 
     /**
-     * Costruisce un cluster candidato per ogni tupla non ancora clusterizzata
-     * e restituisce il cluster più popoloso.
+     * Costruisce un cluster candidato per ogni tupla non ancora clusterizzata e restituisce il
+     * cluster più popoloso.
      *
      * @param data insieme di dati
      * @param isClustered informazione sullo stato di clusterizzazione delle tuple
