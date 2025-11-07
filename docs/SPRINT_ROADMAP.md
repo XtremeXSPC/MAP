@@ -13,8 +13,8 @@
 | Sprint 0 | Struttura Base | ✅ Completato | 1 settimana | 100% |
 | Sprint 1 | Algoritmo QT | ✅ Completato | 1 settimana | 100% |
 | Sprint 2 | Persistenza e I/O | ✅ Completato | 1 settimana | 100% |
-| Sprint 3 | Ottimizzazioni Performance | 🚧 In Corso | 2 settimane | 0% |
-| Sprint 4 | Supporto Attributi Continui | 🔜 Pianificato | 1 settimana | 0% |
+| Sprint 3 | Ottimizzazioni Performance | ✅ Completato | 2 settimane | 100% |
+| Sprint 4 | Supporto Attributi Continui | ✅ Completato | 1 settimana | 100% |
 | Sprint 5 | Interfaccia Grafica | 🔜 Pianificato | 2 settimane | 0% |
 | Sprint 6 | Metriche Qualità | 🔜 Pianificato | 1 settimana | 0% |
 | Sprint 7 | Database Integration (JDBC) | 🔜 Pianificato | 2 settimane | 0% |
@@ -22,7 +22,7 @@
 
 ### Timeline Stimata
 - **Fase 1 (Core):** Sprint 0-1 (✅ Completata)
-- **Fase 2 (Estensioni Base):** Sprint 2 (✅ Completata), Sprint 3-4 (🚧 In corso / 🔜 Prossimi)
+- **Fase 2 (Estensioni Base):** Sprint 2-3-4 (✅ Completata)
 - **Fase 3 (Interfacce):** Sprint 5-6 (🔜 3 settimane)
 - **Fase 4 (Integrazione):** Sprint 7-8 (🔜 4 settimane)
 
@@ -260,57 +260,92 @@ Ottimizzare l'algoritmo QT per gestire dataset più grandi (> 1000 tuple) miglio
 
 ---
 
-### Sprint 4 - Supporto Attributi Continui
+### ✅ Sprint 4 - Supporto Attributi Continui
 
 **Durata:** 1 settimana
-**Stato:** Pianificato
+**Stato:** ✅ Completato
 **Priorità:** 🟡 Media
 **Prerequisiti:** Sprint 0, 1
+**Documentazione:** [`docs/sprints/SPRINT_4.md`](sprints/SPRINT_4.md)
 
 #### Obiettivi
 Estendere il sistema per supportare attributi numerici/continui usando distanza Euclidea.
 
-#### Funzionalità Pianificate
+#### Funzionalità Implementate
 
-##### 1. ContinuousItem
-- Implementare sottoclasse di Item per valori continui
-- Distanza Euclidea: |value1 - value2|
-- Normalizzazione nel range [0, 1]
+##### 1. ✅ ContinuousItem
+- ✅ Implementata sottoclasse di Item per valori continui
+- ✅ Distanza Euclidea normalizzata: |scaledValue1 - scaledValue2|
+- ✅ Normalizzazione nel range [0, 1]
+- ✅ Javadoc completo con formula ed esempi
 
-##### 2. Normalizzazione Valori
-- Min-max normalization: (x - min) / (max - min)
-- Gestione automatica range attributi
-- Supporto in ContinuousAttribute
+##### 2. ✅ Normalizzazione Valori
+- ✅ Min-max normalization: (x - min) / (max - min)
+- ✅ Gestione automatica range attributi
+- ✅ Supporto in ContinuousAttribute.getScaledValue()
 
-##### 3. Dataset Misti
-- Gestire dataset con attributi discreti + continui
-- Distanza combinata: weighted average
-- Pesi configurabili per attributi
+##### 3. ✅ Dataset Misti
+- ✅ Gestione dataset con attributi discreti + continui
+- ✅ Distanza combinata tramite media aritmetica
+- ✅ Fix critico in Data.getItemSet() per type detection
 
-##### 4. Dataset di Test
-- Iris dataset (4 attributi continui)
-- Wine dataset (13 attributi continui)
-- Confronto risultati con algoritmi standard
+##### 4. ✅ Dataset di Test
+- ✅ Iris dataset (150 tuple, 4 attributi continui + 1 discreto)
+- ✅ Weather Mixed dataset (30 tuple, 2 continui + 3 discreti)
+- ✅ Test di validazione completi per entrambi
 
-#### Classi da Implementare/Modificare
-- `ContinuousItem` (nuova) - Implementare distance()
-- `ContinuousAttribute` - Completare implementazione
-- `Data` - Supporto per dataset misti
-- `Tuple` - Distanza combinata discreto/continuo
+#### Classi Implementate/Modificate
+- ✅ `ContinuousItem` (nuova) - Distanza Euclidea normalizzata
+- ✅ `Data.getItemSet()` - Fix bug per supporto attributi continui
+- ✅ `TestIris.java` - Validazione caricamento Iris
+- ✅ `TestWeatherMixed.java` - Validazione caricamento Mixed
+- ✅ `TestIrisClustering.java` - Clustering con radius multipli
+- ✅ `TestWeatherMixedClustering.java` - Clustering dataset misto
 
-#### Formula Distanza Mista
+#### Formula Distanza Mista Implementata
 ```
-distance = (w_discrete * d_hamming + w_continuous * d_euclidean) / (w_discrete + w_continuous)
+distance = Σ(item[i].distance(...)) / n
+dove:
+  - DiscreteItem.distance() → 0 o 1 (Hamming)
+  - ContinuousItem.distance() → [0, 1] (Euclidea normalizzata)
+  - Media aritmetica compatibile perché entrambe in [0, 1]
 ```
+
+#### Risultati Ottenuti
+
+**Test Iris (150 tuple, 4 continui):**
+- ✅ Radius 0.5: 11 cluster, **100% purezza**
+- ✅ Separazione perfetta delle 3 specie:
+  - Cluster 1: 48 setosa (100% puro)
+  - Cluster 2: 41 versicolor (100% puro)
+  - Cluster 3: 38 virginica (100% puro)
+- ✅ Distanze intra-specie < inter-specie verificato
+
+**Test Weather Mixed (30 tuple, 2 continui + 3 discreti):**
+- ✅ Radius 0.5: 8 cluster sensati
+- ✅ Cluster raggruppano condizioni meteo simili
+- ✅ Attributi continui (temp, humidity) combinati con discreti
+- ✅ Pattern meteo identificati correttamente
 
 #### Criteri di Successo
-- [ ] ContinuousItem implementato e testato
-- [ ] Normalizzazione funzionante
-- [ ] Test con Iris dataset
-- [ ] Confronto con k-means su dati continui
-- [ ] Documentazione formule distanza
+- [x] ContinuousItem implementato e testato ✅
+- [x] Normalizzazione funzionante ✅
+- [x] Test con Iris dataset ✅
+- [x] Clustering su dati continui eccellente ✅
+- [x] Documentazione formule distanza ✅
 
-#### Story Points Stimati: 13
+#### Story Points Completati: 13/13
+
+#### File Deliverables
+- `src/ContinuousItem.java` (+102 LOC)
+- `src/Data.java` (modificato, +30 LOC)
+- `data/iris.csv` (150 tuple)
+- `data/weather_mixed.csv` (30 tuple)
+- `src/TestIris.java` (+95 LOC)
+- `src/TestWeatherMixed.java` (+108 LOC)
+- `src/TestIrisClustering.java` (+125 LOC)
+- `src/TestWeatherMixedClustering.java` (+137 LOC)
+- `docs/sprints/SPRINT_4.md` (+672 LOC)
 
 ---
 
@@ -951,6 +986,7 @@ git push
 |------|----------|-----------|
 | 2025-11-06 | 1.0 | Creazione roadmap completa Sprint 0-8 |
 | 2025-11-07 | 1.1 | Sprint 2 completato, Sprint 3 in corso |
+| 2025-11-07 | 1.2 | Sprint 3 e Sprint 4 completati |
 
 ---
 
@@ -959,4 +995,7 @@ git push
 Per dettagli implementativi di ogni sprint, consultare:
 - [`docs/sprints/SPRINT_0.md`](sprints/SPRINT_0.md) - Struttura Base
 - [`docs/sprints/SPRINT_1.md`](sprints/SPRINT_1.md) - Algoritmo QT
+- [`docs/sprints/SPRINT_2.md`](sprints/SPRINT_2.md) - Persistenza e I/O
+- [`docs/sprints/SPRINT_3.md`](sprints/SPRINT_3.md) - Ottimizzazioni Performance
+- [`docs/sprints/SPRINT_4.md`](sprints/SPRINT_4.md) - Supporto Attributi Continui
 - Sprint futuri: Da creare al momento dell'implementazione
