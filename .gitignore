@@ -28,3 +28,7 @@ replay_pid*
 .logs
 *.dmp
 *.class
+
+# Benchmark output files
+benchmark_*.txt
+*_benchmark_results.txt
