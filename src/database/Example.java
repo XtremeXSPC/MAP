@@ -43,11 +43,16 @@ public class Example implements Comparable<Example> {
      *         minore, uguale o maggiore di ex
      */
     public int compareTo(Example ex) {
-        int i = 0;
-        for (Object o : ex.example) {
-            if (!o.equals(this.example.get(i)))
-                return ((Comparable<Object>) o).compareTo(example.get(i));
-            i++;
+        int sizeDiff = this.example.size() - ex.example.size();
+        if (sizeDiff != 0) {
+            return sizeDiff;
+        }
+        for (int i = 0; i < this.example.size(); i++) {
+            Object o1 = this.example.get(i);
+            Object o2 = ex.example.get(i);
+            if (!o1.equals(o2)) {
+                return ((Comparable) o1).compareTo(o2);
+            }
         }
         return 0;
     }
