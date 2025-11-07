@@ -1,7 +1,10 @@
+import java.io.Serializable;
+
 /**
  * Classe astratta che modella un item (coppia attributo-valore).
+ * Implementa Serializable per permettere la serializzazione binaria.
  */
-public abstract class Item {
+public abstract class Item implements Serializable {
     private Attribute attribute;
     private Object value;
 

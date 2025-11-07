@@ -1,11 +1,14 @@
+import database.*;
 import exceptions.InvalidDataFormatException;
 import exceptions.InvalidFileFormatException;
 import java.io.IOException;
+import java.sql.SQLException;
 import keyboardinput.Keyboard;
 
 /**
- * Classe di test per l'algoritmo Quality Threshold con menu interattivo. Utilizza la classe
- * Keyboard per gestione robusta dell'input utente (QT03).
+ * Classe di test per l'algoritmo Quality Threshold con menu interattivo (QT07).
+ * Supporta: dataset hardcoded, CSV, database MySQL, serializzazione cluster.
+ * Utilizza Keyboard per gestione robusta dell'input (QT03).
  */
 public class MainTest {
 
@@ -17,21 +20,24 @@ public class MainTest {
     public static void main(String[] args) {
         boolean continua = true;
 
-        System.out.println("=== QT Clustering System (con Keyboard Input - QT03) ===\n");
+        System.out.println("=== QT Clustering System (QT07 - JDBC Integration) ===\n");
 
         while (continua) {
             printMenu();
-            int scelta = getIntInput("Scelta: ", 0, 3);
+            int scelta = getIntInput("Scelta: ", 0, 4);
 
             switch (scelta) {
                 case 1:
-                    usaDatasetHardcoded();
+                    caricaClusterSalvato();
                     break;
                 case 2:
-                    caricaDatasetCSV();
+                    caricaDatiDatabase();
                     break;
                 case 3:
-                    caricaClusterSalvato();
+                    usaDatasetHardcoded();
+                    break;
+                case 4:
+                    caricaDatasetCSV();
                     break;
                 case 0:
                     System.out.println("\nArrivederci!");
@@ -48,19 +54,55 @@ public class MainTest {
     }
 
     /**
-     * Stampa il menu principale.
+     * Stampa il menu principale (conforme a QT07).
      */
     private static void printMenu() {
-        System.out.println("=== QT Clustering System ===");
-        System.out.println("1. Usa dataset PlayTennis (hardcoded)");
-        System.out.println("2. Carica dataset da CSV");
-        System.out.println("3. Carica cluster salvato");
+        System.out.println("=== Menu Principale (QT07) ===");
+        System.out.println("1. Carica Cluster da File");
+        System.out.println("2. Carica Dati da Database (MySQL)");
+        System.out.println("--- Opzioni Aggiuntive ---");
+        System.out.println("3. Usa dataset PlayTennis (hardcoded)");
+        System.out.println("4. Carica dataset da CSV");
         System.out.println("0. Esci");
         System.out.println();
     }
 
     /**
-     * Opzione 1: Usa dataset PlayTennis hardcoded.
+     * Opzione 2 (QT07): Carica dati da database MySQL.
+     */
+    private static void caricaDatiDatabase() {
+        System.out.println("\n--- Carica Dati da Database (QT07) ---");
+        System.out.print("Nome tabella: ");
+        String tableName = Keyboard.readString().trim();
+
+        try {
+            System.out.println("Connessione a MapDB in corso...");
+            Data data = new Data(tableName, true); // true = from database
+
+            System.out.println("✓ Dataset caricato da database: " + data.getNumberOfExamples()
+                    + " esempi, " + data.getNumberOfExplanatoryAttributes() + " attributi");
+
+            System.out.println("\n" + data);
+
+            eseguiClustering(data);
+
+        } catch (DatabaseConnectionException e) {
+            System.err.println("✗ Errore connessione database: " + e.getMessage());
+            System.err.println("   Verificare che MySQL sia in esecuzione e MapDB configurato.");
+        } catch (EmptySetException e) {
+            System.err.println("✗ Tabella vuota: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("✗ Errore SQL: " + e.getMessage());
+        } catch (NoValueException e) {
+            System.err.println("✗ Errore valori aggregati: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("✗ Errore: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Opzione 3: Usa dataset PlayTennis hardcoded.
      */
     private static void usaDatasetHardcoded() {
         try {
@@ -76,7 +118,7 @@ public class MainTest {
     }
 
     /**
-     * Opzione 2: Carica dataset da file CSV.
+     * Opzione 4: Carica dataset da file CSV.
      */
     private static void caricaDatasetCSV() {
         System.out.println("\n--- Carica Dataset da CSV ---");
@@ -130,7 +172,7 @@ public class MainTest {
     }
 
     /**
-     * Opzione 3: Carica cluster precedentemente salvato.
+     * Opzione 1 (QT07): Carica cluster precedentemente salvato.
      */
     private static void caricaClusterSalvato() {
         System.out.println("\n--- Carica Cluster Salvato ---");
@@ -176,39 +218,30 @@ public class MainTest {
     }
 
     /**
-     * Esegue il clustering sul dataset fornito.
+     * Esegue il clustering sul dataset fornito (QT07).
+     * Supporta serializzazione binaria dei risultati.
      *
      * @param data dataset su cui eseguire clustering
      */
     private static void eseguiClustering(Data data) {
-        double radius = getPositiveDoubleInput("Inserisci radius (> 0): ");
+        double radius = getPositiveDoubleInput("Insert radius (>0): ");
 
         System.out.println("\nComputazione in corso...");
         QTMiner qt = new QTMiner(radius);
         int numClusters = qt.compute(data);
 
-        System.out.println("✓ Trovati " + numClusters + " cluster\n");
-        System.out.println("--- Risultati Clustering ---");
+        System.out.println("Number of clusters:" + numClusters);
         System.out.println(qt.getC().toString(data));
 
-        // Chiedi se salvare
-        System.out.print("\nSalvare risultati? (s/n): ");
-        String risposta = Keyboard.readWord();
-        if (risposta != null) {
-            risposta = risposta.trim().toLowerCase();
-        }
+        // Salvataggio (QT07 - serializzazione binaria)
+        System.out.print("Backup file name: ");
+        String backupFile = Keyboard.readString().trim();
 
-        if (risposta != null
-                && (risposta.equals("s") || risposta.equals("si") || risposta.equals("yes"))) {
-            System.out.print("Inserisci nome file output (es. clusters.dmp): ");
-            String outputPath = Keyboard.readString().trim();
-
-            try {
-                qt.getC().save(outputPath, radius);
-                System.out.println("✓ Cluster salvati in " + outputPath);
-            } catch (IOException e) {
-                System.err.println("✗ Errore salvataggio: " + e.getMessage());
-            }
+        try {
+            qt.salva(backupFile); // Usa metodo QT07
+            System.out.println("Saving transaction ended!");
+        } catch (IOException e) {
+            System.err.println("✗ Errore salvataggio: " + e.getMessage());
         }
     }
 

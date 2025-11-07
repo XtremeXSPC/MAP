@@ -1,12 +1,13 @@
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 /**
  * Classe che modella un cluster. Implementa Iterable per supportare enhanced for-loop e Comparable
- * per ordinamento automatico.
+ * per ordinamento automatico. Implementa Serializable per permettere la serializzazione binaria.
  */
-class Cluster implements Iterable<Integer>, Comparable<Cluster> {
+class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
     private Tuple centroid;
     private Set<Integer> clusteredData;
 

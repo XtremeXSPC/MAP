@@ -1,5 +1,7 @@
+import database.*;
 import exceptions.InvalidDataFormatException;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -7,50 +9,47 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Classe che modella l'insieme di transazioni (tuple). Usa LinkedList per explanatorySet come da
- * specifica QT05.
+ * Classe che modella l'insieme di transazioni (tuple).
+ * Supporta caricamento da: hardcoded data, file CSV, database MySQL.
  */
 public class Data {
-    private Object data[][];
+    private List<Example> data;
     private int numberOfExamples;
     private List<Attribute> explanatorySet;
 
     /**
-     * Costruttore della classe Data. Inizializza la matrice data con le transazioni di esempio.
+     * Costruttore della classe Data. Inizializza con dati hardcoded PlayTennis.
      */
     public Data() {
-        // Inizializzazione della matrice data con 14 esempi e 5 attributi
-        // QT06: Temperature è ora continuo invece di discreto
-        data = new Object[14][5];
+        // Inizializza data come ArrayList di Example
+        data = new ArrayList<>();
 
-        // Popolamento della matrice con i dati PlayTennis (QT06 format)
-        // Outlook, Temperature(continuo), Humidity, Wind, PlayTennis
-        data[0] = new Object[] {"sunny", 30.3, "high", "weak", "no"};
-        data[1] = new Object[] {"sunny", 30.3, "high", "strong", "no"};
-        data[2] = new Object[] {"overcast", 30.0, "high", "weak", "yes"};
-        data[3] = new Object[] {"rain", 13.0, "high", "weak", "yes"};
-        data[4] = new Object[] {"rain", 0.0, "normal", "weak", "yes"};
-        data[5] = new Object[] {"rain", 0.0, "normal", "strong", "no"};
-        data[6] = new Object[] {"overcast", 0.1, "normal", "strong", "yes"};
-        data[7] = new Object[] {"sunny", 13.0, "high", "weak", "no"};
-        data[8] = new Object[] {"sunny", 0.1, "normal", "weak", "yes"};
-        data[9] = new Object[] {"rain", 12.0, "normal", "weak", "yes"};
-        data[10] = new Object[] {"sunny", 12.5, "normal", "strong", "yes"};
-        data[11] = new Object[] {"overcast", 12.5, "high", "strong", "yes"};
-        data[12] = new Object[] {"overcast", 29.21, "normal", "weak", "yes"};
-        data[13] = new Object[] {"rain", 12.5, "high", "strong", "no"};
+        // Popolamento dei dati PlayTennis (QT06 format: Temperature continuo)
+        data.add(createExample(new Object[] {"sunny", 30.3, "high", "weak", "no"}));
+        data.add(createExample(new Object[] {"sunny", 30.3, "high", "strong", "no"}));
+        data.add(createExample(new Object[] {"overcast", 30.0, "high", "weak", "yes"}));
+        data.add(createExample(new Object[] {"rain", 13.0, "high", "weak", "yes"}));
+        data.add(createExample(new Object[] {"rain", 0.0, "normal", "weak", "yes"}));
+        data.add(createExample(new Object[] {"rain", 0.0, "normal", "strong", "no"}));
+        data.add(createExample(new Object[] {"overcast", 0.1, "normal", "strong", "yes"}));
+        data.add(createExample(new Object[] {"sunny", 13.0, "high", "weak", "no"}));
+        data.add(createExample(new Object[] {"sunny", 0.1, "normal", "weak", "yes"}));
+        data.add(createExample(new Object[] {"rain", 12.0, "normal", "weak", "yes"}));
+        data.add(createExample(new Object[] {"sunny", 12.5, "normal", "strong", "yes"}));
+        data.add(createExample(new Object[] {"overcast", 12.5, "high", "strong", "yes"}));
+        data.add(createExample(new Object[] {"overcast", 29.21, "normal", "weak", "yes"}));
+        data.add(createExample(new Object[] {"rain", 12.5, "high", "strong", "no"}));
 
-        // Numero di esempi
-        numberOfExamples = 14;
+        numberOfExamples = data.size();
 
-        // Inizializzazione dell'explanatory set con LinkedList
+        // Inizializzazione explanatorySet con LinkedList
         explanatorySet = new LinkedList<>();
 
         // Outlook attribute
         String[] outLookValues = new String[] {"overcast", "rain", "sunny"};
         explanatorySet.add(new DiscreteAttribute("Outlook", 0, outLookValues));
 
-        // Temperature attribute (QT06: ora continuo invece di discreto)
+        // Temperature attribute (QT06: ora continuo)
         explanatorySet.add(new ContinuousAttribute("Temperature", 1, 3.2, 38.7));
 
         // Humidity attribute
@@ -75,6 +74,75 @@ public class Data {
      */
     public Data(String csvFilename) throws IOException, InvalidDataFormatException {
         parseCSV(csvFilename);
+    }
+
+    /**
+     * Costruttore che carica dataset da tabella database MySQL (QT07).
+     *
+     * @param tableName nome della tabella nel database MapDB
+     * @throws SQLException in caso di errore SQL
+     * @throws EmptySetException se la tabella è vuota
+     * @throws DatabaseConnectionException se la connessione al database fallisce
+     * @throws NoValueException se valori aggregati non trovati
+     */
+    public Data(String tableName, boolean fromDatabase)
+            throws SQLException, EmptySetException, DatabaseConnectionException, NoValueException {
+        if (!fromDatabase) {
+            throw new IllegalArgumentException("Usare costruttore Data(String) per CSV");
+        }
+
+        // Connessione al database
+        DbAccess db = new DbAccess();
+        db.initConnection();
+
+        try {
+            // Carica transazioni dal database
+            TableData tableData = new TableData(db);
+            data = tableData.getDistinctTransazioni(tableName);
+            numberOfExamples = data.size();
+
+            // Costruisci schema attributi
+            TableSchema schema = new TableSchema(db, tableName);
+            explanatorySet = new LinkedList<>();
+
+            for (int i = 0; i < schema.getNumberOfAttributes(); i++) {
+                TableSchema.Column col = schema.getColumn(i);
+
+                if (col.isNumber()) {
+                    // Attributo continuo: ricava min e max
+                    Float minObj = (Float) tableData.getAggregateColumnValue(tableName, col, QUERY_TYPE.MIN);
+                    Float maxObj = (Float) tableData.getAggregateColumnValue(tableName, col, QUERY_TYPE.MAX);
+                    double min = minObj.doubleValue();
+                    double max = maxObj.doubleValue();
+                    explanatorySet.add(new ContinuousAttribute(col.getColumnName(), i, min, max));
+                } else {
+                    // Attributo discreto: ricava valori distinti
+                    Set<Object> values = tableData.getDistinctColumnValues(tableName, col);
+                    String[] valuesArray = new String[values.size()];
+                    int idx = 0;
+                    for (Object v : values) {
+                        valuesArray[idx++] = (String) v;
+                    }
+                    explanatorySet.add(new DiscreteAttribute(col.getColumnName(), i, valuesArray));
+                }
+            }
+        } finally {
+            db.closeConnection();
+        }
+    }
+
+    /**
+     * Helper per creare un Example da un array di Object.
+     *
+     * @param values array di valori
+     * @return Example popolato
+     */
+    private Example createExample(Object[] values) {
+        Example ex = new Example();
+        for (Object v : values) {
+            ex.add(v);
+        }
+        return ex;
     }
 
     /**
@@ -122,7 +190,7 @@ public class Data {
      * @return valore dell'attributo
      */
     public Object getValue(int exampleIndex, int attributeIndex) {
-        return data[exampleIndex][attributeIndex];
+        return data.get(exampleIndex).get(attributeIndex);
     }
 
     /**
@@ -147,7 +215,7 @@ public class Data {
         for (int i = 0; i < numberOfExamples; i++) {
             str += i + ":";
             for (int j = 0; j < explanatorySet.size(); j++) {
-                str += data[i][j];
+                str += data.get(i).get(j);
                 if (j < explanatorySet.size() - 1) {
                     str += ",";
                 }
@@ -179,7 +247,7 @@ public class Data {
 
         for (int i = 0; i < explanatorySet.size(); i++) {
             Attribute attr = explanatorySet.get(i);
-            Object value = data[index][i];
+            Object value = data.get(index).get(i);
 
             if (attr instanceof DiscreteAttribute) {
                 // Attributo discreto → crea DiscreteItem
@@ -192,6 +260,8 @@ public class Data {
                 // Gestione conversione: String → Double o già Double
                 if (value instanceof String) {
                     numValue = Double.parseDouble((String) value);
+                } else if (value instanceof Float) {
+                    numValue = ((Float) value).doubleValue();
                 } else {
                     numValue = (Double) value;
                 }
@@ -292,12 +362,10 @@ public class Data {
             explanatorySet.add(inferAttributeType(headers[i], i, columnValues.get(i)));
         }
 
-        // Popola matrice dati
-        data = new Object[numberOfExamples][numAttributes];
-        for (int i = 0; i < numberOfExamples; i++) {
-            for (int j = 0; j < numAttributes; j++) {
-                data[i][j] = rows.get(i)[j];
-            }
+        // Popola lista Example
+        data = new ArrayList<>();
+        for (String[] row : rows) {
+            data.add(createExample(row));
         }
     }
 

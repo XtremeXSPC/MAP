@@ -1,6 +1,8 @@
+import java.io.*;
+
 /**
  * Classe che implementa l'algoritmo Quality Threshold per il clustering. Versione ottimizzata con
- * cache delle distanze.
+ * cache delle distanze. Supporta serializzazione e de-serializzazione dei cluster (QT07).
  */
 public class QTMiner {
     private ClusterSet C;
@@ -29,6 +31,28 @@ public class QTMiner {
         C = new ClusterSet();
         this.radius = radius;
         this.enableOptimizations = enableOptimizations;
+    }
+
+    /**
+     * Costruttore che carica cluster da file serializzato (QT07).
+     * De-serializza l'oggetto ClusterSet da file binario.
+     *
+     * @param fileName percorso + nome file (senza estensione .dmp)
+     * @throws FileNotFoundException se il file non esiste
+     * @throws IOException se si verificano errori di I/O
+     * @throws ClassNotFoundException se la classe serializzata non è trovata
+     */
+    public QTMiner(String fileName)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        FileInputStream fileIn = new FileInputStream(fileName + ".dmp");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        C = (ClusterSet) in.readObject();
+        in.close();
+        fileIn.close();
+
+        // Imposta valori di default per attributi non serializzati
+        this.radius = 0;
+        this.enableOptimizations = false;
     }
 
     /**
@@ -85,6 +109,23 @@ public class QTMiner {
         }
 
         return numclusters;
+    }
+
+    /**
+     * Salva i cluster in un file binario serializzato (QT07).
+     * Serializza l'oggetto ClusterSet in formato .dmp.
+     *
+     * @param fileName percorso + nome file (senza estensione .dmp)
+     * @throws FileNotFoundException se il percorso non è valido
+     * @throws IOException se si verificano errori di I/O
+     */
+    public void salva(String fileName) throws FileNotFoundException, IOException {
+        FileOutputStream fileOut = new FileOutputStream(fileName + ".dmp");
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(C);
+        out.close();
+        fileOut.close();
+        System.out.println("Saving clusters in " + fileName + ".dmp");
     }
 
     /**

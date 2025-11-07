@@ -9,8 +9,9 @@ import java.util.TreeSet;
 /**
  * Classe che rappresenta un insieme di cluster. Usa TreeSet per ordinamento automatico per
  * dimensione e implementa Iterable per iterazione.
+ * Implementa Serializable per permettere la serializzazione binaria.
  */
-public class ClusterSet implements Iterable<Cluster> {
+public class ClusterSet implements Iterable<Cluster>, Serializable {
     private Set<Cluster> C;
 
     /**
