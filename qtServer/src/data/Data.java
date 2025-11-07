@@ -262,7 +262,11 @@ public class Data {
 
                 // Gestione conversione: String → Double o già Double
                 if (value instanceof String) {
-                    numValue = Double.parseDouble((String) value);
+                    try {
+                        numValue = Double.parseDouble((String) value);
+                    } catch (NumberFormatException e) {
+                        throw new InvalidDataFormatException("Cannot parse value '" + value + "' as Double at row " + index + ", column " + i, e);
+                    }
                 } else if (value instanceof Float) {
                     numValue = ((Float) value).doubleValue();
                 } else {
