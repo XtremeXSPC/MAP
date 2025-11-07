@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Sistema di benchmarking per l'algoritmo Quality Threshold.
- * Misura tempo esecuzione, calcoli distanza, uso memoria.
+ * Sistema di benchmarking per l'algoritmo Quality Threshold. Misura tempo esecuzione, calcoli
+ * distanza, uso memoria.
  */
 public class QTBenchmark {
 
@@ -29,15 +29,12 @@ public class QTBenchmark {
         @Override
         public String toString() {
             return String.format(
-                "Dataset: %s (%d tuples, %d attrs) | Radius: %.2f | Opt: %s\n" +
-                "  Time: %d ms | Clusters: %d | Calculations: %d\n" +
-                "  Cache: hits=%d, misses=%d, rate=%.1f%% | Memory: %d MB",
-                datasetName, numTuples, numAttributes, radius,
-                optimizationsEnabled ? "ON" : "OFF",
-                executionTimeMs, numClusters, distanceCalculations,
-                cacheHits, cacheMisses, cacheHitRate * 100,
-                memoryUsedMB
-            );
+                    "Dataset: %s (%d tuple, %d attributi) | Raggio: %.2f | Ott: %s\n"
+                            + "  Tempo: %d ms | Cluster: %d | Calcoli: %d\n"
+                            + "  Cache: hit=%d, miss=%d, tasso=%.1f%% | Memoria: %d MB",
+                    datasetName, numTuples, numAttributes, radius,
+                    optimizationsEnabled ? "ON" : "OFF", executionTimeMs, numClusters,
+                    distanceCalculations, cacheHits, cacheMisses, cacheHitRate * 100, memoryUsedMB);
         }
     }
 
@@ -50,7 +47,7 @@ public class QTBenchmark {
      * @return risultato benchmark
      */
     public static BenchmarkResult runBenchmark(String datasetPath, double radius,
-                                               boolean enableOptimizations) {
+            boolean enableOptimizations) {
         BenchmarkResult result = new BenchmarkResult();
 
         try {
@@ -71,7 +68,7 @@ public class QTBenchmark {
 
             // Misura memoria prima
             Runtime runtime = Runtime.getRuntime();
-            runtime.gc();  // Suggest garbage collection
+            runtime.gc(); // Suggest garbage collection
             long memBefore = runtime.totalMemory() - runtime.freeMemory();
 
             // Esegui clustering e misura tempo
@@ -118,17 +115,17 @@ public class QTBenchmark {
      * @return array con 2 risultati [without_opt, with_opt]
      */
     public static BenchmarkResult[] runComparison(String datasetPath, double radius) {
-        System.out.println("Benchmark: " + datasetPath + " (radius=" + radius + ")");
+        System.out.println("Benchmark: " + datasetPath + " (raggio=" + radius + ")");
 
-        System.out.print("  Running WITHOUT optimizations... ");
+        System.out.print("  Esecuzione SENZA ottimizzazioni... ");
         BenchmarkResult withoutOpt = runBenchmark(datasetPath, radius, false);
-        System.out.println("Done (" + withoutOpt.executionTimeMs + " ms)");
+        System.out.println("Completato (" + withoutOpt.executionTimeMs + " ms)");
 
-        System.out.print("  Running WITH optimizations... ");
+        System.out.print("  Esecuzione CON ottimizzazioni... ");
         BenchmarkResult withOpt = runBenchmark(datasetPath, radius, true);
-        System.out.println("Done (" + withOpt.executionTimeMs + " ms)");
+        System.out.println("Completato (" + withOpt.executionTimeMs + " ms)");
 
-        return new BenchmarkResult[] { withoutOpt, withOpt };
+        return new BenchmarkResult[] {withoutOpt, withOpt};
     }
 
     /**
@@ -141,79 +138,70 @@ public class QTBenchmark {
     public static String compareResults(BenchmarkResult baseline, BenchmarkResult optimized) {
         double speedup = (double) baseline.executionTimeMs / optimized.executionTimeMs;
         double timeReduction = ((baseline.executionTimeMs - optimized.executionTimeMs) * 100.0)
-                                / baseline.executionTimeMs;
+                / baseline.executionTimeMs;
 
-        int calcReduction = baseline.distanceCalculations > 0
-            ? ((baseline.distanceCalculations - optimized.distanceCalculations) * 100)
-              / baseline.distanceCalculations
-            : 0;
+        int calcReduction =
+                baseline.distanceCalculations > 0
+                        ? ((baseline.distanceCalculations - optimized.distanceCalculations) * 100)
+                                / baseline.distanceCalculations
+                        : 0;
 
         StringBuilder report = new StringBuilder();
         report.append("\n");
         report.append("=".repeat(70)).append("\n");
-        report.append("PERFORMANCE COMPARISON REPORT\n");
+        report.append("REPORT COMPARATIVO PRESTAZIONI\n");
         report.append("=".repeat(70)).append("\n\n");
 
-        report.append(String.format("Dataset: %s (%d tuples, %d attributes)\n",
-            baseline.datasetName, baseline.numTuples, baseline.numAttributes));
-        report.append(String.format("Radius: %.2f\n", baseline.radius));
-        report.append(String.format("Clusters Found: %d\n\n", baseline.numClusters));
+        report.append(String.format("Dataset: %s (%d tuple, %d attributi)\n", baseline.datasetName,
+                baseline.numTuples, baseline.numAttributes));
+        report.append(String.format("Raggio: %.2f\n", baseline.radius));
+        report.append(String.format("Cluster Trovati: %d\n\n", baseline.numClusters));
 
         report.append("-".repeat(70)).append("\n");
-        report.append(String.format("%-30s %15s %15s %12s\n",
-            "Metric", "Baseline", "Optimized", "Improvement"));
+        report.append(String.format("%-22s %15s %15s %15s\n", "Metrica", "Baseline", "Ottimizzato",
+                "Miglioramento"));
         report.append("-".repeat(70)).append("\n");
 
-        report.append(String.format("%-30s %12d ms %12d ms %10.1f%%\n",
-            "Execution Time",
-            baseline.executionTimeMs,
-            optimized.executionTimeMs,
-            timeReduction));
+        report.append(String.format("%-22s %15s %15s %15s\n", "Tempo Esecuzione",
+                baseline.executionTimeMs + " ms", optimized.executionTimeMs + " ms",
+                String.format("%.1f%%", timeReduction)));
 
-        report.append(String.format("%-30s %15.2fx\n",
-            "Speedup", speedup));
+        report.append(String.format("%-22s %15s %15s\n", "Accelerazione", "",
+                String.format("%.2fx", speedup)));
 
         if (optimized.distanceCalculations > 0) {
-            report.append(String.format("%-30s %15d %15d %10d%%\n",
-                "Distance Calculations",
-                baseline.distanceCalculations,
-                optimized.distanceCalculations,
-                calcReduction));
+            report.append(String.format("%-22s %15d %15d %15s\n", "Calcoli Distanza",
+                    baseline.distanceCalculations, optimized.distanceCalculations,
+                    calcReduction + "%"));
 
-            report.append(String.format("%-30s %15s %15d\n",
-                "Cache Hits",
-                "N/A",
-                optimized.cacheHits));
+            report.append(
+                    String.format("%-22s %15s %15d\n", "Hit Cache", "N/D", optimized.cacheHits));
 
-            report.append(String.format("%-30s %15s %12.1f%%\n",
-                "Cache Hit Rate",
-                "N/A",
-                optimized.cacheHitRate * 100));
+            report.append(String.format("%-22s %15s %15s\n", "Tasso Hit Cache", "N/D",
+                    String.format("%.1f%%", optimized.cacheHitRate * 100)));
         }
 
-        report.append(String.format("%-30s %12d MB %12d MB\n",
-            "Memory Used",
-            baseline.memoryUsedMB,
-            optimized.memoryUsedMB));
+        report.append(String.format("%-22s %15s %15s\n", "Memoria Utilizzata",
+                baseline.memoryUsedMB + " MB", optimized.memoryUsedMB + " MB"));
 
         report.append("-".repeat(70)).append("\n\n");
 
         // Valutazione
-        report.append("EVALUATION:\n");
+        report.append("VALUTAZIONE:\n");
         if (speedup >= 2.0) {
-            report.append("  ✓ EXCELLENT - 2x+ speedup achieved!\n");
+            report.append("  ✓ ECCELLENTE - Accelerazione di oltre 2x!\n");
         } else if (speedup >= 1.5) {
-            report.append("  ✓ GOOD - Significant performance improvement\n");
+            report.append("  ✓ BUONO - Miglioramento significativo delle prestazioni\n");
         } else if (speedup >= 1.2) {
-            report.append("  ✓ MODERATE - Noticeable improvement\n");
+            report.append("  ✓ MODERATO - Miglioramento apprezzabile\n");
         } else {
-            report.append("  ⚠ MINIMAL - Limited improvement\n");
+            report.append("  ⚠ MINIMO - Miglioramento limitato\n");
         }
 
         if (optimized.cacheHitRate >= 0.8) {
-            report.append("  ✓ Cache efficiency: Excellent (>80% hit rate)\n");
+            report.append("  ✓ Efficienza cache: Eccellente (>80% tasso hit)\n");
         } else if (optimized.cacheHitRate >= 0.5) {
-            report.append("  ✓ Cache efficiency: Good (>50% hit rate)\n");
+            report.append("  ✓ Efficienza cache: Buona (>50% tasso hit)\n");
         }
 
         report.append("\n");
@@ -221,6 +209,7 @@ public class QTBenchmark {
 
         return report.toString();
     }
+
 
     /**
      * Salva report su file.
@@ -241,7 +230,7 @@ public class QTBenchmark {
      * Main per eseguire benchmark standalone.
      */
     public static void main(String[] args) {
-        System.out.println("QT Algorithm - Performance Benchmark Suite");
+        System.out.println("Algoritmo QT - Suite di Benchmark Prestazioni");
         System.out.println("=".repeat(70));
         System.out.println();
 
@@ -258,6 +247,6 @@ public class QTBenchmark {
             saveReport(report2, "benchmark_weather.txt");
         }
 
-        System.out.println("\nBenchmark suite completed!");
+        System.out.println("\nSuite di benchmark completata!");
     }
 }
