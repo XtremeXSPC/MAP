@@ -1,4 +1,4 @@
-package exceptions;
+package mining;
 
 /**
  * Eccezione lanciata quando un cluster caricato da file non è compatibile con il dataset

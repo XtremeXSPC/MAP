@@ -1,4 +1,4 @@
-package exceptions;
+package data;
 
 /**
  * Eccezione lanciata quando i dati in un file CSV non sono validi o inconsistenti.

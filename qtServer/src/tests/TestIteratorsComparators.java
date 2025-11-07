@@ -7,12 +7,12 @@ import mining.ClusterSet;
 import mining.QTMiner;
 
 /**
- * Test Sprint 5 - Contenitori, Iteratori, Comparatori (QT05) Dimostra le nuove
- * funzionalità implementate.
+ * Test Iteratori e Comparatori - Dimostra le funzionalità di iterazione
+ * e ordinamento su ClusterSet, Cluster e DiscreteAttribute.
  */
-public class TestSprint5 {
+public class TestIteratorsComparators {
     public static void main(String[] args) {
-        System.out.println("=== Test Sprint 5 - Iteratori e Comparatori ===\n");
+        System.out.println("=== Test Iteratori e Comparatori ===\n");
 
         // Crea dataset
         Data data = new Data();
@@ -75,6 +75,6 @@ public class TestSprint5 {
         }
         System.out.println("}");
 
-        System.out.println("\n=== Test Sprint 5 Completato ===");
+        System.out.println("\n=== Test Completato ===");
     }
 }
