@@ -1,4 +1,4 @@
-# Sprint 4 - Supporto Attributi Continui
+# Sprint 3 - Supporto Attributi Continui
 
 ## Obiettivo
 
@@ -65,6 +65,7 @@ public class ContinuousItem extends Item {
 #### Formula Distanza
 
 **Distanza Euclidea Normalizzata (1D):**
+
 ```
 distance = |v1_scaled - v2_scaled|
 
@@ -74,6 +75,7 @@ dove:
 ```
 
 **Esempio:**
+
 ```
 Attributo: Temperature (min=10, max=40)
 Value 1: 15°C → scaled = (15-10)/(40-10) = 0.167
@@ -82,6 +84,7 @@ Distance: |0.167 - 0.500| = 0.333
 ```
 
 **Proprietà:**
+
 - Range output: [0, 1] (normalizzato)
 - Compatibile con distanza Hamming discreta (anche in [0, 1])
 - Permette combinazione distanze discrete/continue
@@ -102,6 +105,7 @@ Correggere il metodo `Data.getItemSet()` che attualmente crea sempre `DiscreteIt
 #### Bug Identificato
 
 **Codice attuale (src/Data.java:164-171):**
+
 ```java
 public Tuple getItemSet(int index) {
     Tuple tuple = new Tuple(explanatorySet.length);
@@ -115,6 +119,7 @@ public Tuple getItemSet(int index) {
 ```
 
 **Problema:**
+
 - Assume tutti gli attributi siano discreti
 - Cast `(DiscreteAttribute)` fallisce se attributo è continuo
 - Cast `(String)` fallisce se valore è numerico
@@ -172,6 +177,7 @@ Creare dataset Iris standard per machine learning (150 tuple, 4 attributi contin
 #### Dataset Iris Specification
 
 **Attributi:**
+
 1. `sepal_length` - Lunghezza sepalo (cm) - Continuo
 2. `sepal_width` - Larghezza sepalo (cm) - Continuo
 3. `petal_length` - Lunghezza petalo (cm) - Continuo
@@ -179,6 +185,7 @@ Creare dataset Iris standard per machine learning (150 tuple, 4 attributi contin
 5. `species` - Specie (setosa, versicolor, virginica) - Discreto
 
 **Statistiche:**
+
 - 150 tuple totali
 - 50 tuple per specie
 - Range sepal_length: 4.3 - 7.9 cm
@@ -224,6 +231,7 @@ Creare dataset sintetico con attributi sia discreti che continui per testare cap
 **Nome:** `data/weather_mixed.csv`
 
 **Attributi:**
+
 1. `outlook` - Condizione cielo (sunny, overcast, rain) - Discreto
 2. `temperature` - Temperatura in °C (10-40) - Continuo
 3. `humidity` - Umidità percentuale (50-100) - Continuo
@@ -233,6 +241,7 @@ Creare dataset sintetico con attributi sia discreti che continui per testare cap
 **Dimensione:** 30 tuple
 
 **Esempio:**
+
 ```csv
 outlook,temperature,humidity,wind,play
 sunny,25.5,65.0,weak,yes
@@ -261,6 +270,7 @@ rain,18.5,95.0,weak,no
 #### Test 1: ContinuousItem Distance
 
 **Setup:**
+
 ```java
 ContinuousAttribute temp = new ContinuousAttribute("Temperature", 0, 10.0, 40.0);
 ContinuousItem item1 = new ContinuousItem(temp, 15.0);
@@ -268,6 +278,7 @@ ContinuousItem item2 = new ContinuousItem(temp, 25.0);
 ```
 
 **Test:**
+
 ```java
 double distance = item1.distance(25.0);
 // Expected: |((15-10)/(40-10)) - ((25-10)/(40-10))|
@@ -280,12 +291,14 @@ assertEquals(0.333, distance, 0.001);
 #### Test 2: Data.getItemSet() con Attributi Misti
 
 **Setup:**
+
 ```java
 Data data = new Data("data/weather_mixed.csv");
 Tuple tuple = data.getItemSet(0);
 ```
 
 **Test:**
+
 ```java
 // Verifica tipi item corretti
 assertTrue(tuple.get(0) instanceof DiscreteItem);  // outlook
@@ -300,12 +313,14 @@ assertTrue(tuple.get(4) instanceof DiscreteItem);  // play
 #### Test 3: Clustering Iris Dataset
 
 **Setup:**
+
 ```java
 Data iris = new Data("data/iris.csv");
 QTMiner miner = new QTMiner(0.3, false); // radius = 0.3
 ```
 
 **Test:**
+
 ```java
 int numClusters = miner.compute(iris);
 
@@ -326,12 +341,14 @@ assertEquals(150, totalPoints);
 #### Test 4: Clustering Dataset Misto
 
 **Setup:**
+
 ```java
 Data mixed = new Data("data/weather_mixed.csv");
 QTMiner miner = new QTMiner(0.5, false);
 ```
 
 **Test:**
+
 ```java
 int numClusters = miner.compute(mixed);
 
@@ -347,12 +364,14 @@ System.out.println(miner.getC().toString(mixed));
 #### Test 5: Distanza Mista (Discrete + Continuous)
 
 **Setup:**
+
 ```java
 // Tuple 1: (sunny, 25.0, 70.0, weak, yes)
 // Tuple 2: (sunny, 30.0, 80.0, weak, yes)
 ```
 
 **Test:**
+
 ```java
 double distance = tuple1.getDistance(tuple2);
 
@@ -375,6 +394,7 @@ assertTrue(distance >= 0.0 && distance <= 1.0);
 #### Verifica Dataset Discreti Funzionano Ancora
 
 **Test:**
+
 ```java
 @Test
 public void testPlayTennisStillWorking() {
@@ -475,13 +495,13 @@ Data.getItemSet(index)
 
 ### Criteri Quantitativi
 
-| Metrica | Target | Verifica |
-|---------|--------|----------|
-| Classi implementate | 1 nuova + 1 modificata | ContinuousItem + Data |
-| Dataset creati | 2 | iris.csv + weather_mixed.csv |
-| Test funzionali passati | 5/5 | Tutti i test in sezione Testing |
-| Test regressione | 2/2 | PlayTennis ancora funzionante |
-| LOC aggiunte | ~80-100 | ContinuousItem (~40) + Data fix (~20) + dataset (~30-40) |
+| Metrica                 | Target                 | Verifica                                                 |
+| ----------------------- | ---------------------- | -------------------------------------------------------- |
+| Classi implementate     | 1 nuova + 1 modificata | ContinuousItem + Data                                    |
+| Dataset creati          | 2                      | iris.csv + weather_mixed.csv                             |
+| Test funzionali passati | 5/5                    | Tutti i test in sezione Testing                          |
+| Test regressione        | 2/2                    | PlayTennis ancora funzionante                            |
+| LOC aggiunte            | ~80-100                | ContinuousItem (~40) + Data fix (~20) + dataset (~30-40) |
 
 ### Criteri Qualitativi
 
@@ -537,6 +557,7 @@ Size: 52, AvgDistance: 0.25
 **Impatto:** Medio
 
 **Mitigazione:**
+
 - Normalizzazione garantisce valori in [0, 1]
 - Evita calcoli su valori molto grandi/piccoli
 - Validazione range min < max in ContinuousAttribute
@@ -549,6 +570,7 @@ Size: 52, AvgDistance: 0.25
 **Impatto:** Alto
 
 **Mitigazione:**
+
 - Try-catch in Data.getItemSet() per NumberFormatException
 - Validazione formato durante inferAttributeType()
 - Messaggi errore chiari con riga e colonna
@@ -561,6 +583,7 @@ Size: 52, AvgDistance: 0.25
 **Impatto:** Basso
 
 **Mitigazione:**
+
 - Distanza Euclidea ha stessa complessità O(1) di Hamming
 - Normalizzazione pre-calcolata in ContinuousAttribute (min, max)
 - Eventuale caching distanze (già disponibile da Sprint 3)
@@ -572,32 +595,38 @@ Size: 52, AvgDistance: 0.25
 ### Normalizzazione Valori
 
 **Metodo Min-Max:**
+
 ```
 scaled_value = (value - min) / (max - min)
 ```
 
 **Proprietà:**
+
 - Output in [0, 1]
 - Preserva proporzioni relative
 - Sensibile a outlier (min/max estremi)
 
 **Alternativa (non implementata ora):**
+
 - Z-score normalization: (value - mean) / std_dev
 - Robust a outlier ma output non limitato a [0, 1]
 
 ### Combinazione Distanze Discrete/Continue
 
 Attualmente in `Tuple.getDistance()`:
+
 ```java
 distance = Σ(item[i].distance(...)) / n
 ```
 
 **Per dataset misti:**
+
 - Distanza Hamming (discrete): 0 o 1
 - Distanza Euclidea (continuous): [0, 1] (normalizzata)
 - **Media aritmetica funziona** perché entrambe in [0, 1]
 
 **Futura ottimizzazione (Sprint successivo):**
+
 - Pesi per attributi: `w[i] * distance[i]`
 - Feature selection: ignorare attributi irrilevanti
 
@@ -608,7 +637,7 @@ distance = Σ(item[i].distance(...)) / n
 ### Dataset
 
 - **Iris Dataset:** Fisher, R.A. (1936). "The use of multiple measurements in taxonomic problems"
-- **UCI ML Repository:** https://archive.ics.uci.edu/ml/datasets/iris
+- **UCI ML Repository:** <https://archive.ics.uci.edu/ml/datasets/iris>
 
 ### Metriche di Distanza
 
@@ -627,16 +656,16 @@ distance = Σ(item[i].distance(...)) / n
 
 Sprint 4 è completato quando:
 
-1. ✅ Classe `ContinuousItem` implementata e testata
-2. ✅ Bug `Data.getItemSet()` corretto
-3. ✅ Dataset `iris.csv` creato e caricabile
-4. ✅ Dataset `weather_mixed.csv` creato e caricabile
-5. ✅ Clustering funzionante su dataset continui
-6. ✅ Clustering funzionante su dataset misti
-7. ✅ Test regressione passati (playtennis ancora funziona)
-8. ✅ Javadoc completo
-9. ✅ Documentazione aggiornata
-10. ✅ Codice committato e pushato
+1. [x] Classe `ContinuousItem` implementata e testata
+2. [x] Bug `Data.getItemSet()` corretto
+3. [x] Dataset `iris.csv` creato e caricabile
+4. [x] Dataset `weather_mixed.csv` creato e caricabile
+5. [x] Clustering funzionante su dataset continui
+6. [x] Clustering funzionante su dataset misti
+7. [x] Test regressione passati (playtennis ancora funziona)
+8. [x] Javadoc completo
+9. [x] Documentazione aggiornata
+10. [x] Codice committato e pushato
 
 ---
 

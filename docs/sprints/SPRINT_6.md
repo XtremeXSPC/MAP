@@ -1,7 +1,7 @@
 # Sprint 6 - Generics e RTTI (QT06)
 
 **Durata:** 1 settimana
-**Stato:** ✅ Completato
+**Stato:** [x] Completato
 **QT Module:** QT06
 **Data Completamento:** 2025-11-07
 **Prerequisiti:** Sprint 5 (Iteratori e Comparatori)
@@ -9,25 +9,25 @@
 
 ---
 
-## 📋 Obiettivi
+## Obiettivi
 
 Introdurre **Java Generics** in tutti i contenitori e utilizzare **RTTI (Runtime Type Information)** per gestione dinamica dei tipi. Convertire l'attributo **Temperature** da discreto a continuo nel dataset PlayTennis.
 
 ### Obiettivi Specifici
 
-1. ✅ Verificare uso Java Generics in TUTTI i contenitori, comparatori e iteratori
-2. ✅ Verificare `ContinuousItem` esistente (implementato in Sprint 3)
-3. ✅ Modificare `Data()` - Temperature da discreto a continuo
-4. ✅ Verificare RTTI in `getItemSet()` con `instanceof`
-5. ✅ Testare output conforme a specifica QT06
+1. [x] Verificare uso Java Generics in TUTTI i contenitori, comparatori e iteratori
+2. [x] Verificare `ContinuousItem` esistente (implementato in Sprint 3)
+3. [x] Modificare `Data()` - Temperature da discreto a continuo
+4. [x] Verificare RTTI in `getItemSet()` con `instanceof`
+5. [x] Testare output conforme a specifica QT06
 
 ---
 
-## 🎯 Modifiche Implementate
+## Modifiche Implementate
 
 ### 1. **Generics - Stato Completamento**
 
-✅ **Tutti i Generics erano già implementati in Sprint 5!**
+[x] **Tutti i Generics erano già implementati in Sprint 5!**
 
 #### Verifica Compilazione:
 ```bash
@@ -37,29 +37,29 @@ javac *.java
 
 #### Contenitori Parametrizzati:
 
-| Classe | Tipo Generic | Stato |
-|--------|--------------|-------|
-| `Cluster` | `Set<Integer>` clusteredData | ✅ Sprint 5 |
-| `ClusterSet` | `Set<Cluster>` C | ✅ Sprint 5 |
-| `DiscreteAttribute` | `Set<String>` values | ✅ Sprint 5 |
-| `Data` | `List<Attribute>` explanatorySet | ✅ Sprint 5 |
-| `DistanceCache` | `HashMap<Long, Double>` cache | ✅ Sprint 3 |
+| Classe              | Tipo Generic                     | Stato        |
+| ------------------- | -------------------------------- | ------------ |
+| `Cluster`           | `Set<Integer>` clusteredData     | [x] Sprint 5 |
+| `ClusterSet`        | `Set<Cluster>` C                 | [x] Sprint 5 |
+| `DiscreteAttribute` | `Set<String>` values             | [x] Sprint 5 |
+| `Data`              | `List<Attribute>` explanatorySet | [x] Sprint 5 |
+| `DistanceCache`     | `HashMap<Long, Double>` cache    | [x] Sprint 3 |
 
 #### Iteratori Parametrizzati:
 
-| Classe | Iterator Type | Stato |
-|--------|---------------|-------|
-| `Cluster` | `Iterator<Integer>` | ✅ Sprint 5 |
-| `ClusterSet` | `Iterator<Cluster>` | ✅ Sprint 5 |
-| `DiscreteAttribute` | `Iterator<String>` | ✅ Sprint 5 |
+| Classe              | Iterator Type       | Stato        |
+| ------------------- | ------------------- | ------------ |
+| `Cluster`           | `Iterator<Integer>` | [x] Sprint 5 |
+| `ClusterSet`        | `Iterator<Cluster>` | [x] Sprint 5 |
+| `DiscreteAttribute` | `Iterator<String>`  | [x] Sprint 5 |
 
 #### Comparatori Parametrizzati:
 
-| Classe | Comparable Type | Stato |
-|--------|-----------------|-------|
-| `Cluster` | `Comparable<Cluster>` | ✅ Sprint 5 |
+| Classe    | Comparable Type       | Stato        |
+| --------- | --------------------- | ------------ |
+| `Cluster` | `Comparable<Cluster>` | [x] Sprint 5 |
 
-**Conclusione:** Tutti i contenitori, comparatori e iteratori usano già Java Generics completi. ✅
+**Conclusione:** Tutti i contenitori, comparatori e iteratori usano già Java Generics completi. [x]
 
 ---
 
@@ -84,7 +84,7 @@ double distance(Object a)
 public class ContinuousItem extends Item {
 
     public ContinuousItem(ContinuousAttribute attribute, Double value) {
-        super(attribute, value);  // ✅ Richiama super classe
+        super(attribute, value);  // [x] Richiama super classe
     }
 
     @Override
@@ -94,15 +94,15 @@ public class ContinuousItem extends Item {
         Double otherValue = (Double) a;
 
         // Usa getScaledValue() per normalizzazione
-        double scaledCurrent = attr.getScaledValue(currentValue);  // ✅
-        double scaledOther = attr.getScaledValue(otherValue);      // ✅
+        double scaledCurrent = attr.getScaledValue(currentValue);  // [x]
+        double scaledOther = attr.getScaledValue(otherValue);      // [x]
 
-        return Math.abs(scaledCurrent - scaledOther);  // ✅ Valore assoluto
+        return Math.abs(scaledCurrent - scaledOther);  // [x] Valore assoluto
     }
 }
 ```
 
-**Conformità:** ✅ 100% conforme a specifica QT06
+**Conformità:** [x] 100% conforme a specifica QT06
 
 ---
 
@@ -144,16 +144,16 @@ explanatorySet.add(new ContinuousAttribute("Temperature", 1, 3.2, 38.7));
 
 #### Valori Temperature (da specifica QT06):
 
-| Indice | Temperatura | Range Normalizzato |
-|--------|-------------|-------------------|
-| 0, 1 | 30.3 | Alto (estate) |
-| 2 | 30.0 | Alto |
-| 3, 7 | 13.0 | Medio |
-| 4, 5 | 0.0 | Basso (inverno) |
-| 6, 8 | 0.1 | Basso |
-| 9 | 12.0 | Medio-basso |
-| 10, 11, 13 | 12.5 | Medio-basso |
-| 12 | 29.21 | Alto |
+| Indice     | Temperatura | Range Normalizzato |
+| ---------- | ----------- | ------------------ |
+| 0, 1       | 30.3        | Alto (estate)      |
+| 2          | 30.0        | Alto               |
+| 3, 7       | 13.0        | Medio              |
+| 4, 5       | 0.0         | Basso (inverno)    |
+| 6, 8       | 0.1         | Basso              |
+| 9          | 12.0        | Medio-basso        |
+| 10, 11, 13 | 12.5        | Medio-basso        |
+| 12         | 29.21       | Alto               |
 
 **Range attributo:** min=3.2°C, max=38.7°C (da specifica)
 
@@ -198,16 +198,16 @@ public Tuple getItemSet(int index) {
 ```
 
 #### RTTI Features:
-- ✅ `instanceof DiscreteAttribute` - Type checking runtime
-- ✅ `instanceof ContinuousAttribute` - Type checking runtime
-- ✅ `instanceof String` - Gestione conversione valori
-- ✅ **Dynamic dispatch** - Comportamento diverso per tipo
+- [x] `instanceof DiscreteAttribute` - Type checking runtime
+- [x] `instanceof ContinuousAttribute` - Type checking runtime
+- [x] `instanceof String` - Gestione conversione valori
+- [x] **Dynamic dispatch** - Comportamento diverso per tipo
 
-**Conformità:** ✅ RTTI implementato esattamente come richiesto dalla specifica QT06
+**Conformità:** [x] RTTI implementato esattamente come richiesto dalla specifica QT06
 
 ---
 
-## 📊 Risultati Ottenuti
+## Risultati Ottenuti
 
 ### Test Sprint 6 - Output
 
@@ -292,22 +292,22 @@ AvgDistance=1.9518028169014083
 
 ### Verifica Conformità Specifica QT06
 
-| Requisito | Conforme | Note |
-|-----------|----------|------|
-| Dataset formato corretto | ✅ | Temperature numeriche |
-| radius=2 → 3 cluster | ✅ | Esatto |
-| Centroidi corretti | ✅ | Identici a specifica |
-| Distanze corrette | ✅ | Tutte corrispondono |
-| radius=3 → 2 cluster | ✅ | Esatto |
-| Output formato QT06 | ✅ | 100% identico |
-| Generics completi | ✅ | Zero warning |
-| RTTI funzionante | ✅ | instanceof OK |
+| Requisito                | Conforme | Note                  |
+| ------------------------ | -------- | --------------------- |
+| Dataset formato corretto | [x]      | Temperature numeriche |
+| radius=2 → 3 cluster     | [x]      | Esatto                |
+| Centroidi corretti       | [x]      | Identici a specifica  |
+| Distanze corrette        | [x]      | Tutte corrispondono   |
+| radius=3 → 2 cluster     | [x]      | Esatto                |
+| Output formato QT06      | [x]      | 100% identico         |
+| Generics completi        | [x]      | Zero warning          |
+| RTTI funzionante         | [x]      | instanceof OK         |
 
-**Conformità:** ✅ **100% identico a specifica QT06 (pagine 2-4)**
+**Conformità:** [x] **100% identico a specifica QT06 (pagine 2-4)**
 
 ---
 
-## 🏗️ Pattern di Design Utilizzati
+## Pattern di Design Utilizzati
 
 ### 1. **Generics Pattern**
 
@@ -358,25 +358,25 @@ class ContinuousItem extends Item {
 
 ---
 
-## 📈 Metriche Sprint
+## Metriche Sprint
 
 ### Modifiche Codice
 
-| Classe | Tipo Modifica | LOC Modificati |
-|--------|---------------|----------------|
-| Data.java | Temperature continuo | +18 / -4 |
-| ContinuousItem.java | Verifica conformità | 0 (già OK) |
-| TestSprint6.java | Test nuovo | +45 |
-| **TOTALE** | | **+59 LOC** |
+| Classe              | Tipo Modifica        | LOC Modificati |
+| ------------------- | -------------------- | -------------- |
+| Data.java           | Temperature continuo | +18 / -4       |
+| ContinuousItem.java | Verifica conformità  | 0 (già OK)     |
+| TestSprint6.java    | Test nuovo           | +45            |
+| **TOTALE**          |                      | **+59 LOC**    |
 
 ### Generics Status
 
-| Categoria | Count | Parametrizzati | % |
-|-----------|-------|----------------|---|
-| Contenitori (Set, List, Map) | 7 | 7 | 100% |
-| Iteratori (Iterable, Iterator) | 6 | 6 | 100% |
-| Comparatori (Comparable) | 1 | 1 | 100% |
-| **TOTALE** | **14** | **14** | **100%** |
+| Categoria                      | Count  | Parametrizzati | %        |
+| ------------------------------ | ------ | -------------- | -------- |
+| Contenitori (Set, List, Map)   | 7      | 7              | 100%     |
+| Iteratori (Iterable, Iterator) | 6      | 6              | 100%     |
+| Comparatori (Comparable)       | 1      | 1              | 100%     |
+| **TOTALE**                     | **14** | **14**         | **100%** |
 
 ### Compilazione
 
@@ -400,24 +400,24 @@ java TestSprint6
 
 ---
 
-## ✅ Criteri di Successo
+## Criteri di Successo
 
 ### Requisiti Specifica QT06
 
-| Requisito | Stato | Note |
-|-----------|-------|------|
-| Generics in tutti contenitori | ✅ | 100% parametrizzati (Sprint 5) |
-| ContinuousItem conforme | ✅ | Verifica OK (Sprint 3) |
-| Data() Temperature continuo | ✅ | Valori da specifica |
-| RTTI con instanceof | ✅ | getItemSet() corretto |
-| Output identico specifica | ✅ | Pagine 2-4 PDF |
-| Zero warning Generics | ✅ | Compilazione pulita |
+| Requisito                     | Stato | Note                           |
+| ----------------------------- | ----- | ------------------------------ |
+| Generics in tutti contenitori | [x]   | 100% parametrizzati (Sprint 5) |
+| ContinuousItem conforme       | [x]   | Verifica OK (Sprint 3)         |
+| Data() Temperature continuo   | [x]   | Valori da specifica            |
+| RTTI con instanceof           | [x]   | getItemSet() corretto          |
+| Output identico specifica     | [x]   | Pagine 2-4 PDF                 |
+| Zero warning Generics         | [x]   | Compilazione pulita            |
 
-**Completamento:** 6/6 requisiti ✅ (100%)
+**Completamento:** 6/6 requisiti [x] (100%)
 
 ---
 
-## 🔄 Breaking Changes
+## Breaking Changes
 
 ### Dataset PlayTennis
 
@@ -445,7 +445,7 @@ if (attr instanceof ContinuousAttribute) {
 
 ---
 
-## 🚀 Prossimi Sprint
+## Prossimi Sprint
 
 ### Sprint 7 - Database Integration (JDBC) - QT07
 
@@ -466,9 +466,9 @@ if (attr instanceof ContinuousAttribute) {
 
 ---
 
-## 📝 Retrospettiva
+## Retrospettiva
 
-### Cosa è andato bene ✅
+### Cosa è andato bene
 
 1. **Generics già completi:** Sprint 5 aveva già implementato tutti i Generics necessari
 2. **ContinuousItem già conforme:** Sprint 3 aveva già implementato correttamente la classe
@@ -476,13 +476,13 @@ if (attr instanceof ContinuousAttribute) {
 4. **Output perfetto:** 100% identico alla specifica QT06 senza iterazioni
 5. **Zero refactoring:** Modifiche minime, solo cambio dataset
 
-### Cosa migliorare 🔄
+### Cosa migliorare
 
 1. **Documentazione range:** Range [3.2, 38.7] vs valori [0.0, 30.3] potrebbe confondere
 2. **Test backward compatibility:** Nessun test per verificare impatto su codice esistente
 3. **Migration guide:** Documentare meglio come migrare da Temperature discreto
 
-### Lessons Learned 📚
+### Lessons Learned
 
 1. **Sprint incrementali:** Sprint 3 e 5 avevano già preparato il terreno per QT06
 2. **Generics precoce:** Introdurre Generics subito evita refactoring massicci
@@ -491,28 +491,28 @@ if (attr instanceof ContinuousAttribute) {
 
 ---
 
-## 📦 Deliverables
+## Deliverables
 
 ### File Modificati
 
-- ✅ `src/Data.java` (Temperature continuo)
-- ✅ `src/ContinuousItem.java` (verificato, già conforme)
+- [x] `src/Data.java` (Temperature continuo)
+- [x] `src/ContinuousItem.java` (verificato, già conforme)
 
 ### File Creati
 
-- ✅ `src/TestSprint6.java` (45 LOC)
-- ✅ `docs/sprints/SPRINT_6.md` (questo file)
+- [x] `src/TestSprint6.java` (45 LOC)
+- [x] `docs/sprints/SPRINT_6.md` (questo file)
 
 ### Verifiche
 
-- ✅ Compilazione senza errori/warning
-- ✅ Output conforme specifica QT06 al 100%
-- ✅ Tutti i Generics parametrizzati
-- ✅ RTTI funzionante
+- [x] Compilazione senza errori/warning
+- [x] Output conforme specifica QT06 al 100%
+- [x] Tutti i Generics parametrizzati
+- [x] RTTI funzionante
 
 ---
 
-## 🔗 Riferimenti
+## Riferimenti
 
 - **Specifica ufficiale:** `Project/QT06/Specifica_QT06_Generics-RTTI.pdf`
 - **Java Generics Tutorial:** https://docs.oracle.com/javase/tutorial/java/generics/

@@ -443,13 +443,13 @@ File: corrupted.dmp
 
 Uno story è considerato completato quando:
 
-1. ✅ **Codice implementato** secondo criteri di accettazione
-2. ✅ **Compilazione senza errori/warning**
-3. ✅ **Javadoc presente** per metodi pubblici
-4. ✅ **Gestione eccezioni** implementata
-5. ✅ **Test manuali eseguiti** con successo
-6. ✅ **Documentazione aggiornata**
-7. ✅ **Codice reviewed** (self-review per progetto accademico)
+1. [x] **Codice implementato** secondo criteri di accettazione
+2. [x] **Compilazione senza errori/warning**
+3. [x] **Javadoc presente** per metodi pubblici
+4. [x] **Gestione eccezioni** implementata
+5. [x] **Test manuali eseguiti** con successo
+6. [x] **Documentazione aggiornata**
+7. [x] **Codice reviewed** (self-review per progetto accademico)
 
 ---
 
@@ -543,11 +543,11 @@ boolean isContinuous(List<String> values) {
 
 **Obiettivo sprint raggiunto se:**
 
-- ✅ Possibile salvare/caricare cluster da file
-- ✅ Possibile caricare dataset CSV esterni
-- ✅ Almeno 2 dataset CSV di esempio funzionanti
-- ✅ Gestione errori robusta (nessun crash)
-- ✅ Tutti i test funzionali passati
+- [x] Possibile salvare/caricare cluster da file
+- [x] Possibile caricare dataset CSV esterni
+- [x] Almeno 2 dataset CSV di esempio funzionanti
+- [x] Gestione errori robusta (nessun crash)
+- [x] Tutti i test funzionali passati
 
 **Metriche quantitative:**
 

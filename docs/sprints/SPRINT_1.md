@@ -292,7 +292,7 @@ MainTest          QTMiner        Data         Cluster      ArraySet
    |                |--getNumberOfExamples()----->|            |
    |                |<----------14----------------|            |
    |                |              |              |            |
-   |   LOOP [tutte le tuple non clusterizzate]   |            |
+   |   LOOP [tutte le tuple non clusterizzate]    |            |
    |                |              |              |            |
    |                |-buildCandidateCluster(...)  |            |
    |                |  |           |              |            |

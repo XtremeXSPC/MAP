@@ -2,24 +2,8 @@
 
 > **Modulo Corso:** QT03 - Package keyboardinput
 > **Durata:** 1 settimana
-> **Stato:** ✅ Completato
+> **Stato:** [x] Completato
 > **Data Completamento:** 2025-11-07
-
----
-
-## 📋 Indice
-
-1. [Panoramica](#panoramica)
-2. [Obiettivi](#obiettivi)
-3. [Prerequisiti](#prerequisiti)
-4. [Funzionalità Implementate](#funzionalità-implementate)
-5. [Architettura e Design](#architettura-e-design)
-6. [Modifiche al Codice](#modifiche-al-codice)
-7. [Testing e Validazione](#testing-e-validazione)
-8. [Esempi di Utilizzo](#esempi-di-utilizzo)
-9. [Problemi Risolti](#problemi-risolti)
-10. [Metriche](#metriche)
-11. [Retrospettiva](#retrospettiva)
 
 ---
 
@@ -30,45 +14,51 @@ Lo Sprint 4 integra la classe `Keyboard.java` (modulo QT03 del corso) per sostit
 ### Motivazione
 
 Il precedente sistema di input aveva diverse limitazioni:
-- ❌ Crash con input malformati (es. stringhe al posto di numeri)
-- ❌ Validazione minima (non controllava radius > 0)
-- ❌ Messaggi di errore poco chiari
-- ❌ Necessità di riavviare il programma dopo errori
+
+- ✘ Crash con input malformati (es. stringhe al posto di numeri)
+- ✘ Validazione minima (non controllava radius > 0)
+- ✘ Messaggi di errore poco chiari
+- ✘ Necessità di riavviare il programma dopo errori
 
 La classe `Keyboard` risolve tutti questi problemi fornendo:
-- ✅ Gestione automatica eccezioni
-- ✅ Retry automatico per input invalidi
-- ✅ Validazione personalizzabile
-- ✅ Contatore errori per debugging
-- ✅ Nessun crash in caso di input errato
+
+- [x] Gestione automatica eccezioni
+- [x] Retry automatico per input invalidi
+- [x] Validazione personalizzabile
+- [x] Contatore errori per debugging
+- [x] Nessun crash in caso di input errato
 
 ---
 
 ## Obiettivi
 
 ### Obiettivi Primari (Obbligatori)
-- ✅ Integrare package `keyboardinput` nel progetto
-- ✅ Refactorare `MainTest.java` per usare `Keyboard` invece di `Scanner`
-- ✅ Implementare validazione robusta per `radius > 0`
-- ✅ Aggiungere retry automatico per input invalidi
-- ✅ Eliminare tutti i crash dovuti a input malformati
+
+- [x] Integrare package `keyboardinput` nel progetto
+- [x] Refactorare `MainTest.java` per usare `Keyboard` invece di `Scanner`
+- [x] Implementare validazione robusta per `radius > 0`
+- [x] Aggiungere retry automatico per input invalidi
+- [x] Eliminare tutti i crash dovuti a input malformati
 
 ### Obiettivi Secondari (Bonus)
-- ✅ Validazione range per scelte menu
-- ✅ Messaggi di errore user-friendly
-- ✅ Test automatizzati per input invalidi
-- ✅ Documentazione completa della classe Keyboard
+
+- [x] Validazione range per scelte menu
+- [x] Messaggi di errore user-friendly
+- [x] Test automatizzati per input invalidi
+- [x] Documentazione completa della classe Keyboard
 
 ---
 
 ## Prerequisiti
 
 ### Sprint Precedenti
-- ✅ Sprint 0: Struttura Base
-- ✅ Sprint 1: Algoritmo QT
-- ✅ Sprint 2: Persistenza e I/O
+
+- [x] Sprint 0: Struttura Base
+- [x] Sprint 1: Algoritmo QT
+- [x] Sprint 2: Persistenza e I/O
 
 ### Tecnologie Richieste
+
 - Java JDK 8+
 - Package `keyboardinput` (fornito in `Project/QT03/`)
 - Conoscenza di BufferedReader e StringTokenizer
@@ -77,23 +67,24 @@ La classe `Keyboard` risolve tutti questi problemi fornendo:
 
 ## Funzionalità Implementate
 
-### 1. Integrazione Package Keyboard ✅
+### 1. Integrazione Package Keyboard [x]
 
 **File:** `src/keyboardinput/Keyboard.java`
 
 La classe `Keyboard` fornisce metodi statici per lettura robusto di dati da standard input:
 
-| Metodo | Tipo Ritorno | Valore Errore | Descrizione |
-|--------|--------------|---------------|-------------|
-| `readInt()` | `int` | `Integer.MIN_VALUE` | Legge intero |
-| `readDouble()` | `double` | `Double.NaN` | Legge double |
-| `readString()` | `String` | `null` | Legge linea intera |
-| `readWord()` | `String` | `null` | Legge parola singola |
-| `readChar()` | `char` | `Character.MIN_VALUE` | Legge carattere |
-| `readBoolean()` | `boolean` | `false` | Legge booleano |
-| `getErrorCount()` | `int` | - | Restituisce contatore errori |
+| Metodo            | Tipo Ritorno | Valore Errore         | Descrizione                  |
+| ----------------- | ------------ | --------------------- | ---------------------------- |
+| `readInt()`       | `int`        | `Integer.MIN_VALUE`   | Legge intero                 |
+| `readDouble()`    | `double`     | `Double.NaN`          | Legge double                 |
+| `readString()`    | `String`     | `null`                | Legge linea intera           |
+| `readWord()`      | `String`     | `null`                | Legge parola singola         |
+| `readChar()`      | `char`       | `Character.MIN_VALUE` | Legge carattere              |
+| `readBoolean()`   | `boolean`    | `false`               | Legge booleano               |
+| `getErrorCount()` | `int`        | -                     | Restituisce contatore errori |
 
 **Caratteristiche Chiave:**
+
 - **Gestione automatica eccezioni**: Non lancia eccezioni, restituisce valori sentinella
 - **Contatore errori**: Tiene traccia di quanti errori di parsing sono avvenuti
 - **Print automatico errori**: Mostra messaggi di errore su System.out
@@ -101,11 +92,12 @@ La classe `Keyboard` fornisce metodi statici per lettura robusto di dati da stan
 
 ---
 
-### 2. Refactoring MainTest.java ✅
+### 2. Refactoring MainTest.java [x]
 
 **Modifiche Principali:**
 
-#### Prima (Scanner):
+#### Prima (Scanner)
+
 ```java
 private static Scanner scanner = new Scanner(System.in);
 
@@ -124,7 +116,8 @@ private static int getIntInput(String prompt) {
 // Potenziale crash se Scanner fallisce!
 ```
 
-#### Dopo (Keyboard):
+#### Dopo (Keyboard)
+
 ```java
 import keyboardinput.Keyboard;
 
@@ -159,7 +152,7 @@ private static int getIntInput(String prompt, int min, int max) {
 
 ---
 
-### 3. Validazione Radius > 0 ✅
+### 3. Validazione Radius > 0 [x]
 
 **Nuovo Metodo:** `getPositiveDoubleInput(String prompt)`
 
@@ -201,16 +194,17 @@ private static double getPositiveDoubleInput(String prompt) {
 ```
 
 **Caratteristiche:**
-- ✅ Rifiuta input non numerici (lettere, simboli)
-- ✅ Rifiuta valori negativi
-- ✅ Rifiuta valore zero
-- ✅ Accetta solo numeri decimali > 0
-- ✅ Mostra valore inserito per conferma
-- ✅ Retry automatico senza crash
+
+- [x] Rifiuta input non numerici (lettere, simboli)
+- [x] Rifiuta valori negativi
+- [x] Rifiuta valore zero
+- [x] Accetta solo numeri decimali > 0
+- [x] Mostra valore inserito per conferma
+- [x] Retry automatico senza crash
 
 ---
 
-### 4. Validazione Range Menu ✅
+### 4. Validazione Range Menu [x]
 
 **Metodo Aggiornato:** `getIntInput(String prompt, int min, int max)`
 
@@ -219,12 +213,14 @@ int scelta = getIntInput("Scelta: ", 0, 3);
 ```
 
 **Validazione:**
-- ✅ Verifica che l'input sia un numero intero
-- ✅ Verifica che sia nel range [min, max]
-- ✅ Mostra messaggio di errore con range accettabile
-- ✅ Retry automatico
+
+- [x] Verifica che l'input sia un numero intero
+- [x] Verifica che sia nel range [min, max]
+- [x] Mostra messaggio di errore con range accettabile
+- [x] Retry automatico
 
 **Esempio Output:**
+
 ```
 Scelta: abc
 ✗ Errore: inserisci un numero intero valido.
@@ -236,7 +232,7 @@ Scelta: 1
 
 ---
 
-### 5. Gestione Input Stringhe ✅
+### 5. Gestione Input Stringhe [x]
 
 **Sostituzioni:**
 
@@ -295,7 +291,7 @@ if (risposta != null) {
         ┌────────┴────────┐
         │                 │
         ▼                 ▼
-  ✗ INVALIDO       ✅ VALIDO
+  ✗ INVALIDO        ✓ VALIDO
    - Messaggio         - Ritorna valore
    - Retry loop        - Procede
 ```
@@ -303,6 +299,7 @@ if (risposta != null) {
 ### Pattern di Validazione
 
 **Pattern 1: Controllo ErrorCount**
+
 ```java
 int prevCount = Keyboard.getErrorCount();
 value = Keyboard.readInt();
@@ -312,6 +309,7 @@ if (Keyboard.getErrorCount() > prevCount) {
 ```
 
 **Pattern 2: Controllo Valori Sentinella**
+
 ```java
 double value = Keyboard.readDouble();
 if (Double.isNaN(value)) {
@@ -320,6 +318,7 @@ if (Double.isNaN(value)) {
 ```
 
 **Pattern 3: Validazione Dominio**
+
 ```java
 if (value <= 0) {
     // Valore fuori range accettabile
@@ -332,20 +331,20 @@ if (value <= 0) {
 
 ### File Modificati
 
-| File | Modifiche | LOC Aggiunte | LOC Rimosse |
-|------|-----------|--------------|-------------|
-| `MainTest.java` | Refactoring completo input | +70 | -35 |
-| - | Import Keyboard | +1 | -1 |
-| - | Rimozione Scanner | - | -2 |
-| - | Nuovi metodi validazione | +69 | -32 |
+| File            | Modifiche                  | LOC Aggiunte | LOC Rimosse |
+| --------------- | -------------------------- | ------------ | ----------- |
+| `MainTest.java` | Refactoring completo input | +70          | -35         |
+| -               | Import Keyboard            | +1           | -1          |
+| -               | Rimozione Scanner          | -            | -2          |
+| -               | Nuovi metodi validazione   | +69          | -32         |
 
 ### File Aggiunti
 
-| File | Descrizione | LOC |
-|------|-------------|-----|
-| `src/keyboardinput/Keyboard.java` | Classe input robusto | 267 |
-| `src/TestKeyboardInput.java` | Test funzionalità Keyboard | 50 |
-| `docs/sprints/SPRINT_4.md` | Questo documento | ~600 |
+| File                              | Descrizione                | LOC  |
+| --------------------------------- | -------------------------- | ---- |
+| `src/keyboardinput/Keyboard.java` | Classe input robusto       | 267  |
+| `src/TestKeyboardInput.java`      | Test funzionalità Keyboard | 50   |
+| `docs/sprints/SPRINT_4.md`        | Questo documento           | ~600 |
 
 ---
 
@@ -354,101 +353,113 @@ if (value <= 0) {
 ### Test Case 1: Input Non Numerici
 
 **Input:**
+
 ```
 Scelta: abc
 ```
 
 **Output Atteso:**
+
 ```
 ✗ Errore: inserisci un numero intero valido.
 Scelta:
 ```
 
-**Risultato:** ✅ Pass
+**Risultato:** [x] Pass
 
 ---
 
 ### Test Case 2: Radius Negativo
 
 **Input:**
+
 ```
 Inserisci radius (> 0): -1
 ```
 
 **Output Atteso:**
+
 ```
 ✗ Errore: il radius deve essere maggiore di 0 (valore inserito: -1.0).
 Inserisci radius (> 0):
 ```
 
-**Risultato:** ✅ Pass
+**Risultato:** [x] Pass
 
 ---
 
 ### Test Case 3: Radius Zero
 
 **Input:**
+
 ```
 Inserisci radius (> 0): 0
 ```
 
 **Output Atteso:**
+
 ```
 ✗ Errore: il radius deve essere maggiore di 0 (valore inserito: 0.0).
 Inserisci radius (> 0):
 ```
 
-**Risultato:** ✅ Pass
+**Risultato:** [x] Pass
 
 ---
 
 ### Test Case 4: Input Valido
 
 **Input:**
+
 ```
 Inserisci radius (> 0): 0.5
 ```
 
 **Output Atteso:**
+
 ```
 ✓ Radius impostato a: 0.5
 
 Computazione in corso...
 ```
 
-**Risultato:** ✅ Pass
+**Risultato:** [x] Pass
 
 ---
 
 ### Test Case 5: Scelta Menu Fuori Range
 
 **Input:**
+
 ```
 Scelta: 5
 ```
 
 **Output Atteso:**
+
 ```
 ✗ Errore: il valore deve essere compreso tra 0 e 3.
 Scelta:
 ```
 
-**Risultato:** ✅ Pass
+**Risultato:** [x] Pass
 
 ---
 
 ### Test Case 6: Stress Test - Input Casuali
 
 **Script di Test:**
+
 ```bash
 echo -e "test\nabc\n-999\n5\n1\nxyz\n-1\n0\n0.5\nn\n0" | java MainTest
 ```
 
 **Comportamento:**
-- ✅ Nessun crash
-- ✅ Tutti gli input invalidi rifiutati con messaggi chiari
-- ✅ Input valido accettato
-- ✅ Clustering eseguito correttamente
+
+- [x] Nessun crash
+- [x] Tutti gli input invalidi rifiutati con messaggi chiari
+- [x] Input valido accettato
+- [x] Clustering eseguito correttamente
 
 ---
 
@@ -457,6 +468,7 @@ echo -e "test\nabc\n-999\n5\n1\nxyz\n-1\n0\n0.5\nn\n0" | java MainTest
 ### Esempio 1: Menu Interattivo Robusto
 
 **Esecuzione:**
+
 ```
 $ java MainTest
 === QT Clustering System (con Keyboard Input - QT03) ===
@@ -545,31 +557,35 @@ public class NuovaClasse {
 
 ## Problemi Risolti
 
-### Problema 1: Crash con Input Non Numerici ✅
+### Problema 1: Crash con Input Non Numerici [x]
 
 **Prima:**
+
 ```java
 double radius = Double.parseDouble(scanner.nextLine());
 // 💥 NumberFormatException se utente inserisce "abc"
 ```
 
 **Dopo:**
+
 ```java
 double radius = getPositiveDoubleInput("Inserisci radius (> 0): ");
-// ✅ Retry automatico, nessun crash
+// [x] Retry automatico, nessun crash
 ```
 
 ---
 
-### Problema 2: Nessuna Validazione Radius ✅
+### Problema 2: Nessuna Validazione Radius [x]
 
 **Prima:**
+
 ```java
 double radius = scanner.nextDouble();
 // Accetta -1, 0, valori invalidi!
 ```
 
 **Dopo:**
+
 ```java
 // Controlla se è positivo (> 0)
 if (value <= 0) {
@@ -580,14 +596,16 @@ if (value <= 0) {
 
 ---
 
-### Problema 3: Messaggi Errore Poco Chiari ✅
+### Problema 3: Messaggi Errore Poco Chiari [x]
 
 **Prima:**
+
 ```
 Errore: inserisci un numero valido.
 ```
 
 **Dopo:**
+
 ```
 ✗ Errore: il radius deve essere maggiore di 0 (valore inserito: -1.0).
 ✗ Errore: il valore deve essere compreso tra 0 e 3.
@@ -595,22 +613,25 @@ Errore: inserisci un numero valido.
 ```
 
 **Miglioramenti:**
-- ✅ Icone visive (✗ ✓)
-- ✅ Contesto specifico (valore inserito)
-- ✅ Indicazione range accettabile
-- ✅ Conferma input valido
+
+- [x] Icone visive (✗ ✓)
+- [x] Contesto specifico (valore inserito)
+- [x] Indicazione range accettabile
+- [x] Conferma input valido
 
 ---
 
-### Problema 4: Scanner non Chiuso Correttamente ✅
+### Problema 4: Scanner non Chiuso Correttamente [x]
 
 **Prima:**
+
 ```java
 scanner.close();
 // Chiude System.in, problemi se riaperto
 ```
 
 **Dopo:**
+
 ```java
 // Keyboard non richiede chiusura esplicita
 // System.in rimane aperto per tutta l'esecuzione
@@ -621,11 +642,13 @@ scanner.close();
 ## Metriche
 
 ### Story Points
+
 - **Stimati:** 8
 - **Effettivi:** 8
 - **Velocità:** 100%
 
 ### Linee di Codice
+
 - **Aggiunte:** ~387 LOC
   - `MainTest.java`: +35 LOC (netti)
   - `Keyboard.java`: 267 LOC (copiato)
@@ -635,6 +658,7 @@ scanner.close();
 - **Totale Progetto:** ~3,240 LOC
 
 ### Test
+
 - **Unit Test:** 0 (nessun framework testing)
 - **Test Funzionali:** 6 test case manuali
 - **Coverage:** 100% delle funzionalità input
@@ -642,6 +666,7 @@ scanner.close();
 - **Bug Risolti:** 4 (crash e validazioni)
 
 ### Tempo
+
 - **Pianificazione:** 1 ora
 - **Implementazione:** 3 ore
 - **Testing:** 1 ora
@@ -652,7 +677,7 @@ scanner.close();
 
 ## Retrospettiva
 
-### ✅ Cosa è Andato Bene
+### [x] Cosa è Andato Bene
 
 1. **Integrazione Keyboard Semplice**
    - Classe già fornita dal corso, nessuna implementazione da zero
@@ -707,6 +732,7 @@ scanner.close();
 ## Criteri di Successo
 
 ### Funzionali
+
 - [x] Package keyboardinput integrato nel progetto
 - [x] MainTest usa Keyboard invece di Scanner
 - [x] Validazione radius > 0 funzionante
@@ -715,30 +741,34 @@ scanner.close();
 - [x] Nessun crash durante l'esecuzione
 
 ### Non Funzionali
+
 - [x] Codice compilabile senza errori
 - [x] Messaggi di errore user-friendly
 - [x] Documentazione completa
 - [x] Conformità specifiche QT03
 
 ### Bonus
+
 - [x] Validazione range per scelte menu
 - [x] Test automatizzato (TestKeyboardInput)
 - [x] Conferme visive per input valido
 - [x] Documentazione pattern di utilizzo
 
-**Risultato:** ✅ 100% criteri soddisfatti
+**Risultato:** [x] 100% criteri soddisfatti
 
 ---
 
 ## Prossimi Passi
 
 ### Sprint 5 - Contenitori, Iteratori, Comparatori (QT05)
+
 - Implementare pattern Iterator per Cluster
 - Implementare pattern Iterator per ClusterSet
 - Creare Comparator per ordinamento cluster
 - Supporto enhanced for-loop
 
 ### Miglioramenti Futuri per Sprint 4
+
 - Aggiungere JUnit test per validazione
 - Configurazione Keyboard (printErrors, logFile)
 - Internazionalizzazione messaggi errore (i18n)
@@ -749,17 +779,20 @@ scanner.close();
 ## Riferimenti
 
 ### Documentazione Corso
+
 - **Modulo:** QT03 - Package keyboardinput
 - **Specifica:** `Project/QT03/Specifica_QT03_Package.pdf`
 - **Codice Esempio:** `Project/QT03/keyboardinput/Keyboard.java`
 
 ### Sprint Correlati
+
 - **Sprint 0:** Struttura Base (prerequisito)
 - **Sprint 1:** Algoritmo QT (prerequisito)
 - **Sprint 2:** Persistenza I/O (prerequisito)
 - **Sprint 5:** Iteratori (successivo)
 
 ### Risorse Esterne
+
 - [Java BufferedReader](https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html)
 - [Java StringTokenizer](https://docs.oracle.com/javase/8/docs/api/java/util/StringTokenizer.html)
 - [Input Validation Best Practices](https://owasp.org/www-project-proactive-controls/v3/en/c5-validate-inputs)
@@ -799,15 +832,15 @@ public static boolean endOfLine()
 
 ### Valori di Ritorno in Caso di Errore
 
-| Tipo | Valore Errore | Come Verificare |
-|------|---------------|-----------------|
-| `int` | `Integer.MIN_VALUE` | `value == Integer.MIN_VALUE` |
-| `long` | `Long.MIN_VALUE` | `value == Long.MIN_VALUE` |
-| `float` | `Float.NaN` | `Float.isNaN(value)` |
-| `double` | `Double.NaN` | `Double.isNaN(value)` |
-| `char` | `Character.MIN_VALUE` | `value == Character.MIN_VALUE` |
-| `boolean` | `false` | Controllare `getErrorCount()` |
-| `String` | `null` | `value == null` |
+| Tipo      | Valore Errore         | Come Verificare                |
+| --------- | --------------------- | ------------------------------ |
+| `int`     | `Integer.MIN_VALUE`   | `value == Integer.MIN_VALUE`   |
+| `long`    | `Long.MIN_VALUE`      | `value == Long.MIN_VALUE`      |
+| `float`   | `Float.NaN`           | `Float.isNaN(value)`           |
+| `double`  | `Double.NaN`          | `Double.isNaN(value)`          |
+| `char`    | `Character.MIN_VALUE` | `value == Character.MIN_VALUE` |
+| `boolean` | `false`               | Controllare `getErrorCount()`  |
+| `String`  | `null`                | `value == null`                |
 
 ---
 
@@ -871,10 +904,12 @@ private static String getStringWithDefault(String prompt, String defaultValue) {
 **Fine Sprint 4**
 
 Per informazioni su sprint precedenti:
+
 - [`SPRINT_0.md`](SPRINT_0.md) - Struttura Base (QT01)
 - [`SPRINT_1.md`](SPRINT_1.md) - Algoritmo QT (QT01/QT02)
 - [`SPRINT_2.md`](SPRINT_2.md) - Persistenza e I/O (QT04)
 - [`SPRINT_3.md`](SPRINT_3.md) - Supporto Attributi Continui
 
 Per sprint successivi, consultare:
+
 - [`../SPRINT_ROADMAP.md`](../SPRINT_ROADMAP.md) - Roadmap completa progetto
