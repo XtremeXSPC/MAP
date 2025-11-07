@@ -14,7 +14,7 @@
 | Sprint 1 | Algoritmo QT | QT01/QT02 | ✅ Completato | 1 settimana | 100% |
 | Sprint 2 | Persistenza e I/O | QT04 | ✅ Completato | 1 settimana | 100% |
 | Sprint 3 | Supporto Attributi Continui | - | ✅ Completato | 1 settimana | 100% |
-| Sprint 4 | Keyboard Input | QT03 | 🔴 In Corso | 1 settimana | 0% |
+| Sprint 4 | Keyboard Input | QT03 | ✅ Completato | 1 settimana | 100% |
 | Sprint 5 | Contenitori e Iteratori | QT05 | 🔜 Pianificato | 1 settimana | 0% |
 | Sprint 6 | Generics e RTTI | QT06 | 🔜 Pianificato | 1 settimana | 0% |
 | Sprint 7 | Database Integration (JDBC) | QT07 | 🔜 Pianificato | 2 settimane | 0% |
@@ -25,7 +25,7 @@
 
 ### Timeline Stimata
 - **Fase 1 (Core - Obbligatorio):** Sprint 0-3 (✅ Completata - QT01, QT02, QT04)
-- **Fase 2 (Requisiti Corso - Priorità Alta):** Sprint 4-6 (🔴 In Corso - QT03, QT05, QT06)
+- **Fase 2 (Requisiti Corso - Priorità Alta):** Sprint 4-6 (🔴 In Corso - Sprint 4 completato, Sprint 5-6 pianificati)
 - **Fase 3 (Integrazione - Requisiti Corso):** Sprint 7-8 (🔜 4 settimane - QT07, QT08)
 - **Fase 4 (Estensioni - Opzionale):** GUI, Ottimizzazioni, Metriche (🔜 5 settimane)
 
@@ -204,15 +204,16 @@ tupleIDs=0
 
 ---
 
-## 🔜 Sprint Pianificati
+## 🎯 Sprint Completati
 
-### 🔴 Sprint 4 - Keyboard Input (QT03)
+### ✅ Sprint 4 - Keyboard Input (QT03)
 
 **Durata:** 1 settimana
-**Stato:** 🔴 In Corso (Priorità Massima)
+**Stato:** ✅ Completato
 **QT Module:** QT03
+**Data Completamento:** 2025-11-07
 **Prerequisiti:** Sprint 1, 2
-**Documentazione:** `Project/QT03/Specifica_QT03_Package.pdf`
+**Documentazione:** [`docs/sprints/SPRINT_4.md`](sprints/SPRINT_4.md)
 
 #### Obiettivi
 Integrare la classe `Keyboard.java` per gestione robusta dell'input utente da tastiera, sostituendo gli input Scanner rudimentali con una soluzione enterprise-grade conforme alle specifiche del corso.
@@ -286,17 +287,21 @@ do {
 - ✅ Messaggi errore user-friendly
 - ✅ Codice conforme a specifiche QT03
 
-#### Criteri di Successo
-- [ ] Package keyboardinput integrato
-- [ ] MainTest usa Keyboard invece di Scanner
-- [ ] Validazione input radius funzionante
-- [ ] Test con input invalidi (testo, negativi, zero)
-- [ ] Menu interattivo robusto
-- [ ] Nessun crash durante l'esecuzione
+#### Risultati Ottenuti
+- ✅ Package keyboardinput integrato in `src/keyboardinput/`
+- ✅ MainTest completamente refactorato con Keyboard
+- ✅ Validazione robusta input radius (> 0) con retry automatico
+- ✅ Test completi con input invalidi (testo, negativi, zero)
+- ✅ Menu interattivo robusto con validazione range
+- ✅ Zero crash durante test stress con input casuali
+- ✅ Messaggi di errore user-friendly con icone (✗ ✓)
+- ✅ Documentazione completa Sprint 4
 
-#### Story Points Stimati: 8
+#### Story Points: 8/8 (100%)
 
 ---
+
+## 🔜 Sprint Pianificati
 
 ### Sprint 5 - Contenitori, Iteratori, Comparatori (QT05)
 
@@ -965,17 +970,17 @@ Disconnected from server
 
 ### Percorso Obbligatorio (Requisiti Corso)
 ```
-Sprint 0 (Base - QT01)
+Sprint 0 (Base - QT01) ✅
    │
-   ├──► Sprint 1 (Algoritmo QT - QT01/QT02)
+   ├──► Sprint 1 (Algoritmo QT - QT01/QT02) ✅
    │       │
-   │       ├──► Sprint 2 (Persistenza I/O - QT04)
+   │       ├──► Sprint 2 (Persistenza I/O - QT04) ✅
    │       │       │
-   │       │       ├──► Sprint 3 (Attributi Continui)
+   │       │       ├──► Sprint 3 (Attributi Continui) ✅
    │       │       │
-   │       │       └──► Sprint 4 (Keyboard Input - QT03) ← 🔴 IN CORSO
+   │       │       └──► Sprint 4 (Keyboard Input - QT03) ✅
    │       │               │
-   │       │               ├──► Sprint 5 (Iteratori - QT05)
+   │       │               ├──► Sprint 5 (Iteratori - QT05) ← 🔴 PROSSIMO
    │       │               │       │
    │       │               │       └──► Sprint 6 (Generics - QT06)
    │       │               │
@@ -996,10 +1001,10 @@ Sprint 8 (completato)
 ```
 
 ### Legenda:
-- **🔴 Sprint 4:** Priorità massima attuale (QT03 - Keyboard)
-- **🟡 Sprint 5-8:** Requisiti corso (QT05, QT06, QT07, QT08)
+- **🔴 Sprint 5:** Priorità massima attuale (QT05 - Iteratori)
+- **🟡 Sprint 6-8:** Requisiti corso (QT06, QT07, QT08)
 - **🟢 Estensioni:** Opzionali dopo completamento corso
-- **✅ Sprint 0-3:** Completati
+- **✅ Sprint 0-4:** Completati (52% del corso)
 
 ---
 
@@ -1016,12 +1021,12 @@ Sprint 8 (completato)
 **Completamento:** 100% (4/4 sprint)
 
 #### Fase 2: Requisiti Corso Intermedi 🔴 IN CORSO
-5. 🔴 **Sprint 4 - Keyboard Input (QT03)** ← ATTUALE
-6. 🟡 Sprint 5 - Iteratori e Comparatori (QT05)
+5. ✅ Sprint 4 - Keyboard Input (QT03) - COMPLETATO
+6. 🔴 **Sprint 5 - Iteratori e Comparatori (QT05)** ← PROSSIMO
 7. 🟡 Sprint 6 - Generics e RTTI (QT06)
 
-**Completamento:** 0% (0/3 sprint)
-**Durata stimata:** 3 settimane
+**Completamento:** 33% (1/3 sprint)
+**Durata stimata:** 2 settimane
 
 #### Fase 3: Requisiti Corso Avanzati 🔜 PIANIFICATO
 8. 🟡 Sprint 7 - JDBC (QT07)
@@ -1042,9 +1047,8 @@ Sprint 8 (completato)
 ### 📋 Priorità per Ambito Accademico
 
 #### 🔴 Obbligatori per Corso (Priorità Massima)
-- ✅ Sprint 0-3: Base, Algoritmo, Persistenza, Attributi
-- 🔴 **Sprint 4: Keyboard Input (QT03)** ← IN CORSO
-- 🟡 Sprint 5: Iteratori/Comparatori (QT05)
+- ✅ Sprint 0-4: Base, Algoritmo, Persistenza, Attributi, Keyboard
+- 🔴 **Sprint 5: Iteratori/Comparatori (QT05)** ← PROSSIMO
 - 🟡 Sprint 6: Generics/RTTI (QT06)
 - 🟡 Sprint 7: JDBC (QT07)
 - 🟡 Sprint 8: Socket (QT08)
@@ -1064,10 +1068,9 @@ Sprint 8 (completato)
 
 ```
 ADESSO:
-  └─ Sprint 4 (QT03 - Keyboard) ← 🔴 INIZIA QUI
+  └─ Sprint 5 (QT05 - Iteratori) ← 🔴 INIZIA QUI
 
 POI:
-  ├─ Sprint 5 (QT05 - Iteratori)
   └─ Sprint 6 (QT06 - Generics)
 
 INFINE:
@@ -1095,12 +1098,12 @@ OPZIONALE:
 | 1 | Algoritmo QT | QT01/02 | 18 | ✅ Completato |
 | 2 | Persistenza I/O | QT04 | 13 | ✅ Completato |
 | 3 | Attributi Continui | - | 13 | ✅ Completato |
-| 4 | Keyboard Input | QT03 | 8 | 🔴 In Corso |
+| 4 | Keyboard Input | QT03 | 8 | ✅ Completato |
 | 5 | Iteratori/Comparatori | QT05 | 13 | 🔜 Pianificato |
 | 6 | Generics/RTTI | QT06 | 13 | 🔜 Pianificato |
 | 7 | JDBC | QT07 | 21 | 🔜 Pianificato |
 | 8 | Socket | QT08 | 21 | 🔜 Pianificato |
-| **Subtotale Corso** | | | **142** | **28% completato** |
+| **Subtotale Corso** | | | **142** | **52% completato** |
 
 #### Sprint Opzionali (Estensioni)
 | Estensione | Story Points | Priorità |
@@ -1113,29 +1116,29 @@ OPZIONALE:
 **TOTALE PROGETTO:** 197 Story Points
 
 ### Classi Implementate/Pianificate
-- **✅ Completate (Sprint 0-3):** 15 classi principali + 3 eccezioni + 6 test = 24 file
-- **🔴 Sprint 4 (QT03):** +1 package (Keyboard.java)
+- **✅ Completate (Sprint 0-4):** 15 classi principali + 3 eccezioni + 6 test + 1 package (Keyboard) = 25 file
 - **🔜 Sprint 5-6:** +5 classi (Iterators, Comparators, Generics refactoring)
 - **🔜 Sprint 7-8:** +10 classi (JDBC, Socket, Server/Client)
 - **🟢 Estensioni:** +15 classi (GUI, metriche, ottimizzazioni)
 - **Totale previsto:** ~55 classi/file
 
 ### Linee di Codice (LOC)
-- **✅ Attualmente (Sprint 0-3):** ~2,850 LOC
-- **🔴 Fine Sprint 4:** ~3,000 LOC
-- **🔜 Fine Sprint 5-6:** ~3,500 LOC
-- **🔜 Fine Sprint 7-8:** ~5,000 LOC
-- **🟢 Con Estensioni:** ~7,500 LOC
+- **✅ Attualmente (Sprint 0-4):** ~3,240 LOC
+  - Sprint 0-3: ~2,850 LOC
+  - Sprint 4: +390 LOC (Keyboard: 267, MainTest: +35, Test: 50, Docs: 635)
+- **🔜 Fine Sprint 5-6:** ~3,800 LOC
+- **🔜 Fine Sprint 7-8:** ~5,300 LOC
+- **🟢 Con Estensioni:** ~7,800 LOC
 
 ### Completamento Progetto
 ```
-Corso (Obbligatorio):    ████░░░░░░░░░░░░ 28% (4/9 sprint)
+Corso (Obbligatorio):    ████████░░░░░░░░ 52% (5/9 sprint)
 Estensioni (Opzionale):  ░░░░░░░░░░░░░░░░  0% (0/3 sprint)
 ```
 
 **Tempo rimanente stimato:**
-- Completamento corso: 7 settimane (5 sprint)
-- Con estensioni: 12 settimane totali
+- Completamento corso: 6 settimane (4 sprint)
+- Con estensioni: 11 settimane totali
 
 ---
 
@@ -1274,6 +1277,7 @@ git push
 | 2025-11-07 | 1.1 | Sprint 2 completato, Sprint 3 in corso |
 | 2025-11-07 | 1.2 | Sprint 3 e Sprint 4 (Attributi Continui) completati |
 | 2025-11-07 | 2.0 | **MAJOR UPDATE**: Allineamento completo alle specifiche del corso<br>- Riorganizzati sprint per riflettere moduli QT01-QT08<br>- Sprint 4 rinominato a Sprint 3 (Attributi Continui)<br>- Nuovo Sprint 4: Keyboard Input (QT03) - PRIORITÀ MASSIMA<br>- Sprint 5: Contenitori/Iteratori (QT05)<br>- Sprint 6: Generics/RTTI (QT06)<br>- Sprint 7-8: JDBC e Socket (QT07-QT08)<br>- GUI, Ottimizzazioni, Metriche → Estensioni opzionali<br>- Aggiornate dipendenze e priorità<br>- Focus su requisiti corso invece di estensioni |
+| 2025-11-07 | 2.1 | **Sprint 4 Completato**: Keyboard Input (QT03)<br>- Package keyboardinput integrato (267 LOC)<br>- MainTest refactorato con Keyboard<br>- Validazione robusta radius > 0<br>- Zero crash con input invalidi<br>- Test completi con input stress<br>- Documentazione SPRINT_4.md completa<br>- Aggiornate metriche: 52% completamento corso<br>- Story points: 74/142 (52%)<br>- Prossimo: Sprint 5 - Iteratori (QT05) |
 
 ---
 
