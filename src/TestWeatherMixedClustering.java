@@ -38,13 +38,13 @@ public class TestWeatherMixedClustering {
                 int totalPoints = 0;
 
                 System.out.println("Dettagli cluster:");
-                for (int i = 0; i < numClusters; i++) {
-                    Cluster c = clusters.get(i);
+                int clusterNum = 1;
+                for (Cluster c : clusters) {
                     int size = c.getSize();
                     totalPoints += size;
 
                     // Analizza composizione cluster
-                    int[] tupleIds = c.iterator();
+                    int[] tupleIds = c.getTupleIDs();
                     int sunny = 0, overcast = 0, rain = 0;
                     int playYes = 0, playNo = 0;
                     double sumTemp = 0, sumHum = 0;
@@ -84,7 +84,7 @@ public class TestWeatherMixedClustering {
                     // Determina play dominante
                     String dominantPlay = playYes >= playNo ? "yes" : "no";
 
-                    System.out.println("  Cluster " + (i + 1) + ":");
+                    System.out.println("  Cluster " + (clusterNum++) + ":");
                     System.out.println("    Size: " + size);
                     System.out.println("    Outlook dominante: " + dominantOutlook +
                         " (sunny=" + sunny + ", overcast=" + overcast + ", rain=" + rain + ")");

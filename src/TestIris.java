@@ -19,13 +19,14 @@ public class TestIris {
 
             // Verifica tipi attributi
             System.out.println("Tipi attributi:");
-            Attribute[] attrs = iris.getAttributeSchema();
-            for (int i = 0; i < attrs.length; i++) {
-                String type = attrs[i] instanceof ContinuousAttribute ? "Continuous" : "Discrete";
-                System.out.println("  " + (i + 1) + ". " + attrs[i].getName() + " - " + type);
+            java.util.List<Attribute> attrs = iris.getAttributeSchema();
+            int index = 1;
+            for (Attribute attr : attrs) {
+                String type = attr instanceof ContinuousAttribute ? "Continuous" : "Discrete";
+                System.out.println("  " + (index++) + ". " + attr.getName() + " - " + type);
 
-                if (attrs[i] instanceof ContinuousAttribute) {
-                    ContinuousAttribute cattr = (ContinuousAttribute) attrs[i];
+                if (attr instanceof ContinuousAttribute) {
+                    ContinuousAttribute cattr = (ContinuousAttribute) attr;
                     double testValue = 5.0;
                     System.out.println("     (scaled(5.0) = " +
                         String.format("%.3f", cattr.getScaledValue(testValue)) + ")");
@@ -39,7 +40,7 @@ public class TestIris {
             for (int i = 0; i < tuple.getLength(); i++) {
                 Item item = tuple.get(i);
                 String itemType = item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
-                System.out.println("  " + attrs[i].getName() + " = " +
+                System.out.println("  " + attrs.get(i).getName() + " = " +
                     item.getValue() + " [" + itemType + "]");
             }
             System.out.println();
@@ -49,7 +50,7 @@ public class TestIris {
             Tuple tuple51 = iris.getItemSet(50);
             for (int i = 0; i < tuple51.getLength(); i++) {
                 Item item = tuple51.get(i);
-                System.out.println("  " + attrs[i].getName() + " = " + item.getValue());
+                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue());
             }
             System.out.println();
 
@@ -58,7 +59,7 @@ public class TestIris {
             Tuple tuple101 = iris.getItemSet(100);
             for (int i = 0; i < tuple101.getLength(); i++) {
                 Item item = tuple101.get(i);
-                System.out.println("  " + attrs[i].getName() + " = " + item.getValue());
+                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue());
             }
             System.out.println();
 

@@ -92,20 +92,20 @@ public class MainTest {
 
             // Mostra attributi rilevati
             System.out.println("\nAttributi rilevati:");
-            Attribute[] attributes = data.getAttributeSchema();
-            for (int i = 0; i < attributes.length; i++) {
-                Attribute attr = attributes[i];
+            java.util.List<Attribute> attributes = data.getAttributeSchema();
+            for (Attribute attr : attributes) {
                 String tipo = (attr instanceof DiscreteAttribute) ? "discrete" : "continuous";
                 System.out.println("  - " + attr.getName() + " (" + tipo + ")");
 
                 if (attr instanceof DiscreteAttribute) {
                     DiscreteAttribute dAttr = (DiscreteAttribute) attr;
                     System.out.print("    Valori: {");
-                    for (int j = 0; j < Math.min(5, dAttr.getNumberOfDistinctValues()); j++) {
-                        System.out.print(data.getValue(j, i));
-                        if (j < Math.min(4, dAttr.getNumberOfDistinctValues() - 1)) {
-                            System.out.print(", ");
-                        }
+                    int count = 0;
+                    for (String value : dAttr) {
+                        if (count > 0) System.out.print(", ");
+                        System.out.print(value);
+                        count++;
+                        if (count >= 5) break; // Mostra max 5 valori
                     }
                     if (dAttr.getNumberOfDistinctValues() > 5) {
                         System.out.print(", ...");

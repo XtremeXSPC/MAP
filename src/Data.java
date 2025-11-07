@@ -1,17 +1,19 @@
 import exceptions.InvalidDataFormatException;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Classe che modella l'insieme di transazioni (tuple).
+ * Usa LinkedList per explanatorySet come da specifica QT05.
  */
 public class Data {
     private Object data[][];
     private int numberOfExamples;
-    private Attribute explanatorySet[];
+    private List<Attribute> explanatorySet;
 
     /**
      * Costruttore della classe Data. Inizializza la matrice data con le transazioni di esempio.
@@ -39,28 +41,28 @@ public class Data {
         // Numero di esempi
         numberOfExamples = 14;
 
-        // Inizializzazione dell'explanatory set con 5 attributi discreti
-        explanatorySet = new Attribute[5];
+        // Inizializzazione dell'explanatory set con LinkedList
+        explanatorySet = new LinkedList<>();
 
         // Outlook attribute
         String[] outLookValues = new String[] {"overcast", "rain", "sunny"};
-        explanatorySet[0] = new DiscreteAttribute("Outlook", 0, outLookValues);
+        explanatorySet.add(new DiscreteAttribute("Outlook", 0, outLookValues));
 
         // Temperature attribute
         String[] temperatureValues = new String[] {"cool", "hot", "mild"};
-        explanatorySet[1] = new DiscreteAttribute("Temperature", 1, temperatureValues);
+        explanatorySet.add(new DiscreteAttribute("Temperature", 1, temperatureValues));
 
         // Humidity attribute
         String[] humidityValues = new String[] {"high", "normal"};
-        explanatorySet[2] = new DiscreteAttribute("Humidity", 2, humidityValues);
+        explanatorySet.add(new DiscreteAttribute("Humidity", 2, humidityValues));
 
         // Wind attribute
         String[] windValues = new String[] {"strong", "weak"};
-        explanatorySet[3] = new DiscreteAttribute("Wind", 3, windValues);
+        explanatorySet.add(new DiscreteAttribute("Wind", 3, windValues));
 
         // PlayTennis attribute
         String[] playTennisValues = new String[] {"no", "yes"};
-        explanatorySet[4] = new DiscreteAttribute("PlayTennis", 4, playTennisValues);
+        explanatorySet.add(new DiscreteAttribute("PlayTennis", 4, playTennisValues));
     }
 
     /**
@@ -89,15 +91,15 @@ public class Data {
      * @return cardinalità dell'insieme degli attributi
      */
     public int getNumberOfExplanatoryAttributes() {
-        return explanatorySet.length;
+        return explanatorySet.size();
     }
 
     /**
      * Restituisce lo schema degli attributi.
      *
-     * @return array di attributi
+     * @return lista di attributi
      */
-    public Attribute[] getAttributeSchema() {
+    public List<Attribute> getAttributeSchema() {
         return explanatorySet;
     }
 
@@ -108,7 +110,7 @@ public class Data {
      * @return attributo in posizione index
      */
     public Attribute getExplanatoryAttribute(int index) {
-        return explanatorySet[index];
+        return explanatorySet.get(index);
     }
 
     /**
@@ -132,9 +134,9 @@ public class Data {
         String str = "";
 
         // Schema della tabella
-        for (int i = 0; i < explanatorySet.length; i++) {
-            str += explanatorySet[i].getName();
-            if (i < explanatorySet.length - 1) {
+        for (int i = 0; i < explanatorySet.size(); i++) {
+            str += explanatorySet.get(i).getName();
+            if (i < explanatorySet.size() - 1) {
                 str += ",";
             }
         }
@@ -142,10 +144,10 @@ public class Data {
 
         // Transazioni
         for (int i = 0; i < numberOfExamples; i++) {
-            str += (i + 1) + ":";
-            for (int j = 0; j < explanatorySet.length; j++) {
+            str += i + ":";
+            for (int j = 0; j < explanatorySet.size(); j++) {
                 str += data[i][j];
-                if (j < explanatorySet.length - 1) {
+                if (j < explanatorySet.size() - 1) {
                     str += ",";
                 }
             }
@@ -170,10 +172,10 @@ public class Data {
      * @throws NumberFormatException se un valore continuo non può essere parsato come Double
      */
     public Tuple getItemSet(int index) {
-        Tuple tuple = new Tuple(explanatorySet.length);
+        Tuple tuple = new Tuple(explanatorySet.size());
 
-        for (int i = 0; i < explanatorySet.length; i++) {
-            Attribute attr = explanatorySet[i];
+        for (int i = 0; i < explanatorySet.size(); i++) {
+            Attribute attr = explanatorySet.get(i);
             Object value = data[index][i];
 
             if (attr instanceof DiscreteAttribute) {
@@ -282,9 +284,9 @@ public class Data {
         }
 
         // Inferisci tipi attributi
-        explanatorySet = new Attribute[numAttributes];
+        explanatorySet = new LinkedList<>();
         for (int i = 0; i < numAttributes; i++) {
-            explanatorySet[i] = inferAttributeType(headers[i], i, columnValues.get(i));
+            explanatorySet.add(inferAttributeType(headers[i], i, columnValues.get(i)));
         }
 
         // Popola matrice dati
