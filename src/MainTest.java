@@ -1,14 +1,13 @@
 import exceptions.InvalidDataFormatException;
 import exceptions.InvalidFileFormatException;
 import java.io.IOException;
-import java.util.Scanner;
+import keyboardinput.Keyboard;
 
 /**
  * Classe di test per l'algoritmo Quality Threshold con menu interattivo.
+ * Utilizza la classe Keyboard per gestione robusta dell'input utente (QT03).
  */
 public class MainTest {
-
-    private static Scanner scanner = new Scanner(System.in);
 
     /**
      * Metodo main per testare l'algoritmo QT.
@@ -18,9 +17,11 @@ public class MainTest {
     public static void main(String[] args) {
         boolean continua = true;
 
+        System.out.println("=== QT Clustering System (con Keyboard Input - QT03) ===\n");
+
         while (continua) {
             printMenu();
-            int scelta = getIntInput("Scelta: ");
+            int scelta = getIntInput("Scelta: ", 0, 3);
 
             switch (scelta) {
                 case 1:
@@ -33,7 +34,7 @@ public class MainTest {
                     caricaClusterSalvato();
                     break;
                 case 0:
-                    System.out.println("Arrivederci!");
+                    System.out.println("\nArrivederci!");
                     continua = false;
                     break;
                 default:
@@ -44,8 +45,6 @@ public class MainTest {
                 System.out.println("\n" + "=".repeat(50) + "\n");
             }
         }
-
-        scanner.close();
     }
 
     /**
@@ -82,7 +81,7 @@ public class MainTest {
     private static void caricaDatasetCSV() {
         System.out.println("\n--- Carica Dataset da CSV ---");
         System.out.print("Inserisci path file CSV: ");
-        String csvPath = scanner.nextLine().trim();
+        String csvPath = Keyboard.readString().trim();
 
         try {
             System.out.println("Caricamento in corso...");
@@ -134,12 +133,12 @@ public class MainTest {
     private static void caricaClusterSalvato() {
         System.out.println("\n--- Carica Cluster Salvato ---");
         System.out.print("Inserisci path file .dmp: ");
-        String dmpPath = scanner.nextLine().trim();
+        String dmpPath = Keyboard.readString().trim();
 
         System.out.println("Il file cluster richiede un dataset di riferimento.");
         System.out.println("1. Usa dataset PlayTennis (hardcoded)");
         System.out.println("2. Carica dataset da CSV");
-        int scelta = getIntInput("Scelta dataset: ");
+        int scelta = getIntInput("Scelta dataset: ", 1, 2);
 
         try {
             Data data;
@@ -147,7 +146,7 @@ public class MainTest {
                 data = new Data();
             } else if (scelta == 2) {
                 System.out.print("Inserisci path file CSV: ");
-                String csvPath = scanner.nextLine().trim();
+                String csvPath = Keyboard.readString().trim();
                 data = new Data(csvPath);
                 System.out.println("✓ Dataset caricato: " + data.getNumberOfExamples() + " esempi");
             } else {
@@ -180,7 +179,7 @@ public class MainTest {
      * @param data dataset su cui eseguire clustering
      */
     private static void eseguiClustering(Data data) {
-        double radius = getDoubleInput("Inserisci radius: ");
+        double radius = getPositiveDoubleInput("Inserisci radius (> 0): ");
 
         System.out.println("\nComputazione in corso...");
         QTMiner qt = new QTMiner(radius);
@@ -192,11 +191,14 @@ public class MainTest {
 
         // Chiedi se salvare
         System.out.print("\nSalvare risultati? (s/n): ");
-        String risposta = scanner.nextLine().trim().toLowerCase();
+        String risposta = Keyboard.readWord();
+        if (risposta != null) {
+            risposta = risposta.trim().toLowerCase();
+        }
 
-        if (risposta.equals("s") || risposta.equals("si") || risposta.equals("yes")) {
+        if (risposta != null && (risposta.equals("s") || risposta.equals("si") || risposta.equals("yes"))) {
             System.out.print("Inserisci nome file output (es. clusters.dmp): ");
-            String outputPath = scanner.nextLine().trim();
+            String outputPath = Keyboard.readString().trim();
 
             try {
                 qt.getC().save(outputPath, radius);
@@ -208,38 +210,79 @@ public class MainTest {
     }
 
     /**
-     * Legge un input intero dall'utente con validazione.
+     * Legge un input intero dall'utente con validazione e range check.
+     * Utilizza la classe Keyboard per gestione robusta degli errori.
      *
      * @param prompt messaggio da visualizzare
-     * @return numero intero inserito
+     * @param min valore minimo accettabile (incluso)
+     * @param max valore massimo accettabile (incluso)
+     * @return numero intero inserito nel range [min, max]
      */
-    private static int getIntInput(String prompt) {
+    private static int getIntInput(String prompt, int min, int max) {
+        int value;
+        int previousErrorCount = Keyboard.getErrorCount();
+
         while (true) {
-            try {
-                System.out.print(prompt);
-                String input = scanner.nextLine().trim();
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Errore: inserisci un numero intero valido.");
+            System.out.print(prompt);
+            value = Keyboard.readInt();
+
+            // Controlla se c'è stato un errore di parsing
+            if (Keyboard.getErrorCount() > previousErrorCount) {
+                System.out.println("✗ Errore: inserisci un numero intero valido.");
+                previousErrorCount = Keyboard.getErrorCount();
+                continue;
             }
+
+            // Controlla se è nel range valido
+            if (value < min || value > max) {
+                System.out.println("✗ Errore: il valore deve essere compreso tra " + min + " e " + max + ".");
+                continue;
+            }
+
+            // Input valido
+            return value;
         }
     }
 
     /**
-     * Legge un input double dall'utente con validazione.
+     * Legge un input double positivo dall'utente con validazione.
+     * Utilizza la classe Keyboard per gestione robusta degli errori.
+     * Il valore deve essere strettamente maggiore di 0.
      *
      * @param prompt messaggio da visualizzare
-     * @return numero double inserito
+     * @return numero double > 0
      */
-    private static double getDoubleInput(String prompt) {
+    private static double getPositiveDoubleInput(String prompt) {
+        double value;
+        int previousErrorCount = Keyboard.getErrorCount();
+
         while (true) {
-            try {
-                System.out.print(prompt);
-                String input = scanner.nextLine().trim();
-                return Double.parseDouble(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Errore: inserisci un numero valido.");
+            System.out.print(prompt);
+            value = Keyboard.readDouble();
+
+            // Controlla se c'è stato un errore di parsing (restituisce NaN)
+            if (Double.isNaN(value)) {
+                System.out.println("✗ Errore: inserisci un numero valido (decimale).");
+                previousErrorCount = Keyboard.getErrorCount();
+                continue;
             }
+
+            // Controlla se Keyboard ha registrato un errore
+            if (Keyboard.getErrorCount() > previousErrorCount) {
+                System.out.println("✗ Errore: inserisci un numero valido (decimale).");
+                previousErrorCount = Keyboard.getErrorCount();
+                continue;
+            }
+
+            // Controlla se è positivo (> 0)
+            if (value <= 0) {
+                System.out.println("✗ Errore: il radius deve essere maggiore di 0 (valore inserito: " + value + ").");
+                continue;
+            }
+
+            // Input valido
+            System.out.println("✓ Radius impostato a: " + value);
+            return value;
         }
     }
 }
