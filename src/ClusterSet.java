@@ -7,8 +7,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Classe che rappresenta un insieme di cluster.
- * Usa TreeSet per ordinamento automatico per dimensione e implementa Iterable per iterazione.
+ * Classe che rappresenta un insieme di cluster. Usa TreeSet per ordinamento automatico per
+ * dimensione e implementa Iterable per iterazione.
  */
 public class ClusterSet implements Iterable<Cluster> {
     private Set<Cluster> C;
@@ -34,8 +34,8 @@ public class ClusterSet implements Iterable<Cluster> {
     }
 
     /**
-     * Aggiunge un cluster all'insieme.
-     * TreeSet garantisce ordinamento automatico per dimensione cluster.
+     * Aggiunge un cluster all'insieme. TreeSet garantisce ordinamento automatico per dimensione
+     * cluster.
      *
      * @param c cluster da aggiungere
      */
@@ -44,8 +44,8 @@ public class ClusterSet implements Iterable<Cluster> {
     }
 
     /**
-     * Restituisce un iteratore sui cluster.
-     * I cluster sono ordinati automaticamente per dimensione (crescente).
+     * Restituisce un iteratore sui cluster. I cluster sono ordinati automaticamente per dimensione
+     * (crescente).
      *
      * @return iteratore sui cluster
      */
@@ -55,8 +55,8 @@ public class ClusterSet implements Iterable<Cluster> {
     }
 
     /**
-     * Restituisce una stringa con i centroidi di tutti i cluster.
-     * I cluster sono numerati sequenzialmente (ordinati per dimensione).
+     * Restituisce una stringa con i centroidi di tutti i cluster. I cluster sono numerati
+     * sequenzialmente (ordinati per dimensione).
      *
      * @return stringa con i centroidi
      */
@@ -71,8 +71,8 @@ public class ClusterSet implements Iterable<Cluster> {
     }
 
     /**
-     * Restituisce una stringa dettagliata con lo stato di ciascun cluster.
-     * I cluster sono numerati sequenzialmente (ordinati per dimensione).
+     * Restituisce una stringa dettagliata con lo stato di ciascun cluster. I cluster sono numerati
+     * sequenzialmente (ordinati per dimensione).
      *
      * @param data insieme di dati
      * @return stringa dettagliata dei cluster

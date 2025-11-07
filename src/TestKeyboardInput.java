@@ -1,8 +1,8 @@
 import keyboardinput.Keyboard;
 
 /**
- * Test per verificare il funzionamento della classe Keyboard.
- * Questo test dimostra che Keyboard gestisce correttamente input invalidi.
+ * Test per verificare il funzionamento della classe Keyboard. Questo test dimostra che Keyboard
+ * gestisce correttamente input invalidi.
  */
 public class TestKeyboardInput {
 

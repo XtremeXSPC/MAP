@@ -1,6 +1,6 @@
 /**
- * Test Sprint 6 - Generics e RTTI (QT06)
- * Dimostra le modifiche implementate con Temperature continuo.
+ * Test Sprint 6 - Generics e RTTI (QT06) Dimostra le modifiche implementate con Temperature
+ * continuo.
  */
 public class TestSprint6 {
     public static void main(String[] args) {

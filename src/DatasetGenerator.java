@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.Random;
 
 /**
- * Generatore di dataset sintetici per testing performance.
- * Crea file CSV con dimensioni e caratteristiche configurabili.
+ * Generatore di dataset sintetici per testing performance. Crea file CSV con dimensioni e
+ * caratteristiche configurabili.
  */
 public class DatasetGenerator {
 
@@ -21,14 +21,15 @@ public class DatasetGenerator {
      * @param numAttributes numero attributi
      * @param seed seed random per riproducibilità
      */
-    public static void generateDataset(String filename, int numTuples,
-                                       int numAttributes, long seed) {
+    public static void generateDataset(String filename, int numTuples, int numAttributes,
+            long seed) {
         Random random = new Random(seed);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             // Scrivi header
             for (int i = 0; i < numAttributes; i++) {
-                if (i > 0) writer.write(",");
+                if (i > 0)
+                    writer.write(",");
                 writer.write("Attr" + (i + 1));
             }
             writer.write("\n");
@@ -36,7 +37,8 @@ public class DatasetGenerator {
             // Genera tuple
             for (int i = 0; i < numTuples; i++) {
                 for (int j = 0; j < numAttributes; j++) {
-                    if (j > 0) writer.write(",");
+                    if (j > 0)
+                        writer.write(",");
 
                     // Seleziona categoria basata sull'indice attributo
                     String[] categories = selectCategories(j);
@@ -46,8 +48,8 @@ public class DatasetGenerator {
                 writer.write("\n");
             }
 
-            System.out.println("Generated: " + filename +
-                             " (" + numTuples + " tuples, " + numAttributes + " attributes)");
+            System.out.println("Generated: " + filename + " (" + numTuples + " tuples, "
+                    + numAttributes + " attributes)");
 
         } catch (IOException e) {
             System.err.println("Error generating dataset: " + e.getMessage());
@@ -59,12 +61,18 @@ public class DatasetGenerator {
      */
     private static String[] selectCategories(int attrIndex) {
         switch (attrIndex % 5) {
-            case 0: return CATEGORIES_A;
-            case 1: return CATEGORIES_B;
-            case 2: return CATEGORIES_C;
-            case 3: return CATEGORIES_D;
-            case 4: return CATEGORIES_E;
-            default: return CATEGORIES_A;
+            case 0:
+                return CATEGORIES_A;
+            case 1:
+                return CATEGORIES_B;
+            case 2:
+                return CATEGORIES_C;
+            case 3:
+                return CATEGORIES_D;
+            case 4:
+                return CATEGORIES_E;
+            default:
+                return CATEGORIES_A;
         }
     }
 

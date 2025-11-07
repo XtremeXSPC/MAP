@@ -1,9 +1,9 @@
-//********************************************************************
-//  Keyboard.java       Author: Lewis and Loftus
+// ********************************************************************
+// Keyboard.java Author: Lewis and Loftus
 //
-//  Facilitates keyboard input by abstracting details about input
-//  parsing, conversions, and exception handling.
-//********************************************************************
+// Facilitates keyboard input by abstracting details about input
+// parsing, conversions, and exception handling.
+// ********************************************************************
 
 package keyboardinput;
 
@@ -65,8 +65,7 @@ public class Keyboard {
 
 	private static StringTokenizer reader;
 
-	private static BufferedReader in = new BufferedReader(
-			new InputStreamReader(System.in));
+	private static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
 	// -----------------------------------------------------------------
 	// Gets the next input token assuming it may be on subsequent
@@ -107,8 +106,7 @@ public class Keyboard {
 
 			while (token == null || ((delimiters.indexOf(token) >= 0) && skip)) {
 				while (!reader.hasMoreTokens())
-					reader = new StringTokenizer(in.readLine(), delimiters,
-							true);
+					reader = new StringTokenizer(in.readLine(), delimiters, true);
 
 				token = reader.nextToken();
 			}
@@ -127,7 +125,7 @@ public class Keyboard {
 		return !reader.hasMoreTokens();
 	}
 
-	// ************* Reading Section *********************************
+	// ************************ Reading Section ************************
 
 	// -----------------------------------------------------------------
 	// Returns a string read from standard input.
@@ -241,7 +239,7 @@ public class Keyboard {
 		String token = getNextToken();
 		float value;
 		try {
-			value = (new Float(token)).floatValue();
+			value = Float.parseFloat(token);
 		} catch (Exception exception) {
 			error("Error reading float data, NaN value returned.");
 			value = Float.NaN;
@@ -256,7 +254,7 @@ public class Keyboard {
 		String token = getNextToken();
 		double value;
 		try {
-			value = (new Double(token)).doubleValue();
+			value = Double.parseDouble(token);
 		} catch (Exception exception) {
 			error("Error reading double data, NaN value returned.");
 			value = Double.NaN;

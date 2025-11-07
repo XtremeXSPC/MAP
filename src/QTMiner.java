@@ -1,6 +1,6 @@
 /**
- * Classe che implementa l'algoritmo Quality Threshold per il clustering.
- * Versione ottimizzata con cache delle distanze.
+ * Classe che implementa l'algoritmo Quality Threshold per il clustering. Versione ottimizzata con
+ * cache delle distanze.
  */
 public class QTMiner {
     private ClusterSet C;
@@ -9,14 +9,14 @@ public class QTMiner {
     private DistanceCache distanceCache;
 
     /**
-     * Costruttore della classe QTMiner (backwards compatible).
-     * Disabilita caching di default (basato su risultati benchmark).
-     * Le ottimizzazioni strutturali (HashSet/ArrayList) sono sempre attive.
+     * Costruttore della classe QTMiner (backwards compatible). Disabilita caching di default
+     * (basato su risultati benchmark). Le ottimizzazioni strutturali (HashSet/ArrayList) sono
+     * sempre attive.
      *
      * @param radius raggio dei cluster
      */
     public QTMiner(double radius) {
-        this(radius, false);  // Caching disabilitato di default
+        this(radius, false); // Caching disabilitato di default
     }
 
     /**
@@ -50,8 +50,7 @@ public class QTMiner {
     }
 
     /**
-     * Esegue l'algoritmo QT per scoprire i cluster.
-     * Versione ottimizzata con cache distanze.
+     * Esegue l'algoritmo QT per scoprire i cluster. Versione ottimizzata con cache distanze.
      *
      * @param data insieme di dati
      * @return numero di cluster scoperti
@@ -90,8 +89,7 @@ public class QTMiner {
 
     /**
      * Costruisce un cluster candidato per ogni tupla non ancora clusterizzata e restituisce il
-     * cluster più popoloso.
-     * Versione ottimizzata con cache distanze.
+     * cluster più popoloso. Versione ottimizzata con cache distanze.
      *
      * @param data insieme di dati
      * @param isClustered informazione sullo stato di clusterizzazione delle tuple

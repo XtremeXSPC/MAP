@@ -11,9 +11,10 @@ public class TestWeatherMixedClustering {
 
             // Carica dataset
             Data weather = new Data("../data/weather_mixed.csv");
-            System.out.println("Dataset caricato: " + weather.getNumberOfExamples() + " tuple, " +
-                weather.getNumberOfExplanatoryAttributes() + " attributi");
-            System.out.println("  (2 continui: temperature, humidity + 3 discreti: outlook, wind, play)\n");
+            System.out.println("Dataset caricato: " + weather.getNumberOfExamples() + " tuple, "
+                    + weather.getNumberOfExplanatoryAttributes() + " attributi");
+            System.out.println(
+                    "  (2 continui: temperature, humidity + 3 discreti: outlook, wind, play)\n");
 
             // Test con diversi valori di radius
             double[] radiusValues = {0.3, 0.5, 0.7};
@@ -55,12 +56,17 @@ public class TestWeatherMixedClustering {
                         double hum = Double.parseDouble((String) weather.getValue(id, 2));
                         String play = (String) weather.getValue(id, 4);
 
-                        if (outlook.equals("sunny")) sunny++;
-                        else if (outlook.equals("overcast")) overcast++;
-                        else if (outlook.equals("rain")) rain++;
+                        if (outlook.equals("sunny"))
+                            sunny++;
+                        else if (outlook.equals("overcast"))
+                            overcast++;
+                        else if (outlook.equals("rain"))
+                            rain++;
 
-                        if (play.equals("yes")) playYes++;
-                        else playNo++;
+                        if (play.equals("yes"))
+                            playYes++;
+                        else
+                            playNo++;
 
                         sumTemp += temp;
                         sumHum += hum;
@@ -86,20 +92,22 @@ public class TestWeatherMixedClustering {
 
                     System.out.println("  Cluster " + (clusterNum++) + ":");
                     System.out.println("    Size: " + size);
-                    System.out.println("    Outlook dominante: " + dominantOutlook +
-                        " (sunny=" + sunny + ", overcast=" + overcast + ", rain=" + rain + ")");
-                    System.out.println("    Play dominante: " + dominantPlay +
-                        " (yes=" + playYes + ", no=" + playNo + ")");
-                    System.out.println("    Temperature media: " + String.format("%.1f", avgTemp) + "°C");
-                    System.out.println("    Humidity media: " + String.format("%.1f", avgHum) + "%");
+                    System.out.println("    Outlook dominante: " + dominantOutlook + " (sunny="
+                            + sunny + ", overcast=" + overcast + ", rain=" + rain + ")");
+                    System.out.println("    Play dominante: " + dominantPlay + " (yes=" + playYes
+                            + ", no=" + playNo + ")");
+                    System.out.println(
+                            "    Temperature media: " + String.format("%.1f", avgTemp) + "°C");
+                    System.out
+                            .println("    Humidity media: " + String.format("%.1f", avgHum) + "%");
 
                     // Mostra centroide
                     Tuple centroid = c.getCentroid();
-                    System.out.println("    Centroid: " + centroid.get(0).getValue() +
-                        ", " + String.format("%.1f", (Double)centroid.get(1).getValue()) + "°C" +
-                        ", " + String.format("%.1f", (Double)centroid.get(2).getValue()) + "%" +
-                        ", " + centroid.get(3).getValue() +
-                        ", " + centroid.get(4).getValue());
+                    System.out.println("    Centroid: " + centroid.get(0).getValue() + ", "
+                            + String.format("%.1f", (Double) centroid.get(1).getValue()) + "°C"
+                            + ", " + String.format("%.1f", (Double) centroid.get(2).getValue())
+                            + "%" + ", " + centroid.get(3).getValue() + ", "
+                            + centroid.get(4).getValue());
                     System.out.println();
                 }
 
@@ -112,10 +120,13 @@ public class TestWeatherMixedClustering {
             System.out.println("========================================\n");
 
             System.out.println("Osservazioni:");
-            System.out.println("- Il clustering combina correttamente attributi continui (temp, humidity)");
+            System.out.println(
+                    "- Il clustering combina correttamente attributi continui (temp, humidity)");
             System.out.println("  e discreti (outlook, wind, play)");
-            System.out.println("- Cluster con outlook simile e condizioni meteo simili vengono raggruppati");
-            System.out.println("- Temperature e humidity medie riflettono le condizioni del cluster");
+            System.out.println(
+                    "- Cluster con outlook simile e condizioni meteo simili vengono raggruppati");
+            System.out
+                    .println("- Temperature e humidity medie riflettono le condizioni del cluster");
             System.out.println();
             System.out.println("L'algoritmo QT con dataset misti funziona correttamente!");
 

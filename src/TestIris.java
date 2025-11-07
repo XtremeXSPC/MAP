@@ -28,8 +28,8 @@ public class TestIris {
                 if (attr instanceof ContinuousAttribute) {
                     ContinuousAttribute cattr = (ContinuousAttribute) attr;
                     double testValue = 5.0;
-                    System.out.println("     (scaled(5.0) = " +
-                        String.format("%.3f", cattr.getScaledValue(testValue)) + ")");
+                    System.out.println("     (scaled(5.0) = "
+                            + String.format("%.3f", cattr.getScaledValue(testValue)) + ")");
                 }
             }
             System.out.println();
@@ -39,9 +39,10 @@ public class TestIris {
             Tuple tuple = iris.getItemSet(0);
             for (int i = 0; i < tuple.getLength(); i++) {
                 Item item = tuple.get(i);
-                String itemType = item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
-                System.out.println("  " + attrs.get(i).getName() + " = " +
-                    item.getValue() + " [" + itemType + "]");
+                String itemType =
+                        item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
+                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue() + " ["
+                        + itemType + "]");
             }
             System.out.println();
 
@@ -65,9 +66,9 @@ public class TestIris {
 
             // Test distanza tra tuple
             System.out.println("Test distanze:");
-            Tuple t1 = iris.getItemSet(0);   // setosa
-            Tuple t2 = iris.getItemSet(1);   // setosa (simile)
-            Tuple t3 = iris.getItemSet(50);  // versicolor
+            Tuple t1 = iris.getItemSet(0); // setosa
+            Tuple t2 = iris.getItemSet(1); // setosa (simile)
+            Tuple t3 = iris.getItemSet(50); // versicolor
             Tuple t4 = iris.getItemSet(100); // virginica
 
             double d12 = t1.getDistance(t2);

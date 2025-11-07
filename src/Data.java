@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Classe che modella l'insieme di transazioni (tuple).
- * Usa LinkedList per explanatorySet come da specifica QT05.
+ * Classe che modella l'insieme di transazioni (tuple). Usa LinkedList per explanatorySet come da
+ * specifica QT05.
  */
 public class Data {
     private Object data[][];
@@ -161,11 +161,13 @@ public class Data {
     /**
      * Crea e restituisce un oggetto Tuple che modella la i-esima riga in data.
      *
-     * <p>Questo metodo gestisce sia attributi discreti che continui, creando
-     * il tipo appropriato di Item per ciascun attributo:</p>
+     * <p>
+     * Questo metodo gestisce sia attributi discreti che continui, creando il tipo appropriato di
+     * Item per ciascun attributo:
+     * </p>
      * <ul>
-     *   <li>DiscreteAttribute → DiscreteItem</li>
-     *   <li>ContinuousAttribute → ContinuousItem</li>
+     * <li>DiscreteAttribute → DiscreteItem</li>
+     * <li>ContinuousAttribute → ContinuousItem</li>
      * </ul>
      *
      * @param index indice di riga

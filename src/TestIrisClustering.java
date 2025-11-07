@@ -11,8 +11,8 @@ public class TestIrisClustering {
 
             // Carica dataset
             Data iris = new Data("../data/iris.csv");
-            System.out.println("Dataset caricato: " + iris.getNumberOfExamples() + " tuple, " +
-                iris.getNumberOfExplanatoryAttributes() + " attributi\n");
+            System.out.println("Dataset caricato: " + iris.getNumberOfExamples() + " tuple, "
+                    + iris.getNumberOfExplanatoryAttributes() + " attributi\n");
 
             // Test con diversi valori di radius
             double[] radiusValues = {0.2, 0.3, 0.5};
@@ -48,9 +48,12 @@ public class TestIrisClustering {
 
                     for (int id : tupleIds) {
                         String species = (String) iris.getValue(id, 4);
-                        if (species.equals("setosa")) setosa++;
-                        else if (species.equals("versicolor")) versicolor++;
-                        else if (species.equals("virginica")) virginica++;
+                        if (species.equals("setosa"))
+                            setosa++;
+                        else if (species.equals("versicolor"))
+                            versicolor++;
+                        else if (species.equals("virginica"))
+                            virginica++;
                     }
 
                     // Determina specie dominante
@@ -69,17 +72,18 @@ public class TestIrisClustering {
 
                     System.out.println("  Cluster " + (clusterNum++) + ":");
                     System.out.println("    Size: " + size);
-                    System.out.println("    Specie dominante: " + dominant + " (" +
-                        String.format("%.1f", purity) + "% purezza)");
-                    System.out.println("    Composizione: setosa=" + setosa +
-                        ", versicolor=" + versicolor + ", virginica=" + virginica);
+                    System.out.println("    Specie dominante: " + dominant + " ("
+                            + String.format("%.1f", purity) + "% purezza)");
+                    System.out.println("    Composizione: setosa=" + setosa + ", versicolor="
+                            + versicolor + ", virginica=" + virginica);
 
                     // Mostra centroide
                     Tuple centroid = c.getCentroid();
                     System.out.print("    Centroid: ");
                     for (int j = 0; j < 4; j++) {
                         System.out.print(centroid.get(j).getValue());
-                        if (j < 3) System.out.print(", ");
+                        if (j < 3)
+                            System.out.print(", ");
                     }
                     System.out.println(" [" + centroid.get(4).getValue() + "]");
                     System.out.println();
@@ -95,9 +99,12 @@ public class TestIrisClustering {
 
                     for (int id : tupleIds) {
                         String species = (String) iris.getValue(id, 4);
-                        if (species.equals("setosa")) setosa++;
-                        else if (species.equals("versicolor")) versicolor++;
-                        else if (species.equals("virginica")) virginica++;
+                        if (species.equals("setosa"))
+                            setosa++;
+                        else if (species.equals("versicolor"))
+                            versicolor++;
+                        else if (species.equals("virginica"))
+                            virginica++;
                     }
 
                     int maxCount = Math.max(setosa, Math.max(versicolor, virginica));
@@ -106,7 +113,8 @@ public class TestIrisClustering {
                 }
                 double avgPurity = totalPurity / totalPoints * 100;
 
-                System.out.println("Purezza media dei cluster: " + String.format("%.1f", avgPurity) + "%");
+                System.out.println(
+                        "Purezza media dei cluster: " + String.format("%.1f", avgPurity) + "%");
                 System.out.println();
             }
 

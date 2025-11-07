@@ -1,6 +1,6 @@
 /**
- * Test Sprint 5 - Contenitori, Iteratori, Comparatori (QT05)
- * Dimostra le nuove funzionalità implementate.
+ * Test Sprint 5 - Contenitori, Iteratori, Comparatori (QT05) Dimostra le nuove funzionalità
+ * implementate.
  */
 public class TestSprint5 {
     public static void main(String[] args) {
@@ -41,7 +41,8 @@ public class TestSprint5 {
             System.out.print(index++ + ":Tuple IDs: [");
             boolean first = true;
             for (Integer tupleId : cluster) {
-                if (!first) System.out.print(", ");
+                if (!first)
+                    System.out.print(", ");
                 System.out.print(tupleId);
                 first = false;
             }
@@ -59,7 +60,8 @@ public class TestSprint5 {
         System.out.print("  {");
         boolean first = true;
         for (String value : outlook) {
-            if (!first) System.out.print(", ");
+            if (!first)
+                System.out.print(", ");
             System.out.print(value);
             first = false;
         }

@@ -3,8 +3,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Classe che modella un cluster.
- * Implementa Iterable per supportare enhanced for-loop e Comparable per ordinamento automatico.
+ * Classe che modella un cluster. Implementa Iterable per supportare enhanced for-loop e Comparable
+ * per ordinamento automatico.
  */
 class Cluster implements Iterable<Integer>, Comparable<Cluster> {
     private Tuple centroid;
@@ -31,7 +31,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
 
     /**
      * Aggiunge una tupla al cluster.
-     * Ottimizzato: O(1) average invece di O(n) con ArraySet.
+     * 
+     * Ottimizzato: O(1) in media invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
      * @return true se la tupla è stata aggiunta (non era già presente)
@@ -42,7 +43,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
 
     /**
      * Verifica se una transazione è clusterizzata nel cluster corrente.
-     * Ottimizzato: O(1) average invece di O(n) con ArraySet.
+     * 
+     * Ottimizzato: O(1) in media invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
      * @return true se la tupla è nel cluster
@@ -53,7 +55,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
 
     /**
      * Rimuove una tupla dal cluster.
-     * Ottimizzato: O(1) average invece di O(n) con ArraySet.
+     * 
+     * Ottimizzato: O(1) in media invece di O(n) con ArraySet.
      *
      * @param id identificativo della tupla
      */
@@ -71,8 +74,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
     }
 
     /**
-     * Restituisce un array con gli identificativi delle tuple nel cluster.
-     * Converte Set in array ordinato.
+     * Restituisce un array con gli identificativi delle tuple nel cluster. Converte Set in array
+     * ordinato.
      *
      * @return array di identificativi ordinato
      */
@@ -88,8 +91,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
     }
 
     /**
-     * Restituisce un iteratore sugli identificativi delle tuple nel cluster.
-     * Implementazione del pattern Iterator per supportare enhanced for-loop.
+     * Restituisce un iteratore sugli identificativi delle tuple nel cluster. Implementazione del
+     * pattern Iterator per supportare enhanced for-loop.
      *
      * @return iteratore su tuple IDs
      */
@@ -99,15 +102,22 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
     }
 
     /**
-     * Confronta questo cluster con un altro in base alla popolosità (dimensione).
-     * Implementa l'interfaccia Comparable per ordinamento automatico in TreeSet.
+     * Confronta questo cluster con un altro in base alla popolosità (dimensione). Implementa
+     * l'interfaccia Comparable per ordinamento automatico in TreeSet.
      *
-     * <p>Ordine crescente: cluster più piccoli prima dei più grandi.</p>
-     * <p>In caso di parità di dimensione, viene utilizzato il confronto tra hashCode per garantire la consistenza dell'ordinamento.
-     * Questo non implica che i cluster siano considerati uguali, ma solo che l'ordinamento è deterministico.</p>
+     * <p>
+     * Ordine crescente: cluster più piccoli prima dei più grandi.
+     * </p>
+     * <p>
+     * In caso di parità di dimensione, viene utilizzato il confronto tra hashCode per garantire la
+     * consistenza dell'ordinamento. Questo non implica che i cluster siano considerati uguali, ma
+     * solo che l'ordinamento è deterministico.
+     * </p>
      *
      * @param other cluster da confrontare
-     * @return -1 se questo cluster è più piccolo, +1 se è più grande, oppure il risultato del confronto tra hashCode se le dimensioni sono uguali (0 solo se gli hashCode sono uguali)
+     * @return -1 se questo cluster è più piccolo, +1 se è più grande, oppure il risultato del
+     *         confronto tra hashCode se le dimensioni sono uguali (0 solo se gli hashCode sono
+     *         uguali)
      */
     @Override
     public int compareTo(Cluster other) {
@@ -119,9 +129,12 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
             // Stessa dimensione: confronta centroidi
             int centroidCmp;
             if (this.centroid instanceof Comparable && other.centroid instanceof Comparable) {
-                centroidCmp = ((Comparable) this.centroid).compareTo(other.centroid);
+                @SuppressWarnings("unchecked")
+                Comparable<Tuple> comparableCentroid = (Comparable<Tuple>) this.centroid;
+                centroidCmp = comparableCentroid.compareTo(other.centroid);
             } else {
-                centroidCmp = this.centroid.equals(other.centroid) ? 0 : this.centroid.hashCode() - other.centroid.hashCode();
+                centroidCmp = this.centroid.equals(other.centroid) ? 0
+                        : this.centroid.hashCode() - other.centroid.hashCode();
             }
             if (centroidCmp != 0) {
                 return centroidCmp;
@@ -167,7 +180,7 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
         for (int i = 0; i < centroid.getLength(); i++)
             str += centroid.get(i) + " ";
         str += ")\nExamples:\n";
-        int array[] = getTupleIDs();  // Converte Set → array ordinato
+        int array[] = getTupleIDs(); // Converte Set → array ordinato
         for (int i = 0; i < array.length; i++) {
             str += "[";
             for (int j = 0; j < data.getNumberOfExplanatoryAttributes(); j++)

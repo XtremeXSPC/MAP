@@ -4,8 +4,8 @@ import java.io.IOException;
 import keyboardinput.Keyboard;
 
 /**
- * Classe di test per l'algoritmo Quality Threshold con menu interattivo.
- * Utilizza la classe Keyboard per gestione robusta dell'input utente (QT03).
+ * Classe di test per l'algoritmo Quality Threshold con menu interattivo. Utilizza la classe
+ * Keyboard per gestione robusta dell'input utente (QT03).
  */
 public class MainTest {
 
@@ -102,10 +102,12 @@ public class MainTest {
                     System.out.print("    Valori: {");
                     int count = 0;
                     for (String value : dAttr) {
-                        if (count > 0) System.out.print(", ");
+                        if (count > 0)
+                            System.out.print(", ");
                         System.out.print(value);
                         count++;
-                        if (count >= 5) break; // Mostra max 5 valori
+                        if (count >= 5)
+                            break; // Mostra max 5 valori
                     }
                     if (dAttr.getNumberOfDistinctValues() > 5) {
                         System.out.print(", ...");
@@ -196,7 +198,8 @@ public class MainTest {
             risposta = risposta.trim().toLowerCase();
         }
 
-        if (risposta != null && (risposta.equals("s") || risposta.equals("si") || risposta.equals("yes"))) {
+        if (risposta != null
+                && (risposta.equals("s") || risposta.equals("si") || risposta.equals("yes"))) {
             System.out.print("Inserisci nome file output (es. clusters.dmp): ");
             String outputPath = Keyboard.readString().trim();
 
@@ -210,8 +213,8 @@ public class MainTest {
     }
 
     /**
-     * Legge un input intero dall'utente con validazione e range check.
-     * Utilizza la classe Keyboard per gestione robusta degli errori.
+     * Legge un input intero dall'utente con validazione e range check. Utilizza la classe Keyboard
+     * per gestione robusta degli errori.
      *
      * @param prompt messaggio da visualizzare
      * @param min valore minimo accettabile (incluso)
@@ -235,7 +238,8 @@ public class MainTest {
 
             // Controlla se è nel range valido
             if (value < min || value > max) {
-                System.out.println("✗ Errore: il valore deve essere compreso tra " + min + " e " + max + ".");
+                System.out.println(
+                        "✗ Errore: il valore deve essere compreso tra " + min + " e " + max + ".");
                 continue;
             }
 
@@ -245,9 +249,8 @@ public class MainTest {
     }
 
     /**
-     * Legge un input double positivo dall'utente con validazione.
-     * Utilizza la classe Keyboard per gestione robusta degli errori.
-     * Il valore deve essere strettamente maggiore di 0.
+     * Legge un input double positivo dall'utente con validazione. Utilizza la classe Keyboard per
+     * gestione robusta degli errori. Il valore deve essere strettamente maggiore di 0.
      *
      * @param prompt messaggio da visualizzare
      * @return numero double > 0
@@ -276,7 +279,9 @@ public class MainTest {
 
             // Controlla se è positivo (> 0)
             if (value <= 0) {
-                System.out.println("✗ Errore: il radius deve essere maggiore di 0 (valore inserito: " + value + ").");
+                System.out
+                        .println("✗ Errore: il radius deve essere maggiore di 0 (valore inserito: "
+                                + value + ").");
                 continue;
             }
 
