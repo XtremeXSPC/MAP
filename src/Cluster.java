@@ -115,8 +115,29 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster> {
         } else if (this.getSize() > other.getSize()) {
             return +1;
         } else {
-            // Stessa dimensione: usa hashCode per mantenere consistenza
-            return Integer.compare(this.hashCode(), other.hashCode());
+            // Stessa dimensione: confronta centroidi
+            int centroidCmp;
+            if (this.centroid instanceof Comparable && other.centroid instanceof Comparable) {
+                centroidCmp = ((Comparable) this.centroid).compareTo(other.centroid);
+            } else {
+                centroidCmp = this.centroid.equals(other.centroid) ? 0 : this.centroid.hashCode() - other.centroid.hashCode();
+            }
+            if (centroidCmp != 0) {
+                return centroidCmp;
+            }
+            // Centroidi uguali: confronta tuple IDs ordinati
+            int[] thisIDs = this.getTupleIDs();
+            int[] otherIDs = other.getTupleIDs();
+            java.util.Arrays.sort(thisIDs);
+            java.util.Arrays.sort(otherIDs);
+            int minLen = Math.min(thisIDs.length, otherIDs.length);
+            for (int i = 0; i < minLen; i++) {
+                if (thisIDs[i] != otherIDs[i]) {
+                    return Integer.compare(thisIDs[i], otherIDs[i]);
+                }
+            }
+            // Se tutte le tuple sono uguali, confronta lunghezza array
+            return Integer.compare(thisIDs.length, otherIDs.length);
         }
     }
 
