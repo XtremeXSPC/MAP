@@ -8,25 +8,29 @@
 
 ### Stato del Progetto
 
-| Sprint | Nome | Stato | Durata | Completamento |
-|--------|------|-------|--------|---------------|
-| Sprint 0 | Struttura Base | ✅ Completato | 1 settimana | 100% |
-| Sprint 1 | Algoritmo QT | ✅ Completato | 1 settimana | 100% |
-| Sprint 2 | Persistenza e I/O | ✅ Completato | 1 settimana | 100% |
-| Sprint 3 | Ottimizzazioni Performance | ✅ Completato | 2 settimane | 100% |
-| Sprint 4 | Supporto Attributi Continui | ✅ Completato | 1 settimana | 100% |
-| Sprint 5 | Interfaccia Grafica | 🔜 Pianificato | 2 settimane | 0% |
-| Sprint 6 | Metriche Qualità | 🔜 Pianificato | 1 settimana | 0% |
-| Sprint 7 | Database Integration (JDBC) | 🔜 Pianificato | 2 settimane | 0% |
-| Sprint 8 | Comunicazione Client-Server | 🔜 Pianificato | 2 settimane | 0% |
+| Sprint | Nome | QT Module | Stato | Durata | Completamento |
+|--------|------|-----------|-------|--------|---------------|
+| Sprint 0 | Struttura Base | QT01 | ✅ Completato | 1 settimana | 100% |
+| Sprint 1 | Algoritmo QT | QT01/QT02 | ✅ Completato | 1 settimana | 100% |
+| Sprint 2 | Persistenza e I/O | QT04 | ✅ Completato | 1 settimana | 100% |
+| Sprint 3 | Supporto Attributi Continui | - | ✅ Completato | 1 settimana | 100% |
+| Sprint 4 | Keyboard Input | QT03 | 🔴 In Corso | 1 settimana | 0% |
+| Sprint 5 | Contenitori e Iteratori | QT05 | 🔜 Pianificato | 1 settimana | 0% |
+| Sprint 6 | Generics e RTTI | QT06 | 🔜 Pianificato | 1 settimana | 0% |
+| Sprint 7 | Database Integration (JDBC) | QT07 | 🔜 Pianificato | 2 settimane | 0% |
+| Sprint 8 | Comunicazione Client-Server | QT08 | 🔜 Pianificato | 2 settimane | 0% |
+| Estensione | Interfaccia Grafica (GUI) | - | 🔜 Opzionale | 2 settimane | 0% |
+| Estensione | Ottimizzazioni Performance | - | 🔜 Opzionale | 2 settimane | 0% |
+| Estensione | Metriche Qualità | - | 🔜 Opzionale | 1 settimana | 0% |
 
 ### Timeline Stimata
-- **Fase 1 (Core):** Sprint 0-1 (✅ Completata)
-- **Fase 2 (Estensioni Base):** Sprint 2-3-4 (✅ Completata)
-- **Fase 3 (Interfacce):** Sprint 5-6 (🔜 3 settimane)
-- **Fase 4 (Integrazione):** Sprint 7-8 (🔜 4 settimane)
+- **Fase 1 (Core - Obbligatorio):** Sprint 0-3 (✅ Completata - QT01, QT02, QT04)
+- **Fase 2 (Requisiti Corso - Priorità Alta):** Sprint 4-6 (🔴 In Corso - QT03, QT05, QT06)
+- **Fase 3 (Integrazione - Requisiti Corso):** Sprint 7-8 (🔜 4 settimane - QT07, QT08)
+- **Fase 4 (Estensioni - Opzionale):** GUI, Ottimizzazioni, Metriche (🔜 5 settimane)
 
-**Durata Totale Stimata:** 12-14 settimane
+**Durata Totale Stimata (Core + Corso):** 10-12 settimane
+**Con Estensioni:** 15-17 settimane
 
 ---
 
@@ -202,11 +206,228 @@ tupleIDs=0
 
 ## 🔜 Sprint Pianificati
 
-### Sprint 3 - Ottimizzazioni Performance
+### 🔴 Sprint 4 - Keyboard Input (QT03)
+
+**Durata:** 1 settimana
+**Stato:** 🔴 In Corso (Priorità Massima)
+**QT Module:** QT03
+**Prerequisiti:** Sprint 1, 2
+**Documentazione:** `Project/QT03/Specifica_QT03_Package.pdf`
+
+#### Obiettivi
+Integrare la classe `Keyboard.java` per gestione robusta dell'input utente da tastiera, sostituendo gli input Scanner rudimentali con una soluzione enterprise-grade conforme alle specifiche del corso.
+
+#### Funzionalità da Implementare
+
+##### 1. Integrazione Classe Keyboard
+- ✅ Classe `Keyboard.java` già disponibile in `Project/QT03/keyboardinput/`
+- Copiare o importare package `keyboardinput` nel progetto src
+- Metodi disponibili:
+  - `readInt()`: Lettura interi con validazione
+  - `readDouble()`: Lettura double con validazione
+  - `readString()`: Lettura stringhe complete
+  - `readWord()`: Lettura parola singola
+  - `readChar()`: Lettura carattere
+  - `readBoolean()`: Lettura booleani
+
+##### 2. Refactoring MainTest
+- Sostituire tutti i `Scanner` con `Keyboard`
+- Aggiungere validazione input radius (> 0)
+- Aggiungere retry automatico per input invalidi
+- Migliorare messaggi di errore per l'utente
+
+##### 3. Menu Interattivo Avanzato
+- Loop menu principale con gestione errori
+- Validazione scelte utente
+- Gestione EOF (Ctrl+D) e errori input
+- Contatore errori con `Keyboard.getErrorCount()`
+
+##### 4. Gestione Errori Input
+- Try-catch per input malformati
+- Messaggi utente chiari e informativi
+- Retry automatico senza crash
+- Log errori per debugging
+
+#### Esempio Refactoring
+
+**Prima (Scanner):**
+```java
+Scanner scanner = new Scanner(System.in);
+System.out.print("Inserisci radius: ");
+double radius = scanner.nextDouble(); // Può crashare!
+```
+
+**Dopo (Keyboard):**
+```java
+import keyboardinput.Keyboard;
+
+double radius;
+do {
+    System.out.print("Inserisci radius (> 0): ");
+    radius = Keyboard.readDouble();
+    if (radius <= 0) {
+        System.out.println("Errore: radius deve essere > 0");
+    }
+} while (radius <= 0 || Double.isNaN(radius));
+```
+
+#### Classi da Modificare
+- `MainTest.java` - Refactoring completo input/output
+- Aggiungere package `keyboardinput/` al progetto
+
+#### Tecnologie
+- Java I/O (BufferedReader, StringTokenizer)
+- Exception handling robusto
+- Package import e gestione
+
+#### Risultati Attesi
+- ✅ Nessun crash per input malformati
+- ✅ Validazione automatica input
+- ✅ Messaggi errore user-friendly
+- ✅ Codice conforme a specifiche QT03
+
+#### Criteri di Successo
+- [ ] Package keyboardinput integrato
+- [ ] MainTest usa Keyboard invece di Scanner
+- [ ] Validazione input radius funzionante
+- [ ] Test con input invalidi (testo, negativi, zero)
+- [ ] Menu interattivo robusto
+- [ ] Nessun crash durante l'esecuzione
+
+#### Story Points Stimati: 8
+
+---
+
+### Sprint 5 - Contenitori, Iteratori, Comparatori (QT05)
+
+**Durata:** 1 settimana
+**Stato:** Pianificato
+**QT Module:** QT05
+**Prerequisiti:** Sprint 4
+**Documentazione:** `Project/QT05/Specifica_QT05_Contenitori-Iteratori-Comparatori.pdf`
+
+#### Obiettivi
+Implementare pattern Iterator per attraversamento cluster e Comparator per ordinamento cluster secondo diversi criteri (dimensione, distanza media, etc.).
+
+#### Funzionalità Pianificate
+
+##### 1. Pattern Iterator per Cluster
+- Implementare `Iterator<Integer>` in `Cluster`
+- Metodo `iterator()` restituisce iterator su tuple IDs
+- Supporto `hasNext()`, `next()`, `remove()` (optional)
+- Foreach loop su cluster: `for (int tupleId : cluster)`
+
+##### 2. Pattern Iterator per ClusterSet
+- Implementare `Iterable<Cluster>` in `ClusterSet`
+- Attraversamento cluster: `for (Cluster c : clusterSet)`
+- Supporto enhanced for-loop
+
+##### 3. Comparator per Cluster
+- `ClusterSizeComparator` - Ordina per dimensione
+- `ClusterDistanceComparator` - Ordina per distanza media
+- `ClusterCentroidComparator` - Ordina per centroide (lessicografico)
+
+##### 4. Sorting e Filtering
+- Metodo `ClusterSet.sort(Comparator<Cluster>)`
+- Metodo `ClusterSet.filter(Predicate<Cluster>)`
+- Esempio: Mostra solo cluster con size > 3
+
+#### Classi da Modificare/Creare
+- `Cluster` - Implementa `Iterable<Integer>`
+- `ClusterSet` - Implementa `Iterable<Cluster>`
+- `ClusterSizeComparator` (nuova)
+- `ClusterDistanceComparator` (nuova)
+- `MainTest` - Dimostra sorting e iterazione
+
+#### Esempio Utilizzo
+```java
+// Iterazione cluster
+for (Cluster cluster : clusterSet) {
+    System.out.println("Cluster size: " + cluster.getSize());
+    for (int tupleId : cluster) {
+        System.out.println("  Tuple " + tupleId);
+    }
+}
+
+// Sorting
+clusterSet.sort(new ClusterSizeComparator());
+System.out.println("Cluster ordinati per dimensione");
+```
+
+#### Criteri di Successo
+- [ ] Pattern Iterator implementato
+- [ ] Enhanced for-loop funzionante
+- [ ] Almeno 2 Comparator implementati
+- [ ] Sorting cluster dimostrato
+- [ ] Test con dataset multipli
+
+#### Story Points Stimati: 13
+
+---
+
+### Sprint 6 - Generics e RTTI (QT06)
+
+**Durata:** 1 settimana
+**Stato:** Pianificato
+**QT Module:** QT06
+**Prerequisiti:** Sprint 5
+**Documentazione:** `Project/QT06/Specifica_QT06_Generics-RTTI.pdf`
+
+#### Obiettivi
+Refactoring classi esistenti usando Java Generics per type safety e implementare Run-Time Type Information (RTTI) per gestione dinamica tipi attributi.
+
+#### Funzionalità Pianificate
+
+##### 1. Refactoring con Generics
+- `ArraySet<T>` invece di `ArraySet` (attualmente solo int)
+- `Cluster<T>` parametrizzato sul tipo tuple
+- `ClusterSet<T>` generico
+- Eliminare cast espliciti
+
+##### 2. RTTI per Attributi
+- Uso di `instanceof` per determinare tipo attributo runtime
+- `Class<?>` per reflection su Item types
+- Metodo `Attribute.getType(): Class<?>`
+- Dynamic dispatch basato su tipo
+
+##### 3. Type-Safe Collections
+- Sostituire array nativi con `ArrayList<T>`
+- Uso di `List<Tuple>`, `Set<Integer>`, `Map<String, Cluster>`
+- Type safety garantita dal compilatore
+
+##### 4. Wildcard e Bounds
+- Metodi con bounded wildcards: `<T extends Comparable<T>>`
+- Upper/lower bounds per flessibilità
+- Esempio: `public <T extends Number> void process(List<T> items)`
+
+#### Classi da Refactorare
+- `ArraySet` → `ArraySet<T>`
+- `Cluster` → `Cluster<T extends Tuple>`
+- `ClusterSet` → `ClusterSet<T>`
+- `Data` - Uso Generics per explanatorySet
+
+#### Vantaggi Attesi
+- Type safety a compile-time
+- Eliminazione cast espliciti
+- Codice più manutenibile e leggibile
+- Migliore integrazione con Collections Framework
+
+#### Criteri di Successo
+- [ ] Almeno 3 classi refactorate con Generics
+- [ ] Zero warning "unchecked" dal compilatore
+- [ ] RTTI dimostrato con instanceof
+- [ ] Test regressione passati
+- [ ] Documentazione Generics aggiornata
+
+#### Story Points Stimati: 13
+
+---
+
+### Sprint 3 (Opzionale) - Ottimizzazioni Performance
 
 **Durata:** 2 settimane
-**Stato:** Pianificato
-**Priorità:** 🔴 Alta
+**Stato:** Pianificato (Estensione)
+**Priorità:** 🟢 Bassa (Dopo Sprint 8)
 **Prerequisiti:** Sprint 1, 2
 
 #### Obiettivi
@@ -260,13 +481,13 @@ Ottimizzare l'algoritmo QT per gestire dataset più grandi (> 1000 tuple) miglio
 
 ---
 
-### ✅ Sprint 4 - Supporto Attributi Continui
+### ✅ Sprint 3 - Supporto Attributi Continui
 
 **Durata:** 1 settimana
 **Stato:** ✅ Completato
 **Priorità:** 🟡 Media
 **Prerequisiti:** Sprint 0, 1
-**Documentazione:** [`docs/sprints/SPRINT_4.md`](sprints/SPRINT_4.md)
+**Documentazione:** [`docs/sprints/SPRINT_3.md`](sprints/SPRINT_3.md) (ex SPRINT_4.md)
 
 #### Obiettivi
 Estendere il sistema per supportare attributi numerici/continui usando distanza Euclidea.
@@ -349,15 +570,15 @@ dove:
 
 ---
 
-### Sprint 5 - Interfaccia Grafica (GUI)
+### Estensione - Interfaccia Grafica (GUI)
 
 **Durata:** 2 settimane
-**Stato:** Pianificato
-**Priorità:** 🟡 Media
-**Prerequisiti:** Sprint 1, 2
+**Stato:** Pianificato (Estensione Opzionale)
+**Priorità:** 🟢 Bassa (Dopo Sprint 8)
+**Prerequisiti:** Sprint 1, 2, 4
 
 #### Obiettivi
-Creare un'interfaccia grafica Swing per input parametri e visualizzazione cluster.
+Creare un'interfaccia grafica Swing per input parametri e visualizzazione cluster come estensione del progetto.
 
 #### Funzionalità Pianificate
 
@@ -432,15 +653,15 @@ Creare un'interfaccia grafica Swing per input parametri e visualizzazione cluste
 
 ---
 
-### Sprint 6 - Metriche Qualità Clustering
+### Estensione - Metriche Qualità Clustering
 
 **Durata:** 1 settimana
-**Stato:** Pianificato
-**Priorità:** 🟡 Media
-**Prerequisiti:** Sprint 1
+**Stato:** Pianificato (Estensione Opzionale)
+**Priorità:** 🟢 Bassa (Dopo Sprint 8)
+**Prerequisiti:** Sprint 1, 3
 
 #### Obiettivi
-Implementare metriche standard per valutare la qualità del clustering e confrontare con altri algoritmi.
+Implementare metriche standard per valutare la qualità del clustering e confrontare con altri algoritmi come estensione del progetto.
 
 #### Metriche da Implementare
 
@@ -515,15 +736,17 @@ Runtime (ms):       120     85
 
 ---
 
-### Sprint 7 - Database Integration (JDBC)
+### Sprint 7 - Database Integration (JDBC) - QT07
 
 **Durata:** 2 settimane
 **Stato:** Pianificato
-**Priorità:** 🟢 Bassa
-**Prerequisiti:** Sprint 1, 2
+**QT Module:** QT07
+**Priorità:** 🟡 Alta (Requisito Corso)
+**Prerequisiti:** Sprint 2, 4
+**Riferimento:** `Project/QT07/JDBC/`
 
 #### Obiettivi
-Integrare supporto per database relazionali usando JDBC per lettura dati e salvataggio risultati.
+Integrare supporto per database relazionali usando JDBC per lettura dati e salvataggio risultati, seguendo le specifiche del modulo QT07 del corso.
 
 #### Funzionalità Pianificate
 
@@ -606,15 +829,17 @@ repo.saveClusters(qt.getC(), data);
 
 ---
 
-### Sprint 8 - Comunicazione Client-Server (Socket)
+### Sprint 8 - Comunicazione Client-Server (Socket) - QT08
 
 **Durata:** 2 settimane
 **Stato:** Pianificato
-**Priorità:** 🟢 Bassa
-**Prerequisiti:** Sprint 1, 2
+**QT Module:** QT08
+**Priorità:** 🟡 Alta (Requisito Corso)
+**Prerequisiti:** Sprint 2, 4, 7
+**Riferimento:** `Project/QT08/Socket/MainTest.java`
 
 #### Obiettivi
-Implementare architettura client-server per clustering distribuito usando Socket Java.
+Implementare architettura client-server per clustering distribuito usando Socket Java, seguendo le specifiche del modulo QT08 del corso. Il client deve usare la classe Keyboard per input robusto.
 
 #### Architettura Pianificata
 
@@ -738,136 +963,197 @@ Disconnected from server
 
 ## 📈 Diagramma Dipendenze Sprint
 
+### Percorso Obbligatorio (Requisiti Corso)
 ```
-Sprint 0 (Base)
+Sprint 0 (Base - QT01)
    │
-   ├──► Sprint 1 (Algoritmo QT)
+   ├──► Sprint 1 (Algoritmo QT - QT01/QT02)
    │       │
-   │       ├──► Sprint 2 (Persistenza I/O)
+   │       ├──► Sprint 2 (Persistenza I/O - QT04)
    │       │       │
-   │       │       ├──► Sprint 3 (Ottimizzazioni)
-   │       │       │       │
-   │       │       │       └──► Sprint 7 (JDBC)
+   │       │       ├──► Sprint 3 (Attributi Continui)
    │       │       │
-   │       │       ├──► Sprint 5 (GUI)
-   │       │       │
-   │       │       └──► Sprint 8 (Client-Server)
-   │       │
-   │       ├──► Sprint 4 (Attributi Continui)
-   │       │
-   │       └──► Sprint 6 (Metriche Qualità)
+   │       │       └──► Sprint 4 (Keyboard Input - QT03) ← 🔴 IN CORSO
+   │       │               │
+   │       │               ├──► Sprint 5 (Iteratori - QT05)
+   │       │               │       │
+   │       │               │       └──► Sprint 6 (Generics - QT06)
+   │       │               │
+   │       │               └──► Sprint 7 (JDBC - QT07)
+   │       │                       │
+   │       │                       └──► Sprint 8 (Socket - QT08)
+```
+
+### Percorso Estensioni (Opzionali)
+```
+Sprint 8 (completato)
    │
-   └──► Sprint 4 (Attributi Continui)
+   ├──► Estensione: GUI
+   │
+   ├──► Estensione: Ottimizzazioni Performance
+   │
+   └──► Estensione: Metriche Qualità
 ```
 
 ### Legenda:
-- **Sprint 0-1:** Core (prerequisiti per tutto)
-- **Sprint 2:** Abilitatore per Sprint 3, 5, 7, 8
-- **Sprint 3-4-6:** Possono procedere in parallelo dopo Sprint 1
-- **Sprint 5-7-8:** Richiedono Sprint 2
+- **🔴 Sprint 4:** Priorità massima attuale (QT03 - Keyboard)
+- **🟡 Sprint 5-8:** Requisiti corso (QT05, QT06, QT07, QT08)
+- **🟢 Estensioni:** Opzionali dopo completamento corso
+- **✅ Sprint 0-3:** Completati
 
 ---
 
 ## 🎯 Priorità e Raccomandazioni
 
-### Percorso Consigliato
+### 🎓 Percorso Consigliato per Corso MAP
 
-#### Fase 1: Fondamentali (4 settimane)
-1. ✅ Sprint 0 - Struttura Base
-2. ✅ Sprint 1 - Algoritmo QT
-3. **Sprint 2 - Persistenza I/O** ← Prossimo
-4. **Sprint 4 - Attributi Continui**
+#### Fase 1: Core Obbligatorio ✅ COMPLETATA
+1. ✅ Sprint 0 - Struttura Base (QT01)
+2. ✅ Sprint 1 - Algoritmo QT (QT01/QT02)
+3. ✅ Sprint 2 - Persistenza I/O (QT04 Eccezioni)
+4. ✅ Sprint 3 - Attributi Continui (Estensione funzionale)
 
-**Rationale:** Completare funzionalità core prima di interfacce e integrazioni
+**Completamento:** 100% (4/4 sprint)
 
-#### Fase 2: Miglioramenti (3 settimane)
-5. **Sprint 3 - Ottimizzazioni Performance**
-6. **Sprint 6 - Metriche Qualità**
+#### Fase 2: Requisiti Corso Intermedi 🔴 IN CORSO
+5. 🔴 **Sprint 4 - Keyboard Input (QT03)** ← ATTUALE
+6. 🟡 Sprint 5 - Iteratori e Comparatori (QT05)
+7. 🟡 Sprint 6 - Generics e RTTI (QT06)
 
-**Rationale:** Migliorare qualità e performance algoritmo
+**Completamento:** 0% (0/3 sprint)
+**Durata stimata:** 3 settimane
 
-#### Fase 3: Interfacce (4 settimane)
-7. **Sprint 5 - GUI**
-8. **Sprint 7 - JDBC** o **Sprint 8 - Client-Server**
+#### Fase 3: Requisiti Corso Avanzati 🔜 PIANIFICATO
+8. 🟡 Sprint 7 - JDBC (QT07)
+9. 🟡 Sprint 8 - Socket Client-Server (QT08)
 
-**Rationale:** Aggiungere interfacce utente e integrazioni esterne
+**Completamento:** 0% (0/2 sprint)
+**Durata stimata:** 4 settimane
 
-### Priorità per Ambito Accademico
+#### Fase 4: Estensioni Opzionali 🟢 OPZIONALE
+- Interfaccia Grafica (GUI)
+- Ottimizzazioni Performance
+- Metriche Qualità Clustering
 
-**Obbligatori:**
-- ✅ Sprint 0 - Struttura Base
-- ✅ Sprint 1 - Algoritmo QT
-- 🔴 Sprint 2 - Persistenza I/O
+**Durata stimata:** 5 settimane (se tutte implementate)
 
-**Fortemente Raccomandati:**
-- 🟡 Sprint 4 - Attributi Continui
-- 🟡 Sprint 6 - Metriche Qualità
+---
 
-**Opzionali/Bonus:**
-- 🟢 Sprint 3 - Ottimizzazioni
-- 🟢 Sprint 5 - GUI
-- 🟢 Sprint 7 - JDBC
-- 🟢 Sprint 8 - Client-Server
+### 📋 Priorità per Ambito Accademico
 
-### Priorità per Progetto Reale
+#### 🔴 Obbligatori per Corso (Priorità Massima)
+- ✅ Sprint 0-3: Base, Algoritmo, Persistenza, Attributi
+- 🔴 **Sprint 4: Keyboard Input (QT03)** ← IN CORSO
+- 🟡 Sprint 5: Iteratori/Comparatori (QT05)
+- 🟡 Sprint 6: Generics/RTTI (QT06)
+- 🟡 Sprint 7: JDBC (QT07)
+- 🟡 Sprint 8: Socket (QT08)
 
-**Must-Have:**
-- ✅ Sprint 0-1
-- 🔴 Sprint 2 - Persistenza I/O
-- 🔴 Sprint 3 - Ottimizzazioni Performance
-- 🔴 Sprint 6 - Metriche Qualità
+**Rationale:** Questi sprint coprono tutti i moduli QT del corso (QT01-QT08)
 
-**Should-Have:**
-- 🟡 Sprint 4 - Attributi Continui
-- 🟡 Sprint 5 - GUI
+#### 🟢 Opzionali/Bonus (Dopo completamento corso)
+- GUI (interfaccia grafica)
+- Ottimizzazioni Performance (dataset grandi)
+- Metriche Qualità (comparazione algoritmi)
 
-**Nice-to-Have:**
-- 🟢 Sprint 7 - JDBC
-- 🟢 Sprint 8 - Client-Server
+**Rationale:** Estensioni utili ma non richieste dal corso
+
+---
+
+### 🚀 Ordine di Implementazione Raccomandato
+
+```
+ADESSO:
+  └─ Sprint 4 (QT03 - Keyboard) ← 🔴 INIZIA QUI
+
+POI:
+  ├─ Sprint 5 (QT05 - Iteratori)
+  └─ Sprint 6 (QT06 - Generics)
+
+INFINE:
+  ├─ Sprint 7 (QT07 - JDBC)
+  └─ Sprint 8 (QT08 - Socket)
+
+OPZIONALE:
+  ├─ GUI
+  ├─ Ottimizzazioni
+  └─ Metriche
+```
+
+**Nota:** Sprint 7 e 8 possono essere implementati in parallelo da team diversi se necessario.
 
 ---
 
 ## 📊 Metriche Complessive Progetto
 
 ### Story Points Totali
-| Fase | Sprint | Story Points | Percentuale |
-|------|--------|--------------|-------------|
-| Core | 0 | 22 | 15.3% |
-| Core | 1 | 18 | 12.5% |
-| Estensioni | 2 | 13 | 9.0% |
-| Estensioni | 3 | 21 | 14.6% |
-| Estensioni | 4 | 13 | 9.0% |
-| Interfacce | 5 | 21 | 14.6% |
-| Interfacce | 6 | 13 | 9.0% |
-| Integrazione | 7 | 21 | 14.6% |
-| Integrazione | 8 | 21 | 14.6% |
-| **TOTALE** | | **144** | **100%** |
+
+#### Sprint Obbligatori (Corso)
+| Sprint | Nome | QT Module | Story Points | Stato |
+|--------|------|-----------|--------------|-------|
+| 0 | Struttura Base | QT01 | 22 | ✅ Completato |
+| 1 | Algoritmo QT | QT01/02 | 18 | ✅ Completato |
+| 2 | Persistenza I/O | QT04 | 13 | ✅ Completato |
+| 3 | Attributi Continui | - | 13 | ✅ Completato |
+| 4 | Keyboard Input | QT03 | 8 | 🔴 In Corso |
+| 5 | Iteratori/Comparatori | QT05 | 13 | 🔜 Pianificato |
+| 6 | Generics/RTTI | QT06 | 13 | 🔜 Pianificato |
+| 7 | JDBC | QT07 | 21 | 🔜 Pianificato |
+| 8 | Socket | QT08 | 21 | 🔜 Pianificato |
+| **Subtotale Corso** | | | **142** | **28% completato** |
+
+#### Sprint Opzionali (Estensioni)
+| Estensione | Story Points | Priorità |
+|------------|--------------|----------|
+| GUI | 21 | 🟢 Bassa |
+| Ottimizzazioni | 21 | 🟢 Bassa |
+| Metriche Qualità | 13 | 🟢 Bassa |
+| **Subtotale Estensioni** | **55** | |
+
+**TOTALE PROGETTO:** 197 Story Points
 
 ### Classi Implementate/Pianificate
-- **Attualmente:** 12 classi (Sprint 0-1)
-- **Sprint 2-4:** +8 classi
-- **Sprint 5-8:** +15 classi
-- **Totale previsto:** ~35 classi
+- **✅ Completate (Sprint 0-3):** 15 classi principali + 3 eccezioni + 6 test = 24 file
+- **🔴 Sprint 4 (QT03):** +1 package (Keyboard.java)
+- **🔜 Sprint 5-6:** +5 classi (Iterators, Comparators, Generics refactoring)
+- **🔜 Sprint 7-8:** +10 classi (JDBC, Socket, Server/Client)
+- **🟢 Estensioni:** +15 classi (GUI, metriche, ottimizzazioni)
+- **Totale previsto:** ~55 classi/file
 
-### Linee di Codice Stimate
-- **Attualmente:** ~900 LOC
-- **Fine Fase 2:** ~2,500 LOC
-- **Fine Progetto:** ~5,000 LOC
+### Linee di Codice (LOC)
+- **✅ Attualmente (Sprint 0-3):** ~2,850 LOC
+- **🔴 Fine Sprint 4:** ~3,000 LOC
+- **🔜 Fine Sprint 5-6:** ~3,500 LOC
+- **🔜 Fine Sprint 7-8:** ~5,000 LOC
+- **🟢 Con Estensioni:** ~7,500 LOC
+
+### Completamento Progetto
+```
+Corso (Obbligatorio):    ████░░░░░░░░░░░░ 28% (4/9 sprint)
+Estensioni (Opzionale):  ░░░░░░░░░░░░░░░░  0% (0/3 sprint)
+```
+
+**Tempo rimanente stimato:**
+- Completamento corso: 7 settimane (5 sprint)
+- Con estensioni: 12 settimane totali
 
 ---
 
 ## 🛠️ Strumenti e Tecnologie per Sprint
 
-| Sprint | Tecnologie Principali | Librerie/Framework |
-|--------|----------------------|-------------------|
-| 0-1 | Java vanilla, OOP | Nessuna |
-| 2 | Java I/O, Serialization | org.json, Gson (opt) |
-| 3 | Multithreading, Collections | Java ExecutorService |
-| 4 | Math, Statistics | Apache Commons Math (opt) |
-| 5 | Swing, JavaFX | JFreeChart, Java2D |
-| 6 | Statistics | Apache Commons Math |
-| 7 | JDBC, SQL | HikariCP, MySQL Connector |
-| 8 | Socket, Networking | Netty (opt) |
+| Sprint | Nome | QT Module | Tecnologie Principali | Librerie |
+|--------|------|-----------|----------------------|----------|
+| 0-1 | Base + Algoritmo | QT01/02 | Java vanilla, OOP | Nessuna |
+| 2 | Persistenza I/O | QT04 | Java I/O, Exceptions | Nessuna |
+| 3 | Attributi Continui | - | Math, Statistics | Nessuna |
+| 4 | Keyboard Input | QT03 | BufferedReader, StringTokenizer | keyboardinput package |
+| 5 | Iteratori/Comparatori | QT05 | Iterator, Iterable, Comparator | Java Collections |
+| 6 | Generics/RTTI | QT06 | Generics, Reflection, instanceof | Nessuna |
+| 7 | JDBC | QT07 | JDBC, SQL, Connection Pooling | MySQL/PostgreSQL Connector |
+| 8 | Socket | QT08 | Socket, ServerSocket, ObjectStreams | Nessuna |
+| GUI | Estensione | - | Swing, JavaFX (opt) | JFreeChart |
+| Ottimizzazioni | Estensione | - | Multithreading, Collections | ExecutorService |
+| Metriche | Estensione | - | Statistics | Apache Commons Math (opt) |
 
 ---
 
@@ -986,16 +1272,29 @@ git push
 |------|----------|-----------|
 | 2025-11-06 | 1.0 | Creazione roadmap completa Sprint 0-8 |
 | 2025-11-07 | 1.1 | Sprint 2 completato, Sprint 3 in corso |
-| 2025-11-07 | 1.2 | Sprint 3 e Sprint 4 completati |
+| 2025-11-07 | 1.2 | Sprint 3 e Sprint 4 (Attributi Continui) completati |
+| 2025-11-07 | 2.0 | **MAJOR UPDATE**: Allineamento completo alle specifiche del corso<br>- Riorganizzati sprint per riflettere moduli QT01-QT08<br>- Sprint 4 rinominato a Sprint 3 (Attributi Continui)<br>- Nuovo Sprint 4: Keyboard Input (QT03) - PRIORITÀ MASSIMA<br>- Sprint 5: Contenitori/Iteratori (QT05)<br>- Sprint 6: Generics/RTTI (QT06)<br>- Sprint 7-8: JDBC e Socket (QT07-QT08)<br>- GUI, Ottimizzazioni, Metriche → Estensioni opzionali<br>- Aggiornate dipendenze e priorità<br>- Focus su requisiti corso invece di estensioni |
 
 ---
 
 **Fine Roadmap**
 
 Per dettagli implementativi di ogni sprint, consultare:
-- [`docs/sprints/SPRINT_0.md`](sprints/SPRINT_0.md) - Struttura Base
-- [`docs/sprints/SPRINT_1.md`](sprints/SPRINT_1.md) - Algoritmo QT
-- [`docs/sprints/SPRINT_2.md`](sprints/SPRINT_2.md) - Persistenza e I/O
-- [`docs/sprints/SPRINT_3.md`](sprints/SPRINT_3.md) - Ottimizzazioni Performance
-- [`docs/sprints/SPRINT_4.md`](sprints/SPRINT_4.md) - Supporto Attributi Continui
-- Sprint futuri: Da creare al momento dell'implementazione
+- [`docs/sprints/SPRINT_0.md`](sprints/SPRINT_0.md) - Struttura Base (QT01)
+- [`docs/sprints/SPRINT_1.md`](sprints/SPRINT_1.md) - Algoritmo QT (QT01/QT02)
+- [`docs/sprints/SPRINT_2.md`](sprints/SPRINT_2.md) - Persistenza e I/O (QT04 Eccezioni)
+- [`docs/sprints/SPRINT_3.md`](sprints/SPRINT_3.md) - Supporto Attributi Continui (ex SPRINT_4.md)
+- Sprint 4-8: Da creare al momento dell'implementazione
+  - Sprint 4: Keyboard Input (QT03)
+  - Sprint 5: Contenitori/Iteratori (QT05)
+  - Sprint 6: Generics/RTTI (QT06)
+  - Sprint 7: JDBC (QT07)
+  - Sprint 8: Socket (QT08)
+
+Per riferimenti alle specifiche del corso:
+- `Project/QT03/Specifica_QT03_Package.pdf`
+- `Project/QT04/Specifica_QT04_Eccezioni.pdf`
+- `Project/QT05/Specifica_QT05_Contenitori-Iteratori-Comparatori.pdf`
+- `Project/QT06/Specifica_QT06_Generics-RTTI.pdf`
+- `Project/QT07/JDBC/` - Esempi codice JDBC
+- `Project/QT08/Socket/` - Esempi codice Socket
