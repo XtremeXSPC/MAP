@@ -28,6 +28,9 @@ public class ContinuousAttribute extends Attribute {
      * @return valore scalato
      */
     public double getScaledValue(double v) {
+        if (max == min) {
+            return 0.0;
+        }
         return (v - min) / (max - min);
     }
 }
