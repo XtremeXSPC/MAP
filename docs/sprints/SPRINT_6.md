@@ -337,9 +337,7 @@ if (attr instanceof DiscreteAttribute) {
 
 **Vantaggi:**
 - Type checking dinamico a runtime
-- Gestione polimorf
-
-a di attributi misti
+- Gestione polimorfa di attributi misti
 - Supporto dataset eterogenei (discreti + continui)
 
 ### 3. **Template Method (già presente)**
