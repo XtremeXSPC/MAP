@@ -58,9 +58,9 @@ public class Example implements Comparable<Example> {
      * @return stringa con tutti i valori separati da spazio
      */
     public String toString() {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         for (Object o : example)
-            str += o.toString() + " ";
-        return str;
+            str.append(o.toString()).append(" ");
+        return str.toString();
     }
 }
