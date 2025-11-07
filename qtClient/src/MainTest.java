@@ -108,7 +108,7 @@ public class MainTest {
 
 	public static void main(String[] args) {
 		String ip = args[0];
-		int port = new Integer(args[1]).intValue();
+		int port = Integer.parseInt(args[1]);
 		MainTest main = null;
 		try {
 			main = new MainTest(ip, port);
