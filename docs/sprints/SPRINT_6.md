@@ -1,7 +1,7 @@
 # Sprint 6 - Generics e RTTI (QT06)
 
 **Durata:** 1 settimana
-**Stato:** [x] Completato
+**Stato:** ✓ Completato
 **QT Module:** QT06
 **Data Completamento:** 2025-11-07
 **Prerequisiti:** Sprint 5 (Iteratori e Comparatori)

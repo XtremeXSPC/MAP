@@ -2,7 +2,7 @@
 
 > **Modulo Corso:** QT03 - Package keyboardinput
 > **Durata:** 1 settimana
-> **Stato:** [x] Completato
+> **Stato:** ✓ Completato
 > **Data Completamento:** 2025-11-07
 
 ---

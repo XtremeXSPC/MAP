@@ -1,7 +1,7 @@
 # Sprint 8 - Client-Server Communication (Socket) - QT08
 
 **Durata:** 2 settimane
-**Stato:** [x] Completato
+**Stato:** ✓ Completato
 **QT Module:** QT08
 **Data Completamento:** 2025-11-07
 **Prerequisiti:** Sprint 7 (Database Integration)
@@ -708,12 +708,12 @@ public class ServerException extends IOException {
 
 ### Tabella Comandi
 
-| Comando | Nome | Client → Server | Server → Client | Descrizione |
-|---------|------|-----------------|-----------------|-------------|
-| **0** | Load Table | `0` (Integer)<br>`tableName` (String) | `"OK"` or `"ERROR: ..."` | Carica tabella da database MySQL |
-| **1** | Clustering | `1` (Integer)<br>`radius` (Double) | `"OK"` or `"ERROR: ..."`<br>+ `numClusters` (Integer)<br>+ `clusterSet` (String) | Esegue clustering su dati caricati |
-| **2** | Save Clusters | `2` (Integer) | `"OK"` or `"ERROR: ..."` | Salva cluster su file .dmp |
-| **3** | All-in-One | `3` (Integer)<br>`tableName` (String)<br>`radius` (Double) | `"OK"` or `"ERROR: ..."`<br>+ `clusterSet` (String) | Load + Clustering + Save |
+| Comando | Nome          | Client → Server                                            | Server → Client                                                                  | Descrizione                        |
+| ------- | ------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------- |
+| **0**   | Load Table    | `0` (Integer)<br>`tableName` (String)                      | `"OK"` or `"ERROR: ..."`                                                         | Carica tabella da database MySQL   |
+| **1**   | Clustering    | `1` (Integer)<br>`radius` (Double)                         | `"OK"` or `"ERROR: ..."`<br>+ `numClusters` (Integer)<br>+ `clusterSet` (String) | Esegue clustering su dati caricati |
+| **2**   | Save Clusters | `2` (Integer)                                              | `"OK"` or `"ERROR: ..."`                                                         | Salva cluster su file .dmp         |
+| **3**   | All-in-One    | `3` (Integer)<br>`tableName` (String)<br>`radius` (Double) | `"OK"` or `"ERROR: ..."`<br>+ `clusterSet` (String)                              | Load + Clustering + Save           |
 
 ### Diagrammi di Sequenza
 
@@ -1070,15 +1070,15 @@ docs/sprints/SPRINT_8.md  (+1200 LOC)
 
 ### Differenze tra Sprint 7 e Sprint 8
 
-| Aspetto | Sprint 7 (Standalone) | Sprint 8 (Client-Server) |
-|---------|----------------------|-------------------------|
-| **Architettura** | Monolitica | Distribuita (2 processi) |
-| **Esecuzione** | `java MainTest` | Server + Client separati |
-| **Input dati** | Locale (file/DB) | Remoto via socket |
-| **Clustering** | Locale | Server-side |
-| **Comunicazione** | N/A | ObjectInputStream/Output |
-| **Threading** | Single-thread | Multi-thread (thread-per-client) |
-| **Eccezioni** | Locali | Propagate via ServerException |
+| Aspetto           | Sprint 7 (Standalone) | Sprint 8 (Client-Server)         |
+| ----------------- | --------------------- | -------------------------------- |
+| **Architettura**  | Monolitica            | Distribuita (2 processi)         |
+| **Esecuzione**    | `java MainTest`       | Server + Client separati         |
+| **Input dati**    | Locale (file/DB)      | Remoto via socket                |
+| **Clustering**    | Locale                | Server-side                      |
+| **Comunicazione** | N/A                   | ObjectInputStream/Output         |
+| **Threading**     | Single-thread         | Multi-thread (thread-per-client) |
+| **Eccezioni**     | Locali                | Propagate via ServerException    |
 
 ### Package Subdivision
 

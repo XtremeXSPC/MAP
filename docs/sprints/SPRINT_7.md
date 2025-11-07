@@ -1,7 +1,7 @@
 # Sprint 7 - Database Integration (JDBC) - QT07
 
 **Durata:** 2 settimane
-**Stato:** [x] Completato
+**Stato:** ✓ Completato
 **QT Module:** QT07
 **Data Completamento:** 2025-11-07
 **Prerequisiti:** Sprint 2 (Persistenza), Sprint 4 (Keyboard Input)
@@ -98,10 +98,10 @@ Ricava schema di una tabella usando DatabaseMetaData.
 
 **Mapping tipi SQL → Java:**
 
-| SQL Type | Java Type |
-|----------|-----------|
-| VARCHAR, CHAR, LONGVARCHAR, BIT | string |
-| INT, SHORT, LONG, FLOAT, DOUBLE | number |
+| SQL Type                        | Java Type |
+| ------------------------------- | --------- |
+| VARCHAR, CHAR, LONGVARCHAR, BIT | string    |
+| INT, SHORT, LONG, FLOAT, DOUBLE | number    |
 
 **Costruttore:**
 ```java
@@ -186,17 +186,17 @@ public void closeConnection()
 
 Tutte le classi coinvolte nella serializzazione ora implementano `Serializable`:
 
-| Classe | Tipo | File |
-|--------|------|------|
-| ClusterSet | public | ClusterSet.java |
-| Cluster | package-private | Cluster.java |
-| Tuple | public | Tuple.java |
-| Item | abstract | Item.java |
-| DiscreteItem | public | DiscreteItem.java |
-| ContinuousItem | public | ContinuousItem.java |
-| Attribute | abstract | Attribute.java |
-| DiscreteAttribute | public | DiscreteAttribute.java |
-| ContinuousAttribute | public | ContinuousAttribute.java |
+| Classe              | Tipo            | File                     |
+| ------------------- | --------------- | ------------------------ |
+| ClusterSet          | public          | ClusterSet.java          |
+| Cluster             | package-private | Cluster.java             |
+| Tuple               | public          | Tuple.java               |
+| Item                | abstract        | Item.java                |
+| DiscreteItem        | public          | DiscreteItem.java        |
+| ContinuousItem      | public          | ContinuousItem.java      |
+| Attribute           | abstract        | Attribute.java           |
+| DiscreteAttribute   | public          | DiscreteAttribute.java   |
+| ContinuousAttribute | public          | ContinuousAttribute.java |
 
 **Esempio modifica:**
 ```java
@@ -356,14 +356,14 @@ qt.salva("radius2");  // Salva in radius2.dmp
 
 #### 4.3 Differenza con ClusterSet.save()
 
-| Aspetto | ClusterSet.save() (QT04) | QTMiner.salva() (QT07) |
-|---------|-------------------------|------------------------|
-| **Formato** | Testuale (.dmp) | Binario (.dmp) |
-| **Metodo** | BufferedWriter | ObjectOutputStream |
-| **Leggibilità** | Human-readable | Binario |
-| **Metadati** | timestamp, radius | Solo oggetto |
-| **Velocità** | Lento | Veloce |
-| **Dimensione** | Grande | Compatto |
+| Aspetto         | ClusterSet.save() (QT04) | QTMiner.salva() (QT07) |
+| --------------- | ------------------------ | ---------------------- |
+| **Formato**     | Testuale (.dmp)          | Binario (.dmp)         |
+| **Metodo**      | BufferedWriter           | ObjectOutputStream     |
+| **Leggibilità** | Human-readable           | Binario                |
+| **Metadati**    | timestamp, radius        | Solo oggetto           |
+| **Velocità**    | Lento                    | Veloce                 |
+| **Dimensione**  | Grande                   | Compatto               |
 
 **Entrambi convivono:** Il progetto supporta sia serializzazione testuale che binaria.
 
@@ -649,13 +649,13 @@ docs/sprints/SPRINT_7.md  (+850 LOC)
 
 ### Differenze Dataset Hardcoded vs Database
 
-| Aspetto | Hardcoded (Sprint 0-6) | Database (Sprint 7) |
-|---------|------------------------|---------------------|
-| **Temperature** | Discreto: cool/hot/mild | Continuo: Float 0-30.3 |
-| **Struttura** | Object[][] (rigido) | List<Example> (flessibile) |
-| **Caricamento** | Hardcoded nel costruttore | Query SQL SELECT |
-| **Schema** | Predefinito | Inferito da DatabaseMetaData |
-| **Item Types** | DiscreteItem prevalente | DiscreteItem + ContinuousItem |
+| Aspetto         | Hardcoded (Sprint 0-6)    | Database (Sprint 7)           |
+| --------------- | ------------------------- | ----------------------------- |
+| **Temperature** | Discreto: cool/hot/mild   | Continuo: Float 0-30.3        |
+| **Struttura**   | Object[][] (rigido)       | List<Example> (flessibile)    |
+| **Caricamento** | Hardcoded nel costruttore | Query SQL SELECT              |
+| **Schema**      | Predefinito               | Inferito da DatabaseMetaData  |
+| **Item Types**  | DiscreteItem prevalente   | DiscreteItem + ContinuousItem |
 
 ### Gestione Tipo Attributi
 

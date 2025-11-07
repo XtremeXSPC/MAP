@@ -1,7 +1,7 @@
 # Sprint 5 - Contenitori, Iteratori, Comparatori (QT05)
 
 **Durata:** 1 settimana
-**Stato:** [x] Completato
+**Stato:** ✓ Completato
 **QT Module:** QT05
 **Data Completamento:** 2025-11-07
 **Prerequisiti:** Sprint 4 (Keyboard Input)
