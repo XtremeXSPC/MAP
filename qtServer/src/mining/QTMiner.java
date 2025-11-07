@@ -5,8 +5,9 @@ import data.*;
 import database.*;
 
 /**
- * Classe che implementa l'algoritmo Quality Threshold per il clustering. Versione ottimizzata con
- * cache delle distanze. Supporta serializzazione e de-serializzazione dei cluster (QT07).
+ * Classe che implementa l'algoritmo Quality Threshold per il clustering. Versione
+ * ottimizzata con cache delle distanze. Supporta serializzazione e de-serializzazione dei
+ * cluster (QT07).
  */
 public class QTMiner {
     private ClusterSet C;
@@ -38,16 +39,15 @@ public class QTMiner {
     }
 
     /**
-     * Costruttore che carica cluster da file serializzato (QT07).
-     * De-serializza l'oggetto ClusterSet da file binario.
+     * Costruttore che carica cluster da file serializzato (QT07). De-serializza l'oggetto
+     * ClusterSet da file binario.
      *
      * @param fileName percorso + nome file (senza estensione .dmp)
      * @throws FileNotFoundException se il file non esiste
      * @throws IOException se si verificano errori di I/O
      * @throws ClassNotFoundException se la classe serializzata non è trovata
      */
-    public QTMiner(String fileName)
-            throws FileNotFoundException, IOException, ClassNotFoundException {
+    public QTMiner(String fileName) throws FileNotFoundException, IOException, ClassNotFoundException {
         FileInputStream fileIn = new FileInputStream(fileName + ".dmp");
         ObjectInputStream in = new ObjectInputStream(fileIn);
         C = (ClusterSet) in.readObject();
@@ -116,8 +116,8 @@ public class QTMiner {
     }
 
     /**
-     * Salva i cluster in un file binario serializzato (QT07).
-     * Serializza l'oggetto ClusterSet in formato .dmp.
+     * Salva i cluster in un file binario serializzato (QT07). Serializza l'oggetto ClusterSet
+     * in formato .dmp.
      *
      * @param fileName percorso + nome file (senza estensione .dmp)
      * @throws FileNotFoundException se il percorso non è valido
@@ -133,8 +133,8 @@ public class QTMiner {
     }
 
     /**
-     * Costruisce un cluster candidato per ogni tupla non ancora clusterizzata e restituisce il
-     * cluster più popoloso. Versione ottimizzata con cache distanze.
+     * Costruisce un cluster candidato per ogni tupla non ancora clusterizzata e restituisce
+     * il cluster più popoloso. Versione ottimizzata con cache distanze.
      *
      * @param data insieme di dati
      * @param isClustered informazione sullo stato di clusterizzazione delle tuple

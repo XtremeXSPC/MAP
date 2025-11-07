@@ -11,10 +11,10 @@ import database.*;
 import mining.*;
 
 /**
- * Thread dedicato alla gestione di un singolo client (QT08).
- * Gestisce il protocollo di comunicazione e le richieste QT.
+ * Thread dedicato alla gestione di un singolo client (QT08). Gestisce il protocollo di
+ * comunicazione e le richieste QT.
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class ServerOneClient extends Thread {
@@ -23,9 +23,9 @@ public class ServerOneClient extends Thread {
     private ObjectOutputStream out;
 
     // Stato sessione
-    private Data data;                  // Dataset corrente
-    private mining.QTMiner qtMiner;     // Ultimo clustering
-    private String currentTableName;    // Nome tabella caricata
+    private Data data; // Dataset corrente
+    private mining.QTMiner qtMiner; // Ultimo clustering
+    private String currentTableName; // Nome tabella caricata
 
     /**
      * Costruttore del gestore client.
@@ -47,8 +47,7 @@ public class ServerOneClient extends Thread {
     }
 
     /**
-     * Ciclo principale di gestione richieste client.
-     * Override del metodo run() di Thread.
+     * Ciclo principale di gestione richieste client. Override del metodo run() di Thread.
      */
     @Override
     public void run() {
@@ -90,15 +89,17 @@ public class ServerOneClient extends Thread {
             System.out.println("[" + clientAddress + "] Disconnessione client");
 
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("[" + clientAddress + "] Errore comunicazione: "
-                             + e.getMessage());
+            System.err.println("[" + clientAddress + "] Errore comunicazione: " + e.getMessage());
 
         } finally {
             // Chiudi risorse
             try {
-                if (in != null) in.close();
-                if (out != null) out.close();
-                if (socket != null) socket.close();
+                if (in != null)
+                    in.close();
+                if (out != null)
+                    out.close();
+                if (socket != null)
+                    socket.close();
             } catch (IOException e) {
                 System.err.println("Errore chiusura connessione: " + e.getMessage());
             }
@@ -110,9 +111,7 @@ public class ServerOneClient extends Thread {
     /**
      * COMANDO 0: Carica tabella da database.
      *
-     * Protocollo:
-     *   IN:  tableName (String)
-     *   OUT: "OK" oppure messaggio errore
+     * Protocollo: IN: tableName (String) OUT: "OK" oppure messaggio errore
      */
     private void handleStoreTable() throws IOException, ClassNotFoundException {
         try {
@@ -127,9 +126,8 @@ public class ServerOneClient extends Thread {
             // Reset clustering precedente
             qtMiner = null;
 
-            System.out.println("  ✓ Tabella caricata: " + data.getNumberOfExamples()
-                             + " esempi, " + data.getNumberOfExplanatoryAttributes()
-                             + " attributi");
+            System.out.println("  ✓ Tabella caricata: " + data.getNumberOfExamples() + " esempi, "
+                    + data.getNumberOfExplanatoryAttributes() + " attributi");
 
             // Risposta positiva
             out.writeObject("OK");
@@ -159,10 +157,8 @@ public class ServerOneClient extends Thread {
     /**
      * COMANDO 1: Esegue clustering su tabella caricata.
      *
-     * Protocollo:
-     *   IN:  radius (Double)
-     *   OUT: "OK" + numClusters (Integer) + clusterSetString (String)
-     *        oppure messaggio errore
+     * Protocollo: IN: radius (Double) OUT: "OK" + numClusters (Integer) + clusterSetString
+     * (String) oppure messaggio errore
      */
     private void handleLearnFromTable() throws IOException, ClassNotFoundException {
         try {
@@ -203,9 +199,7 @@ public class ServerOneClient extends Thread {
     /**
      * COMANDO 2: Serializza cluster su file.
      *
-     * Protocollo:
-     *   IN:  nessuno (usa stato interno)
-     *   OUT: "OK" oppure messaggio errore
+     * Protocollo: IN: nessuno (usa stato interno) OUT: "OK" oppure messaggio errore
      */
     private void handleStoreClusters() throws IOException {
         try {
@@ -216,8 +210,7 @@ public class ServerOneClient extends Thread {
             }
 
             // Genera nome file
-            String timestamp = LocalDateTime.now().format(
-                DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String fileName = currentTableName + "_" + timestamp;
 
             System.out.println("  → Salvataggio cluster in: " + fileName + ".dmp");
@@ -245,10 +238,8 @@ public class ServerOneClient extends Thread {
     /**
      * COMANDO 3: Operazione completa (carica + clustering + salva).
      *
-     * Protocollo:
-     *   IN:  tableName (String) + radius (Double)
-     *   OUT: "OK" + clusterSetString (String)
-     *        oppure messaggio errore
+     * Protocollo: IN: tableName (String) + radius (Double) OUT: "OK" + clusterSetString
+     * (String) oppure messaggio errore
      */
     private void handleLearnFromFile() throws IOException, ClassNotFoundException {
         try {
@@ -256,24 +247,20 @@ public class ServerOneClient extends Thread {
             String tableName = (String) in.readObject();
             Double radius = (Double) in.readObject();
 
-            System.out.println("  → Operazione completa: tabella=" + tableName
-                             + ", radius=" + radius);
+            System.out.println("  → Operazione completa: tabella=" + tableName + ", radius=" + radius);
 
             // 1. Carica tabella
             data = new Data(tableName, true);
             currentTableName = tableName;
-            System.out.println("    [1/3] Tabella caricata: " + data.getNumberOfExamples()
-                             + " esempi");
+            System.out.println("    [1/3] Tabella caricata: " + data.getNumberOfExamples() + " esempi");
 
             // 2. Clustering
             qtMiner = new mining.QTMiner(radius);
             int numClusters = qtMiner.compute(data);
-            System.out.println("    [2/3] Clustering completato: " + numClusters
-                             + " cluster");
+            System.out.println("    [2/3] Clustering completato: " + numClusters + " cluster");
 
             // 3. Serializza
-            String timestamp = LocalDateTime.now().format(
-                DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String fileName = tableName + "_" + timestamp;
             qtMiner.salva(fileName);
             System.out.println("    [3/3] Cluster salvati in: " + fileName + ".dmp");
@@ -284,8 +271,7 @@ public class ServerOneClient extends Thread {
 
             System.out.println("  ✓ Operazione completata");
 
-        } catch (SQLException | EmptySetException | DatabaseConnectionException
-                 | NoValueException e) {
+        } catch (SQLException | EmptySetException | DatabaseConnectionException | NoValueException e) {
             String errorMsg = "Errore: " + e.getMessage();
             System.err.println("  ✗ " + errorMsg);
             out.writeObject(errorMsg);

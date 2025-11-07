@@ -2,7 +2,6 @@ package data;
 
 import database.*;
 import exceptions.InvalidDataFormatException;
-import data.*;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,8 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Classe che modella l'insieme di transazioni (tuple).
- * Supporta caricamento da: hardcoded data, file CSV, database MySQL.
+ * Classe che modella l'insieme di transazioni (tuple). Supporta caricamento da: hardcoded
+ * data, file CSV, database MySQL.
  */
 public class Data {
     private List<Example> data;
@@ -28,20 +27,20 @@ public class Data {
         data = new ArrayList<>();
 
         // Popolamento dei dati PlayTennis (QT06 format: Temperature continuo)
-        data.add(createExample(new Object[] {"sunny", 30.3, "high", "weak", "no"}));
-        data.add(createExample(new Object[] {"sunny", 30.3, "high", "strong", "no"}));
-        data.add(createExample(new Object[] {"overcast", 30.0, "high", "weak", "yes"}));
-        data.add(createExample(new Object[] {"rain", 13.0, "high", "weak", "yes"}));
-        data.add(createExample(new Object[] {"rain", 0.0, "normal", "weak", "yes"}));
-        data.add(createExample(new Object[] {"rain", 0.0, "normal", "strong", "no"}));
-        data.add(createExample(new Object[] {"overcast", 0.1, "normal", "strong", "yes"}));
-        data.add(createExample(new Object[] {"sunny", 13.0, "high", "weak", "no"}));
-        data.add(createExample(new Object[] {"sunny", 0.1, "normal", "weak", "yes"}));
-        data.add(createExample(new Object[] {"rain", 12.0, "normal", "weak", "yes"}));
-        data.add(createExample(new Object[] {"sunny", 12.5, "normal", "strong", "yes"}));
-        data.add(createExample(new Object[] {"overcast", 12.5, "high", "strong", "yes"}));
-        data.add(createExample(new Object[] {"overcast", 29.21, "normal", "weak", "yes"}));
-        data.add(createExample(new Object[] {"rain", 12.5, "high", "strong", "no"}));
+        data.add(createExample(new Object[] { "sunny", 30.3, "high", "weak", "no" }));
+        data.add(createExample(new Object[] { "sunny", 30.3, "high", "strong", "no" }));
+        data.add(createExample(new Object[] { "overcast", 30.0, "high", "weak", "yes" }));
+        data.add(createExample(new Object[] { "rain", 13.0, "high", "weak", "yes" }));
+        data.add(createExample(new Object[] { "rain", 0.0, "normal", "weak", "yes" }));
+        data.add(createExample(new Object[] { "rain", 0.0, "normal", "strong", "no" }));
+        data.add(createExample(new Object[] { "overcast", 0.1, "normal", "strong", "yes" }));
+        data.add(createExample(new Object[] { "sunny", 13.0, "high", "weak", "no" }));
+        data.add(createExample(new Object[] { "sunny", 0.1, "normal", "weak", "yes" }));
+        data.add(createExample(new Object[] { "rain", 12.0, "normal", "weak", "yes" }));
+        data.add(createExample(new Object[] { "sunny", 12.5, "normal", "strong", "yes" }));
+        data.add(createExample(new Object[] { "overcast", 12.5, "high", "strong", "yes" }));
+        data.add(createExample(new Object[] { "overcast", 29.21, "normal", "weak", "yes" }));
+        data.add(createExample(new Object[] { "rain", 12.5, "high", "strong", "no" }));
 
         numberOfExamples = data.size();
 
@@ -49,22 +48,22 @@ public class Data {
         explanatorySet = new LinkedList<>();
 
         // Outlook attribute
-        String[] outLookValues = new String[] {"overcast", "rain", "sunny"};
+        String[] outLookValues = new String[] { "overcast", "rain", "sunny" };
         explanatorySet.add(new DiscreteAttribute("Outlook", 0, outLookValues));
 
         // Temperature attribute (QT06: ora continuo)
         explanatorySet.add(new ContinuousAttribute("Temperature", 1, 3.2, 38.7));
 
         // Humidity attribute
-        String[] humidityValues = new String[] {"high", "normal"};
+        String[] humidityValues = new String[] { "high", "normal" };
         explanatorySet.add(new DiscreteAttribute("Humidity", 2, humidityValues));
 
         // Wind attribute
-        String[] windValues = new String[] {"strong", "weak"};
+        String[] windValues = new String[] { "strong", "weak" };
         explanatorySet.add(new DiscreteAttribute("Wind", 3, windValues));
 
         // PlayTennis attribute
-        String[] playTennisValues = new String[] {"no", "yes"};
+        String[] playTennisValues = new String[] { "no", "yes" };
         explanatorySet.add(new DiscreteAttribute("PlayTennis", 4, playTennisValues));
     }
 
@@ -233,8 +232,8 @@ public class Data {
      * Crea e restituisce un oggetto Tuple che modella la i-esima riga in data.
      *
      * <p>
-     * Questo metodo gestisce sia attributi discreti che continui, creando il tipo appropriato di
-     * Item per ciascun attributo:
+     * Questo metodo gestisce sia attributi discreti che continui, creando il tipo appropriato
+     * di Item per ciascun attributo:
      * </p>
      * <ul>
      * <li>DiscreteAttribute → DiscreteItem</li>
@@ -262,11 +261,7 @@ public class Data {
 
                 // Gestione conversione: String → Double o già Double
                 if (value instanceof String) {
-                    try {
-                        numValue = Double.parseDouble((String) value);
-                    } catch (NumberFormatException e) {
-                        throw new InvalidDataFormatException("Cannot parse value '" + value + "' as Double at row " + index + ", column " + i, e);
-                    }
+                    numValue = Double.parseDouble((String) value);
                 } else if (value instanceof Float) {
                     numValue = ((Float) value).doubleValue();
                 } else {
@@ -334,8 +329,9 @@ public class Data {
 
                 // Validazione numero colonne
                 if (values.length != headers.length) {
-                    throw new InvalidDataFormatException("Numero colonne inconsistente: atteso "
-                            + headers.length + ", trovato " + values.length, lineNumber);
+                    throw new InvalidDataFormatException(
+                            "Numero colonne inconsistente: atteso " + headers.length + ", trovato " + values.length,
+                            lineNumber);
                 }
 
                 rows.add(values);
@@ -377,8 +373,8 @@ public class Data {
     }
 
     /**
-     * Inferisce il tipo di un attributo dai suoi valori. Se tutti i valori sono numerici, crea
-     * ContinuousAttribute, altrimenti crea DiscreteAttribute.
+     * Inferisce il tipo di un attributo dai suoi valori. Se tutti i valori sono numerici,
+     * crea ContinuousAttribute, altrimenti crea DiscreteAttribute.
      *
      * @param name nome dell'attributo
      * @param index indice dell'attributo

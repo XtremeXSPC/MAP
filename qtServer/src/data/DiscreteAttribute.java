@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Classe che modella un attributo discreto (categorico). Implementa Iterable per iterazione sui
- * valori distinti (ordinati alfabeticamente).
+ * Classe che modella un attributo discreto (categorico). Implementa Iterable per
+ * iterazione sui valori distinti (ordinati alfabeticamente).
  */
 public class DiscreteAttribute extends Attribute implements Iterable<String> {
     private Set<String> values;

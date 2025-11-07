@@ -4,10 +4,10 @@ package data;
  * Classe che modella un item continuo (coppia attributo continuo-valore numerico).
  *
  * <p>
- * Questa classe estende {@link Item} per gestire attributi con valori numerici continui. La
- * distanza tra due valori continui è calcolata usando la distanza Euclidea normalizzata, che
- * produce un valore nell'intervallo [0, 1] compatibile con la distanza di Hamming utilizzata per
- * gli attributi discreti.
+ * Questa classe estende {@link Item} per gestire attributi con valori numerici continui.
+ * La distanza tra due valori continui è calcolata usando la distanza Euclidea
+ * normalizzata, che produce un valore nell'intervallo [0, 1] compatibile con la distanza
+ * di Hamming utilizzata per gli attributi discreti.
  * </p>
  *
  * <h3>Formula Distanza:</h3>
@@ -45,8 +45,8 @@ public class ContinuousItem extends Item {
      *
      * <p>
      * Crea un item continuo con l'attributo e il valore specificati. Il valore deve essere un
-     * numero nell'intervallo [min, max] dell'attributo, altrimenti la normalizzazione potrebbe
-     * produrre risultati fuori range [0, 1].
+     * numero nell'intervallo [min, max] dell'attributo, altrimenti la normalizzazione
+     * potrebbe produrre risultati fuori range [0, 1].
      * </p>
      *
      * @param attribute attributo continuo associato all'item
@@ -58,13 +58,14 @@ public class ContinuousItem extends Item {
     }
 
     /**
-     * Calcola la distanza Euclidea normalizzata tra il valore dell'item corrente e un altro valore
-     * numerico.
+     * Calcola la distanza Euclidea normalizzata tra il valore dell'item corrente e un altro
+     * valore numerico.
      *
      * <p>
      * La distanza è calcolata come il valore assoluto della differenza tra i due valori
-     * normalizzati nell'intervallo [0, 1] usando min-max scaling. Questo garantisce che la distanza
-     * sia compatibile con la distanza di Hamming (0 o 1) usata per gli attributi discreti.
+     * normalizzati nell'intervallo [0, 1] usando min-max scaling. Questo garantisce che la
+     * distanza sia compatibile con la distanza di Hamming (0 o 1) usata per gli attributi
+     * discreti.
      * </p>
      *
      * <h3>Algoritmo:</h3>

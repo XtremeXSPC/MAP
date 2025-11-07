@@ -1,5 +1,12 @@
+package tests;
+
 import java.io.IOException;
+import data.Data;
+import data.Tuple;
 import exceptions.InvalidDataFormatException;
+import mining.Cluster;
+import mining.ClusterSet;
+import mining.QTMiner;
 
 /**
  * Test clustering con dataset Weather Mixed usando diversi valori di radius.
@@ -13,11 +20,10 @@ public class TestWeatherMixedClustering {
             Data weather = new Data("../data/weather_mixed.csv");
             System.out.println("Dataset caricato: " + weather.getNumberOfExamples() + " tuple, "
                     + weather.getNumberOfExplanatoryAttributes() + " attributi");
-            System.out.println(
-                    "  (2 continui: temperature, humidity + 3 discreti: outlook, wind, play)\n");
+            System.out.println("  (2 continui: temperature, humidity + 3 discreti: outlook, wind, play)\n");
 
             // Test con diversi valori di radius
-            double[] radiusValues = {0.3, 0.5, 0.7};
+            double[] radiusValues = { 0.3, 0.5, 0.7 };
 
             for (double radius : radiusValues) {
                 System.out.println("========================================");
@@ -92,22 +98,19 @@ public class TestWeatherMixedClustering {
 
                     System.out.println("  Cluster " + (clusterNum++) + ":");
                     System.out.println("    Size: " + size);
-                    System.out.println("    Outlook dominante: " + dominantOutlook + " (sunny="
-                            + sunny + ", overcast=" + overcast + ", rain=" + rain + ")");
-                    System.out.println("    Play dominante: " + dominantPlay + " (yes=" + playYes
-                            + ", no=" + playNo + ")");
+                    System.out.println("    Outlook dominante: " + dominantOutlook + " (sunny=" + sunny + ", overcast="
+                            + overcast + ", rain=" + rain + ")");
                     System.out.println(
-                            "    Temperature media: " + String.format("%.1f", avgTemp) + "°C");
-                    System.out
-                            .println("    Humidity media: " + String.format("%.1f", avgHum) + "%");
+                            "    Play dominante: " + dominantPlay + " (yes=" + playYes + ", no=" + playNo + ")");
+                    System.out.println("    Temperature media: " + String.format("%.1f", avgTemp) + "°C");
+                    System.out.println("    Humidity media: " + String.format("%.1f", avgHum) + "%");
 
                     // Mostra centroide
                     Tuple centroid = c.getCentroid();
                     System.out.println("    Centroid: " + centroid.get(0).getValue() + ", "
-                            + String.format("%.1f", (Double) centroid.get(1).getValue()) + "°C"
-                            + ", " + String.format("%.1f", (Double) centroid.get(2).getValue())
-                            + "%" + ", " + centroid.get(3).getValue() + ", "
-                            + centroid.get(4).getValue());
+                            + String.format("%.1f", (Double) centroid.get(1).getValue()) + "°C" + ", "
+                            + String.format("%.1f", (Double) centroid.get(2).getValue()) + "%" + ", "
+                            + centroid.get(3).getValue() + ", " + centroid.get(4).getValue());
                     System.out.println();
                 }
 
@@ -120,13 +123,10 @@ public class TestWeatherMixedClustering {
             System.out.println("========================================\n");
 
             System.out.println("Osservazioni:");
-            System.out.println(
-                    "- Il clustering combina correttamente attributi continui (temp, humidity)");
+            System.out.println("- Il clustering combina correttamente attributi continui (temp, humidity)");
             System.out.println("  e discreti (outlook, wind, play)");
-            System.out.println(
-                    "- Cluster con outlook simile e condizioni meteo simili vengono raggruppati");
-            System.out
-                    .println("- Temperature e humidity medie riflettono le condizioni del cluster");
+            System.out.println("- Cluster con outlook simile e condizioni meteo simili vengono raggruppati");
+            System.out.println("- Temperature e humidity medie riflettono le condizioni del cluster");
             System.out.println();
             System.out.println("L'algoritmo QT con dataset misti funziona correttamente!");
 

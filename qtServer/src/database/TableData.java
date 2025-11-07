@@ -10,9 +10,8 @@ import java.util.TreeSet;
 import database.TableSchema.Column;
 
 /**
- * Classe per l'accesso ai dati di una tabella del database.
- * Fornisce metodi per estrarre transazioni distinte, valori distinti di colonne
- * e valori aggregati (MIN, MAX).
+ * Classe per l'accesso ai dati di una tabella del database. Fornisce metodi per estrarre
+ * transazioni distinte, valori distinti di colonne e valori aggregati (MIN, MAX).
  *
  * @author MAP corso
  * @version 1.0

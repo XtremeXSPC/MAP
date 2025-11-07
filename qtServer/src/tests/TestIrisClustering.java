@@ -1,5 +1,12 @@
+package tests;
+
 import java.io.IOException;
+import data.Data;
+import data.Tuple;
 import exceptions.InvalidDataFormatException;
+import mining.Cluster;
+import mining.ClusterSet;
+import mining.QTMiner;
 
 /**
  * Test clustering con dataset Iris usando diversi valori di radius.
@@ -15,7 +22,7 @@ public class TestIrisClustering {
                     + iris.getNumberOfExplanatoryAttributes() + " attributi\n");
 
             // Test con diversi valori di radius
-            double[] radiusValues = {0.2, 0.3, 0.5};
+            double[] radiusValues = { 0.2, 0.3, 0.5 };
 
             for (double radius : radiusValues) {
                 System.out.println("========================================");
@@ -72,10 +79,10 @@ public class TestIrisClustering {
 
                     System.out.println("  Cluster " + (clusterNum++) + ":");
                     System.out.println("    Size: " + size);
-                    System.out.println("    Specie dominante: " + dominant + " ("
-                            + String.format("%.1f", purity) + "% purezza)");
-                    System.out.println("    Composizione: setosa=" + setosa + ", versicolor="
-                            + versicolor + ", virginica=" + virginica);
+                    System.out.println(
+                            "    Specie dominante: " + dominant + " (" + String.format("%.1f", purity) + "% purezza)");
+                    System.out.println("    Composizione: setosa=" + setosa + ", versicolor=" + versicolor
+                            + ", virginica=" + virginica);
 
                     // Mostra centroide
                     Tuple centroid = c.getCentroid();
@@ -113,8 +120,7 @@ public class TestIrisClustering {
                 }
                 double avgPurity = totalPurity / totalPoints * 100;
 
-                System.out.println(
-                        "Purezza media dei cluster: " + String.format("%.1f", avgPurity) + "%");
+                System.out.println("Purezza media dei cluster: " + String.format("%.1f", avgPurity) + "%");
                 System.out.println();
             }
 

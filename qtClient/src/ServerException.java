@@ -1,8 +1,8 @@
 import java.io.IOException;
 
 /**
- * Eccezione sollevata dal server e propagata al client (QT08).
- * Incapsula errori lato server (DB, clustering, I/O).
+ * Eccezione sollevata dal server e propagata al client (QT08). Incapsula errori lato
+ * server (DB, clustering, I/O).
  *
  * @author MAP corso
  * @version 1.0

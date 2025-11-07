@@ -3,8 +3,8 @@ package data;
 import java.io.Serializable;
 
 /**
- * Classe astratta che modella un attributo generico.
- * Implementa Serializable per permettere la serializzazione binaria.
+ * Classe astratta che modella un attributo generico. Implementa Serializable per
+ * permettere la serializzazione binaria.
  */
 public abstract class Attribute implements Serializable {
     private String name;

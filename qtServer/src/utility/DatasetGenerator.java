@@ -1,3 +1,5 @@
+package utility;
+
 import java.io.*;
 import java.util.Random;
 
@@ -7,11 +9,11 @@ import java.util.Random;
  */
 public class DatasetGenerator {
 
-    private static final String[] CATEGORIES_A = {"A1", "A2", "A3", "A4", "A5"};
-    private static final String[] CATEGORIES_B = {"B1", "B2", "B3"};
-    private static final String[] CATEGORIES_C = {"C1", "C2", "C3", "C4"};
-    private static final String[] CATEGORIES_D = {"D1", "D2"};
-    private static final String[] CATEGORIES_E = {"yes", "no"};
+    private static final String[] CATEGORIES_A = { "A1", "A2", "A3", "A4", "A5" };
+    private static final String[] CATEGORIES_B = { "B1", "B2", "B3" };
+    private static final String[] CATEGORIES_C = { "C1", "C2", "C3", "C4" };
+    private static final String[] CATEGORIES_D = { "D1", "D2" };
+    private static final String[] CATEGORIES_E = { "yes", "no" };
 
     /**
      * Genera dataset sintetico con parametri specificati.
@@ -21,8 +23,7 @@ public class DatasetGenerator {
      * @param numAttributes numero attributi
      * @param seed seed random per riproducibilità
      */
-    public static void generateDataset(String filename, int numTuples, int numAttributes,
-            long seed) {
+    public static void generateDataset(String filename, int numTuples, int numAttributes, long seed) {
         Random random = new Random(seed);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
@@ -48,8 +49,8 @@ public class DatasetGenerator {
                 writer.write("\n");
             }
 
-            System.out.println("Generated: " + filename + " (" + numTuples + " tuples, "
-                    + numAttributes + " attributes)");
+            System.out.println(
+                    "Generated: " + filename + " (" + numTuples + " tuples, " + numAttributes + " attributes)");
 
         } catch (IOException e) {
             System.err.println("Error generating dataset: " + e.getMessage());

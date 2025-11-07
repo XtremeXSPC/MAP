@@ -1,4 +1,12 @@
+package tests;
+
 import java.io.IOException;
+import data.Attribute;
+import data.ContinuousAttribute;
+import data.ContinuousItem;
+import data.Data;
+import data.Item;
+import data.Tuple;
 import exceptions.InvalidDataFormatException;
 
 /**
@@ -24,8 +32,7 @@ public class TestWeatherMixed {
             int numContinuous = 0;
 
             for (int i = 0; i < attrs.size(); i++) {
-                String type =
-                        attrs.get(i) instanceof ContinuousAttribute ? "Continuous" : "Discrete";
+                String type = attrs.get(i) instanceof ContinuousAttribute ? "Continuous" : "Discrete";
                 System.out.println("  " + (i + 1) + ". " + attrs.get(i).getName() + " - " + type);
 
                 if (attrs.get(i) instanceof ContinuousAttribute) {
@@ -34,8 +41,7 @@ public class TestWeatherMixed {
                     numDiscrete++;
                 }
             }
-            System.out.println(
-                    "\nRiepilogo: " + numContinuous + " continui, " + numDiscrete + " discreti");
+            System.out.println("\nRiepilogo: " + numContinuous + " continui, " + numDiscrete + " discreti");
             System.out.println();
 
             // Verifica prima tupla
@@ -43,10 +49,8 @@ public class TestWeatherMixed {
             Tuple tuple = weather.getItemSet(0);
             for (int i = 0; i < tuple.getLength(); i++) {
                 Item item = tuple.get(i);
-                String itemType =
-                        item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
-                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue() + " ["
-                        + itemType + "]");
+                String itemType = item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
+                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue() + " [" + itemType + "]");
             }
             System.out.println();
 
@@ -87,8 +91,7 @@ public class TestWeatherMixed {
             System.out.println("Analisi:");
             System.out.println("  - t1 vs t2: stessa outlook, temperature simili → distanza bassa");
             System.out.println("  - t1 vs t3: outlook diverso → distanza media");
-            System.out
-                    .println("  - t1 vs t4: play diverso, temperature più lontane → distanza alta");
+            System.out.println("  - t1 vs t4: play diverso, temperature più lontane → distanza alta");
             System.out.println();
 
             // Verifica proprietà

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Modella una transazione (riga) letta dal database.
- * Ogni Example contiene una lista di valori eterogenei (String, Double, ecc.).
+ * Modella una transazione (riga) letta dal database. Ogni Example contiene una lista di
+ * valori eterogenei (String, Double, ecc.).
  *
  * @author MAP corso
  * @version 1.0
@@ -39,14 +39,15 @@ public class Example implements Comparable<Example> {
      * Confronta questa transazione con un'altra transazione.
      *
      * @param ex transazione da confrontare
-     * @return valore negativo, zero o positivo se questa transazione è
-     *         minore, uguale o maggiore di ex
+     * @return valore negativo, zero o positivo se questa transazione è minore, uguale o
+     *         maggiore di ex
      */
+    @SuppressWarnings("unchecked")
     public int compareTo(Example ex) {
         int i = 0;
         for (Object o : ex.example) {
             if (!o.equals(this.example.get(i)))
-                return ((Comparable) o).compareTo(example.get(i));
+                return ((Comparable<Object>) o).compareTo(example.get(i));
             i++;
         }
         return 0;

@@ -1,6 +1,14 @@
+package tests;
+
+import data.Data;
+import data.DiscreteAttribute;
+import mining.Cluster;
+import mining.ClusterSet;
+import mining.QTMiner;
+
 /**
- * Test Sprint 5 - Contenitori, Iteratori, Comparatori (QT05) Dimostra le nuove funzionalità
- * implementate.
+ * Test Sprint 5 - Contenitori, Iteratori, Comparatori (QT05) Dimostra le nuove
+ * funzionalità implementate.
  */
 public class TestSprint5 {
     public static void main(String[] args) {

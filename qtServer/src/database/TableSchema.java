@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Modella lo schema di una tabella nel database relazionale.
- * Ricava i metadati delle colonne e mappa i tipi SQL a tipi Java.
+ * Modella lo schema di una tabella nel database relazionale. Ricava i metadati delle
+ * colonne e mappa i tipi SQL a tipi Java.
  *
  * @author MAP corso
  * @version 1.0
@@ -101,9 +101,8 @@ public class TableSchema {
 
         while (res.next()) {
             if (mapSQL_JAVATypes.containsKey(res.getString("TYPE_NAME")))
-                tableSchema.add(new Column(
-                        res.getString("COLUMN_NAME"),
-                        mapSQL_JAVATypes.get(res.getString("TYPE_NAME"))));
+                tableSchema.add(
+                        new Column(res.getString("COLUMN_NAME"), mapSQL_JAVATypes.get(res.getString("TYPE_NAME"))));
         }
         res.close();
     }

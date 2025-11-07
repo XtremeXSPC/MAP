@@ -10,9 +10,9 @@ import java.util.TreeSet;
 import data.*;
 
 /**
- * Classe che rappresenta un insieme di cluster. Usa TreeSet per ordinamento automatico per
- * dimensione e implementa Iterable per iterazione.
- * Implementa Serializable per permettere la serializzazione binaria.
+ * Classe che rappresenta un insieme di cluster. Usa TreeSet per ordinamento automatico
+ * per dimensione e implementa Iterable per iterazione. Implementa Serializable per
+ * permettere la serializzazione binaria.
  */
 public class ClusterSet implements Iterable<Cluster>, Serializable {
     private Set<Cluster> C;
@@ -38,8 +38,8 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
     }
 
     /**
-     * Aggiunge un cluster all'insieme. TreeSet garantisce ordinamento automatico per dimensione
-     * cluster.
+     * Aggiunge un cluster all'insieme. TreeSet garantisce ordinamento automatico per
+     * dimensione cluster.
      *
      * @param c cluster da aggiungere
      */
@@ -48,8 +48,8 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
     }
 
     /**
-     * Restituisce un iteratore sui cluster. I cluster sono ordinati automaticamente per dimensione
-     * (crescente).
+     * Restituisce un iteratore sui cluster. I cluster sono ordinati automaticamente per
+     * dimensione (crescente).
      *
      * @return iteratore sui cluster
      */
@@ -75,8 +75,8 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
     }
 
     /**
-     * Restituisce una stringa dettagliata con lo stato di ciascun cluster. I cluster sono numerati
-     * sequenzialmente (ordinati per dimensione).
+     * Restituisce una stringa dettagliata con lo stato di ciascun cluster. I cluster sono
+     * numerati sequenzialmente (ordinati per dimensione).
      *
      * @param data insieme di dati
      * @return stringa dettagliata dei cluster
@@ -158,8 +158,7 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
      * @throws IOException se si verificano errori di I/O
      * @throws InvalidFileFormatException se il formato non è valido
      */
-    private void loadFromFile(String filename, Data data)
-            throws IOException, InvalidFileFormatException {
+    private void loadFromFile(String filename, Data data) throws IOException, InvalidFileFormatException {
         File file = new File(filename);
 
         // Validazioni
@@ -193,8 +192,7 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
                 // Leggi metadata
                 if (metadataFound && line.startsWith("numClusters=")) {
                     try {
-                        expectedClusters =
-                                Integer.parseInt(line.substring("numClusters=".length()));
+                        expectedClusters = Integer.parseInt(line.substring("numClusters=".length()));
                     } catch (NumberFormatException e) {
                         throw new InvalidFileFormatException("Numero cluster non valido: " + line);
                     }
@@ -216,8 +214,8 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
                 throw new InvalidFileFormatException("Header METADATA mancante");
             }
             if (expectedClusters > 0 && clustersLoaded != expectedClusters) {
-                throw new InvalidFileFormatException("Numero cluster inconsistente: atteso "
-                        + expectedClusters + ", caricato " + clustersLoaded);
+                throw new InvalidFileFormatException(
+                        "Numero cluster inconsistente: atteso " + expectedClusters + ", caricato " + clustersLoaded);
             }
         }
     }
@@ -231,8 +229,7 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
      * @throws IOException se si verificano errori di I/O
      * @throws InvalidFileFormatException se il formato non è valido
      */
-    private Cluster parseCluster(BufferedReader reader, Data data)
-            throws IOException, InvalidFileFormatException {
+    private Cluster parseCluster(BufferedReader reader, Data data) throws IOException, InvalidFileFormatException {
         String centroidLine = reader.readLine();
         String tupleIDsLine = reader.readLine();
 
@@ -252,9 +249,8 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
         for (int i = 0; i < centroidValues.length; i++) {
             // Recupera attributo da data
             if (i >= data.getNumberOfExplanatoryAttributes()) {
-                throw new InvalidFileFormatException("Numero attributi centroide ("
-                        + centroidValues.length + ") non compatibile con dataset ("
-                        + data.getNumberOfExplanatoryAttributes() + ")");
+                throw new InvalidFileFormatException("Numero attributi centroide (" + centroidValues.length
+                        + ") non compatibile con dataset (" + data.getNumberOfExplanatoryAttributes() + ")");
             }
             Attribute attr = data.getExplanatoryAttribute(i);
             DiscreteItem item = new DiscreteItem((DiscreteAttribute) attr, centroidValues[i]);
@@ -275,8 +271,8 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
             try {
                 int id = Integer.parseInt(idStr.trim());
                 if (id < 0 || id >= data.getNumberOfExamples()) {
-                    throw new InvalidFileFormatException("ID tupla non valido: " + id
-                            + " (dataset ha " + data.getNumberOfExamples() + " esempi)");
+                    throw new InvalidFileFormatException(
+                            "ID tupla non valido: " + id + " (dataset ha " + data.getNumberOfExamples() + " esempi)");
                 }
                 cluster.addData(id);
             } catch (NumberFormatException e) {

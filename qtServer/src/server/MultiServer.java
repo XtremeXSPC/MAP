@@ -7,10 +7,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Server multi-client per Quality Threshold clustering (QT08).
- * Gestisce connessioni multiple tramite thread dedicati.
+ * Server multi-client per Quality Threshold clustering (QT08). Gestisce connessioni
+ * multiple tramite thread dedicati.
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class MultiServer {
@@ -39,8 +39,7 @@ public class MultiServer {
     }
 
     /**
-     * Costruttore del server multi-client.
-     * Inizializza la porta e avvia il server.
+     * Costruttore del server multi-client. Inizializza la porta e avvia il server.
      *
      * @param port porta su cui ascoltare
      */
@@ -49,8 +48,7 @@ public class MultiServer {
     }
 
     /**
-     * Ciclo principale del server.
-     * Attende connessioni e crea un thread per ogni client.
+     * Ciclo principale del server. Attende connessioni e crea un thread per ogni client.
      *
      * @param port porta su cui ascoltare
      */
@@ -70,7 +68,7 @@ public class MultiServer {
                     Socket clientSocket = serverSocket.accept();
 
                     System.out.println("\n[" + getTimestamp() + "] Nuova connessione da: "
-                                     + clientSocket.getInetAddress().getHostAddress());
+                            + clientSocket.getInetAddress().getHostAddress());
 
                     // Crea thread dedicato per il client
                     new ServerOneClient(clientSocket);

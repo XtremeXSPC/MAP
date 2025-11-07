@@ -15,8 +15,8 @@ public class DiscreteItem extends Item {
     }
 
     /**
-     * Calcola la distanza tra il valore dell'item corrente e un altro oggetto. Restituisce 0 se i
-     * valori sono uguali, 1 altrimenti.
+     * Calcola la distanza tra il valore dell'item corrente e un altro oggetto. Restituisce 0
+     * se i valori sono uguali, 1 altrimenti.
      *
      * @param a oggetto con cui calcolare la distanza
      * @return 0 se uguali, 1 altrimenti

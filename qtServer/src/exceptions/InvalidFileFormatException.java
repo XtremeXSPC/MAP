@@ -1,8 +1,8 @@
 package exceptions;
 
 /**
- * Eccezione lanciata quando il formato di un file non è valido.
- * Usata principalmente per file .dmp (cluster dump files).
+ * Eccezione lanciata quando il formato di un file non è valido. Usata principalmente per
+ * file .dmp (cluster dump files).
  */
 public class InvalidFileFormatException extends Exception {
 

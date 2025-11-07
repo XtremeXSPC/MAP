@@ -1,8 +1,8 @@
 package exceptions;
 
 /**
- * Eccezione lanciata quando un cluster caricato da file non è compatibile
- * con il dataset corrente (es. numero attributi diverso, ID tuple non validi).
+ * Eccezione lanciata quando un cluster caricato da file non è compatibile con il dataset
+ * corrente (es. numero attributi diverso, ID tuple non validi).
  */
 public class IncompatibleClusterException extends Exception {
 

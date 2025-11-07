@@ -7,8 +7,8 @@ import data.*;
  * Cache per memorizzare distanze già calcolate tra tuple. Utilizza una HashMap sparsa per
  * efficienza memoria con chiave Long costruita da (i,j).
  *
- * Performance: - Get/Put: O(1) average - Memoria: Solo distanze calcolate (sparse), non matrice
- * completa
+ * Performance: - Get/Put: O(1) average - Memoria: Solo distanze calcolate (sparse), non
+ * matrice completa
  *
  * Thread-safe: NO (uso single-threaded)
  *
@@ -194,8 +194,8 @@ public class DistanceCache {
     }
 
     /**
-     * Stima memoria usata dal cache in bytes. Approssimativo: ogni entry HashMap ~40 bytes + Long
-     * (16) + Double (16)
+     * Stima memoria usata dal cache in bytes. Approssimativo: ogni entry HashMap ~40 bytes +
+     * Long (16) + Double (16)
      *
      * @return bytes usati (stima)
      */
@@ -219,18 +219,16 @@ public class DistanceCache {
      */
     public String getStats() {
         return String.format(
-                "DistanceCache Statistics:\n" + "  Status: %s\n" + "  Cache Size: %d entries\n"
-                        + "  Memory: %.2f MB\n" + "  Hits: %d\n" + "  Misses: %d\n"
-                        + "  Hit Rate: %.2f%%\n" + "  Total Calculations: %d\n"
+                "DistanceCache Statistics:\n" + "  Status: %s\n" + "  Cache Size: %d entries\n" + "  Memory: %.2f MB\n"
+                        + "  Hits: %d\n" + "  Misses: %d\n" + "  Hit Rate: %.2f%%\n" + "  Total Calculations: %d\n"
                         + "  Calculations Saved: %d (%.1f%%)",
-                enabled ? "ENABLED" : "DISABLED", cache.size(), getEstimatedMemoryMB(), hits,
-                misses, getHitRate() * 100, calculations, hits,
+                enabled ? "ENABLED" : "DISABLED", cache.size(), getEstimatedMemoryMB(), hits, misses,
+                getHitRate() * 100, calculations, hits,
                 calculations > 0 ? (hits * 100.0 / (hits + calculations)) : 0.0);
     }
 
     @Override
     public String toString() {
-        return String.format("DistanceCache[size=%d, hitRate=%.2f%%]", cache.size(),
-                getHitRate() * 100);
+        return String.format("DistanceCache[size=%d, hitRate=%.2f%%]", cache.size(), getHitRate() * 100);
     }
 }

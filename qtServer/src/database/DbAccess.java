@@ -5,8 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Gestisce l'accesso al database MySQL tramite JDBC.
- * Implementa i metodi per inizializzare, ottenere e chiudere una connessione.
+ * Gestisce l'accesso al database MySQL tramite JDBC. Implementa i metodi per
+ * inizializzare, ottenere e chiudere una connessione.
  *
  * @author MAP corso
  * @version 1.0
@@ -53,10 +53,11 @@ public class DbAccess {
     private Connection conn;
 
     /**
-     * Inizializza la connessione al database MySQL.
-     * Carica il driver MySQL e stabilisce la connessione usando i parametri configurati.
+     * Inizializza la connessione al database MySQL. Carica il driver MySQL e stabilisce la
+     * connessione usando i parametri configurati.
      *
-     * @throws DatabaseConnectionException se il driver non è trovato o la connessione fallisce
+     * @throws DatabaseConnectionException se il driver non è trovato o la connessione
+     *         fallisce
      */
     public void initConnection() throws DatabaseConnectionException {
         try {
@@ -64,8 +65,8 @@ public class DbAccess {
             Class.forName(DRIVER_CLASS_NAME);
 
             // Costruisce la connection string
-            String connectionString = DBMS + "://" + SERVER + ":" + PORT + "/" + DATABASE
-                    + "?user=" + USER_ID + "&password=" + PASSWORD + "&serverTimezone=UTC";
+            String connectionString = DBMS + "://" + SERVER + ":" + PORT + "/" + DATABASE + "?user=" + USER_ID
+                    + "&password=" + PASSWORD + "&serverTimezone=UTC";
 
             // Stabilisce la connessione
             conn = DriverManager.getConnection(connectionString);
@@ -87,8 +88,8 @@ public class DbAccess {
     }
 
     /**
-     * Chiude la connessione al database.
-     * Non solleva eccezioni se la connessione è già chiusa.
+     * Chiude la connessione al database. Non solleva eccezioni se la connessione è già
+     * chiusa.
      */
     public void closeConnection() {
         try {

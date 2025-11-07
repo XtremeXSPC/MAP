@@ -7,8 +7,9 @@ import java.util.Set;
 import data.*;
 
 /**
- * Classe che modella un cluster. Implementa Iterable per supportare enhanced for-loop e Comparable
- * per ordinamento automatico. Implementa Serializable per permettere la serializzazione binaria.
+ * Classe che modella un cluster. Implementa Iterable per supportare enhanced for-loop e
+ * Comparable per ordinamento automatico. Implementa Serializable per permettere la
+ * serializzazione binaria.
  */
 class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
     private Tuple centroid;
@@ -78,8 +79,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
     }
 
     /**
-     * Restituisce un array con gli identificativi delle tuple nel cluster. Converte Set in array
-     * ordinato.
+     * Restituisce un array con gli identificativi delle tuple nel cluster. Converte Set in
+     * array ordinato.
      *
      * @return array di identificativi ordinato
      */
@@ -95,8 +96,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
     }
 
     /**
-     * Restituisce un iteratore sugli identificativi delle tuple nel cluster. Implementazione del
-     * pattern Iterator per supportare enhanced for-loop.
+     * Restituisce un iteratore sugli identificativi delle tuple nel cluster. Implementazione
+     * del pattern Iterator per supportare enhanced for-loop.
      *
      * @return iteratore su tuple IDs
      */
@@ -113,15 +114,15 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
      * Ordine crescente: cluster più piccoli prima dei più grandi.
      * </p>
      * <p>
-     * In caso di parità di dimensione, viene utilizzato il confronto tra hashCode per garantire la
-     * consistenza dell'ordinamento. Questo non implica che i cluster siano considerati uguali, ma
-     * solo che l'ordinamento è deterministico.
+     * In caso di parità di dimensione, viene utilizzato il confronto tra hashCode per
+     * garantire la consistenza dell'ordinamento. Questo non implica che i cluster siano
+     * considerati uguali, ma solo che l'ordinamento è deterministico.
      * </p>
      *
      * @param other cluster da confrontare
      * @return -1 se questo cluster è più piccolo, +1 se è più grande, oppure il risultato del
-     *         confronto tra hashCode se le dimensioni sono uguali (0 solo se gli hashCode sono
-     *         uguali)
+     *         confronto tra hashCode se le dimensioni sono uguali (0 solo se gli hashCode
+     *         sono uguali)
      */
     @Override
     public int compareTo(Cluster other) {
@@ -137,8 +138,8 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
                 Comparable<Tuple> comparableCentroid = (Comparable<Tuple>) this.centroid;
                 centroidCmp = comparableCentroid.compareTo(other.centroid);
             } else {
-                centroidCmp = this.centroid.equals(other.centroid) ? 0
-                        : this.centroid.hashCode() - other.centroid.hashCode();
+                centroidCmp =
+                        this.centroid.equals(other.centroid) ? 0 : this.centroid.hashCode() - other.centroid.hashCode();
             }
             if (centroidCmp != 0) {
                 return centroidCmp;

@@ -1,4 +1,12 @@
+package tests;
+
 import java.io.IOException;
+import data.Attribute;
+import data.ContinuousAttribute;
+import data.ContinuousItem;
+import data.Data;
+import data.Item;
+import data.Tuple;
 import exceptions.InvalidDataFormatException;
 
 /**
@@ -28,8 +36,8 @@ public class TestIris {
                 if (attr instanceof ContinuousAttribute) {
                     ContinuousAttribute cattr = (ContinuousAttribute) attr;
                     double testValue = 5.0;
-                    System.out.println("     (scaled(5.0) = "
-                            + String.format("%.3f", cattr.getScaledValue(testValue)) + ")");
+                    System.out.println(
+                            "     (scaled(5.0) = " + String.format("%.3f", cattr.getScaledValue(testValue)) + ")");
                 }
             }
             System.out.println();
@@ -39,10 +47,8 @@ public class TestIris {
             Tuple tuple = iris.getItemSet(0);
             for (int i = 0; i < tuple.getLength(); i++) {
                 Item item = tuple.get(i);
-                String itemType =
-                        item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
-                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue() + " ["
-                        + itemType + "]");
+                String itemType = item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
+                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue() + " [" + itemType + "]");
             }
             System.out.println();
 
