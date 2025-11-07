@@ -1,9 +1,11 @@
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * Classe che modella una tupla come sequenza di coppie attributo-valore.
+ * Implementa Serializable per permettere la serializzazione binaria.
  */
-public class Tuple {
+public class Tuple implements Serializable {
     private Item[] tuple;
 
     /**
