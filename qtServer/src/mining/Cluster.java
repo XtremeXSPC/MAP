@@ -146,8 +146,6 @@ class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
             // Centroidi uguali: confronta tuple IDs ordinati
             int[] thisIDs = this.getTupleIDs();
             int[] otherIDs = other.getTupleIDs();
-            java.util.Arrays.sort(thisIDs);
-            java.util.Arrays.sort(otherIDs);
             int minLen = Math.min(thisIDs.length, otherIDs.length);
             for (int i = 0; i < minLen; i++) {
                 if (thisIDs[i] != otherIDs[i]) {
