@@ -1,8 +1,13 @@
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Classe che modella un attributo discreto (categorico).
+ * Implementa Iterable per iterazione sui valori distinti (ordinati alfabeticamente).
  */
-public class DiscreteAttribute extends Attribute {
-    private String[] values;
+public class DiscreteAttribute extends Attribute implements Iterable<String> {
+    private Set<String> values;
 
     /**
      * Costruttore della classe DiscreteAttribute.
@@ -13,7 +18,10 @@ public class DiscreteAttribute extends Attribute {
      */
     public DiscreteAttribute(String name, int index, String[] values) {
         super(name, index);
-        this.values = values;
+        this.values = new TreeSet<>();
+        for (String value : values) {
+            this.values.add(value);
+        }
     }
 
     /**
@@ -22,16 +30,17 @@ public class DiscreteAttribute extends Attribute {
      * @return numero di valori discreti
      */
     public int getNumberOfDistinctValues() {
-        return values.length;
+        return values.size();
     }
 
     /**
-     * Restituisce il valore discreto in posizione i.
+     * Restituisce un iteratore sui valori distinti dell'attributo.
+     * I valori sono ordinati alfabeticamente (TreeSet).
      *
-     * @param i posizione del valore
-     * @return valore discreto
+     * @return iteratore sui valori
      */
-    public String getValue(int i) {
-        return values[i];
+    @Override
+    public Iterator<String> iterator() {
+        return values.iterator();
     }
 }

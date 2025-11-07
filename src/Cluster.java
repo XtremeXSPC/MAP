@@ -1,13 +1,14 @@
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Classe che modella un cluster.
- * Ottimizzata con HashSet per operazioni O(1) invece di O(n).
+ * Implementa Iterable per supportare enhanced for-loop e Comparable per ordinamento automatico.
  */
-class Cluster {
+class Cluster implements Iterable<Integer>, Comparable<Cluster> {
     private Tuple centroid;
-    private HashSet<Integer> clusteredData;
+    private Set<Integer> clusteredData;
 
     /**
      * Costruttore della classe Cluster.
@@ -71,11 +72,11 @@ class Cluster {
 
     /**
      * Restituisce un array con gli identificativi delle tuple nel cluster.
-     * Converte HashSet in array ordinato.
+     * Converte Set in array ordinato.
      *
      * @return array di identificativi ordinato
      */
-    int[] iterator() {
+    int[] getTupleIDs() {
         int[] array = new int[clusteredData.size()];
         int index = 0;
         for (Integer id : clusteredData) {
@@ -84,6 +85,39 @@ class Cluster {
         // Ordina per consistenza con versione precedente
         java.util.Arrays.sort(array);
         return array;
+    }
+
+    /**
+     * Restituisce un iteratore sugli identificativi delle tuple nel cluster.
+     * Implementazione del pattern Iterator per supportare enhanced for-loop.
+     *
+     * @return iteratore su tuple IDs
+     */
+    @Override
+    public Iterator<Integer> iterator() {
+        return clusteredData.iterator();
+    }
+
+    /**
+     * Confronta questo cluster con un altro in base alla popolosità (dimensione).
+     * Implementa l'interfaccia Comparable per ordinamento automatico in TreeSet.
+     *
+     * <p>Ordine crescente: cluster più piccoli prima dei più grandi.</p>
+     * <p>In caso di parità di dimensione, mantiene ordine di inserimento.</p>
+     *
+     * @param other cluster da confrontare
+     * @return -1 se questo cluster è più piccolo, +1 se è più grande, 0 se uguale
+     */
+    @Override
+    public int compareTo(Cluster other) {
+        if (this.getSize() < other.getSize()) {
+            return -1;
+        } else if (this.getSize() > other.getSize()) {
+            return +1;
+        } else {
+            // Stessa dimensione: usa hashCode per mantenere consistenza
+            return Integer.compare(this.hashCode(), other.hashCode());
+        }
     }
 
     /**
@@ -111,14 +145,14 @@ class Cluster {
         for (int i = 0; i < centroid.getLength(); i++)
             str += centroid.get(i) + " ";
         str += ")\nExamples:\n";
-        int array[] = iterator();  // Usa il metodo iterator() che converte HashSet → array
+        int array[] = getTupleIDs();  // Converte Set → array ordinato
         for (int i = 0; i < array.length; i++) {
             str += "[";
             for (int j = 0; j < data.getNumberOfExplanatoryAttributes(); j++)
                 str += data.getValue(array[i], j) + " ";
             str += "] dist=" + getCentroid().getDistance(data.getItemSet(array[i])) + "\n";
         }
-        str += "\nAvgDistance=" + getCentroid().avgDistance(data, array);
+        str += "\nAvgDistance=" + getCentroid().avgDistance(data, clusteredData);
         return str;
     }
 }

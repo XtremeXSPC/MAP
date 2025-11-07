@@ -1,3 +1,5 @@
+import java.util.Set;
+
 /**
  * Classe che modella una tupla come sequenza di coppie attributo-valore.
  */
@@ -62,16 +64,16 @@ public class Tuple {
      * in clusteredData.
      *
      * @param data insieme di dati
-     * @param clusteredData array di indici delle tuple
+     * @param clusteredData set di indici delle tuple
      * @return distanza media
      */
-    public double avgDistance(Data data, int clusteredData[]) {
+    public double avgDistance(Data data, Set<Integer> clusteredData) {
         double p = 0.0, sumD = 0.0;
-        for (int i = 0; i < clusteredData.length; i++) {
-            double d = getDistance(data.getItemSet(clusteredData[i]));
+        for (Integer tupleId : clusteredData) {
+            double d = getDistance(data.getItemSet(tupleId));
             sumD += d;
         }
-        p = sumD / clusteredData.length;
+        p = sumD / clusteredData.size();
         return p;
     }
 }

@@ -19,15 +19,15 @@ public class TestWeatherMixed {
 
             // Verifica tipi attributi
             System.out.println("Tipi attributi:");
-            Attribute[] attrs = weather.getAttributeSchema();
+            java.util.List<Attribute> attrs = weather.getAttributeSchema();
             int numDiscrete = 0;
             int numContinuous = 0;
 
-            for (int i = 0; i < attrs.length; i++) {
-                String type = attrs[i] instanceof ContinuousAttribute ? "Continuous" : "Discrete";
-                System.out.println("  " + (i + 1) + ". " + attrs[i].getName() + " - " + type);
+            for (int i = 0; i < attrs.size(); i++) {
+                String type = attrs.get(i) instanceof ContinuousAttribute ? "Continuous" : "Discrete";
+                System.out.println("  " + (i + 1) + ". " + attrs.get(i).getName() + " - " + type);
 
-                if (attrs[i] instanceof ContinuousAttribute) {
+                if (attrs.get(i) instanceof ContinuousAttribute) {
                     numContinuous++;
                 } else {
                     numDiscrete++;
@@ -42,7 +42,7 @@ public class TestWeatherMixed {
             for (int i = 0; i < tuple.getLength(); i++) {
                 Item item = tuple.get(i);
                 String itemType = item instanceof ContinuousItem ? "ContinuousItem" : "DiscreteItem";
-                System.out.println("  " + attrs[i].getName() + " = " +
+                System.out.println("  " + attrs.get(i).getName() + " = " +
                     item.getValue() + " [" + itemType + "]");
             }
             System.out.println();
@@ -52,7 +52,7 @@ public class TestWeatherMixed {
             Tuple tuple15 = weather.getItemSet(14);
             for (int i = 0; i < tuple15.getLength(); i++) {
                 Item item = tuple15.get(i);
-                System.out.println("  " + attrs[i].getName() + " = " + item.getValue());
+                System.out.println("  " + attrs.get(i).getName() + " = " + item.getValue());
             }
             System.out.println();
 

@@ -37,13 +37,13 @@ public class TestIrisClustering {
                 int totalPoints = 0;
 
                 System.out.println("Dettagli cluster:");
-                for (int i = 0; i < numClusters; i++) {
-                    Cluster c = clusters.get(i);
+                int clusterNum = 1;
+                for (Cluster c : clusters) {
                     int size = c.getSize();
                     totalPoints += size;
 
                     // Analizza specie dominante nel cluster
-                    int[] tupleIds = c.iterator();
+                    int[] tupleIds = c.getTupleIDs();
                     int setosa = 0, versicolor = 0, virginica = 0;
 
                     for (int id : tupleIds) {
@@ -67,7 +67,7 @@ public class TestIrisClustering {
 
                     double purity = (double) maxCount / size * 100;
 
-                    System.out.println("  Cluster " + (i + 1) + ":");
+                    System.out.println("  Cluster " + (clusterNum++) + ":");
                     System.out.println("    Size: " + size);
                     System.out.println("    Specie dominante: " + dominant + " (" +
                         String.format("%.1f", purity) + "% purezza)");
@@ -89,9 +89,8 @@ public class TestIrisClustering {
 
                 // Calcola purezza media
                 double totalPurity = 0;
-                for (int i = 0; i < numClusters; i++) {
-                    Cluster c = clusters.get(i);
-                    int[] tupleIds = c.iterator();
+                for (Cluster c : clusters) {
+                    int[] tupleIds = c.getTupleIDs();
                     int setosa = 0, versicolor = 0, virginica = 0;
 
                     for (int id : tupleIds) {

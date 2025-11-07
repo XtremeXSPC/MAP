@@ -2,20 +2,22 @@ import exceptions.InvalidFileFormatException;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Classe che rappresenta un insieme di cluster.
- * Ottimizzata con ArrayList per operazioni O(1) invece di O(n) copy.
+ * Usa TreeSet per ordinamento automatico per dimensione e implementa Iterable per iterazione.
  */
-public class ClusterSet {
-    private ArrayList<Cluster> C;
+public class ClusterSet implements Iterable<Cluster> {
+    private Set<Cluster> C;
 
     /**
      * Costruttore della classe ClusterSet.
      */
     public ClusterSet() {
-        C = new ArrayList<>();
+        C = new TreeSet<>();
     }
 
     /**
@@ -27,13 +29,13 @@ public class ClusterSet {
      * @throws InvalidFileFormatException se il formato del file non è valido
      */
     public ClusterSet(String filename, Data data) throws IOException, InvalidFileFormatException {
-        C = new ArrayList<>();
+        C = new TreeSet<>();
         loadFromFile(filename, data);
     }
 
     /**
      * Aggiunge un cluster all'insieme.
-     * Ottimizzato: O(1) amortized invece di O(n) array copy.
+     * TreeSet garantisce ordinamento automatico per dimensione cluster.
      *
      * @param c cluster da aggiungere
      */
@@ -42,45 +44,44 @@ public class ClusterSet {
     }
 
     /**
-     * Restituisce il cluster in posizione i.
+     * Restituisce un iteratore sui cluster.
+     * I cluster sono ordinati automaticamente per dimensione (crescente).
      *
-     * @param i posizione del cluster
-     * @return cluster in posizione i
+     * @return iteratore sui cluster
      */
-    public Cluster get(int i) {
-        return C.get(i);
+    @Override
+    public Iterator<Cluster> iterator() {
+        return C.iterator();
     }
 
     /**
      * Restituisce una stringa con i centroidi di tutti i cluster.
+     * I cluster sono numerati sequenzialmente (ordinati per dimensione).
      *
      * @return stringa con i centroidi
      */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (int i = 0; i < C.size(); i++) {
-            Cluster cluster = C.get(i);
-            if (cluster != null) {
-                str.append(i).append(":").append(cluster.toString()).append("\n");
-            }
+        int index = 1;
+        for (Cluster cluster : this) {
+            str.append(index++).append(":").append(cluster.toString()).append("\n");
         }
         return str.toString();
     }
 
     /**
      * Restituisce una stringa dettagliata con lo stato di ciascun cluster.
+     * I cluster sono numerati sequenzialmente (ordinati per dimensione).
      *
      * @param data insieme di dati
      * @return stringa dettagliata dei cluster
      */
     public String toString(Data data) {
         StringBuilder str = new StringBuilder();
-        for (int i = 0; i < C.size(); i++) {
-            Cluster cluster = C.get(i);
-            if (cluster != null) {
-                str.append(i).append(":").append(cluster.toString(data)).append("\n");
-            }
+        int index = 1;
+        for (Cluster cluster : this) {
+            str.append(index++).append(":").append(cluster.toString(data)).append("\n");
         }
         return str.toString();
     }
@@ -115,33 +116,32 @@ public class ClusterSet {
             writer.write("timestamp=" + now.format(formatter) + "\n");
             writer.write("---\n");
 
-            // Scrivi ogni cluster
-            for (int i = 0; i < C.size(); i++) {
-                Cluster cluster = C.get(i);
-                if (cluster != null) {
-                    writer.write("CLUSTER " + i + "\n");
+            // Scrivi ogni cluster (ordinati per dimensione)
+            int index = 0;
+            for (Cluster cluster : this) {
+                writer.write("CLUSTER " + index + "\n");
 
-                    // Centroide
-                    Tuple centroid = cluster.getCentroid();
-                    writer.write("centroid=");
-                    for (int j = 0; j < centroid.getLength(); j++) {
-                        if (j > 0)
-                            writer.write(",");
-                        writer.write(centroid.get(j).getValue().toString());
-                    }
-                    writer.write("\n");
-
-                    // ID tuple
-                    int[] tupleIDs = cluster.iterator();
-                    writer.write("tupleIDs=");
-                    for (int j = 0; j < tupleIDs.length; j++) {
-                        if (j > 0)
-                            writer.write(",");
-                        writer.write(String.valueOf(tupleIDs[j]));
-                    }
-                    writer.write("\n");
-                    writer.write("---\n");
+                // Centroide
+                Tuple centroid = cluster.getCentroid();
+                writer.write("centroid=");
+                for (int j = 0; j < centroid.getLength(); j++) {
+                    if (j > 0)
+                        writer.write(",");
+                    writer.write(centroid.get(j).getValue().toString());
                 }
+                writer.write("\n");
+
+                // ID tuple
+                int[] tupleIDs = cluster.getTupleIDs();
+                writer.write("tupleIDs=");
+                for (int j = 0; j < tupleIDs.length; j++) {
+                    if (j > 0)
+                        writer.write(",");
+                    writer.write(String.valueOf(tupleIDs[j]));
+                }
+                writer.write("\n");
+                writer.write("---\n");
+                index++;
             }
         }
     }
