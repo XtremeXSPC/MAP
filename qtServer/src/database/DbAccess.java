@@ -25,32 +25,89 @@ public class DbAccess {
     /**
      * Indirizzo del server MySQL
      */
-    private final String SERVER = "localhost";
+    private String SERVER = "localhost";
 
     /**
      * Nome del database
      */
-    private final String DATABASE = "MapDB";
+    private String DATABASE = "MapDB";
 
     /**
      * Porta del server MySQL
      */
-    private final String PORT = "3306";
+    private String PORT = "3306";
 
     /**
      * Nome utente per accesso al database
      */
-    private final String USER_ID = "MapUser";
+    private String USER_ID = "MapUser";
 
     /**
      * Password utente
      */
-    private final String PASSWORD = "map";
+    private String PASSWORD = "map";
 
     /**
      * Connessione al database
      */
     private Connection conn;
+
+    /**
+     * Costruttore di default.
+     * Usa parametri di connessione hardcoded (localhost:3306/MapDB).
+     * Richiede chiamata esplicita a initConnection().
+     */
+    public DbAccess() {
+        // Usa valori di default già inizializzati
+    }
+
+    /**
+     * Costruttore con JDBC URL completo.
+     * Inizializza automaticamente la connessione.
+     *
+     * @param jdbcUrl URL completo JDBC (es. "jdbc:mysql://localhost:3306/MapDB")
+     * @param user username per l'accesso
+     * @param password password per l'accesso
+     * @throws DatabaseConnectionException se la connessione fallisce o l'URL è malformato
+     */
+    public DbAccess(String jdbcUrl, String user, String password) throws DatabaseConnectionException {
+        // Parse JDBC URL: jdbc:mysql://server:port/database
+        try {
+            String[] parts = jdbcUrl.replace("jdbc:mysql://", "").split("/");
+            String[] serverPart = parts[0].split(":");
+
+            this.SERVER = serverPart[0];
+            this.PORT = serverPart.length > 1 ? serverPart[1] : "3306";
+            this.DATABASE = parts.length > 1 ? parts[1] : "MapDB";
+            this.USER_ID = user;
+            this.PASSWORD = password;
+
+            initConnection();
+        } catch (Exception e) {
+            throw new DatabaseConnectionException("JDBC URL malformato: " + jdbcUrl + " - " + e.getMessage());
+        }
+    }
+
+    /**
+     * Costruttore con parametri di connessione personalizzati separati.
+     * Inizializza automaticamente la connessione.
+     *
+     * @param server indirizzo server MySQL
+     * @param port porta server MySQL
+     * @param database nome database
+     * @param user username per l'accesso
+     * @param password password per l'accesso
+     * @throws DatabaseConnectionException se la connessione fallisce
+     */
+    public DbAccess(String server, String port, String database, String user, String password)
+            throws DatabaseConnectionException {
+        this.SERVER = server;
+        this.PORT = port;
+        this.DATABASE = database;
+        this.USER_ID = user;
+        this.PASSWORD = password;
+        initConnection();
+    }
 
     /**
      * Inizializza la connessione al database MySQL. Carica il driver MySQL e stabilisce la

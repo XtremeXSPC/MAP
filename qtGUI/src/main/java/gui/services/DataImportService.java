@@ -5,6 +5,8 @@ import data.EmptyDatasetException;
 import data.InvalidDataFormatException;
 import database.DatabaseConnectionException;
 import database.DbAccess;
+import database.EmptySetException;
+import database.NoValueException;
 import database.TableData;
 import database.TableSchema;
 import org.slf4j.Logger;
@@ -146,11 +148,11 @@ public class DataImportService {
             logger.info("Connessione database stabilita");
 
             // Carica schema tabella
-            TableSchema schema = new TableSchema(tableName, db);
+            TableSchema schema = new TableSchema(db, tableName);
 
             // Carica dati
             TableData tableData = new TableData(db);
-            Data data = new Data(tableName, db);
+            Data data = new Data(tableName, true);
 
             logger.info("Dataset caricato dal database: {} tuple, {} attributi",
                     data.getNumberOfExamples(),
@@ -161,21 +163,20 @@ public class DataImportService {
         } catch (DatabaseConnectionException e) {
             logger.error("Errore connessione database: {}", e.getMessage(), e);
             throw e;
-        } catch (EmptyDatasetException e) {
+        } catch (EmptySetException e) {
             logger.error("Tabella {} vuota o non trovata", tableName, e);
-            throw e;
+            throw new EmptyDatasetException("Tabella vuota: " + e.getMessage());
+        } catch (NoValueException e) {
+            logger.error("Valori mancanti in tabella {}", tableName, e);
+            throw new SQLException("Errore valori database: " + e.getMessage());
         } catch (SQLException e) {
             logger.error("Errore SQL durante caricamento dati", e);
             throw e;
         } finally {
             // Chiudi connessione
             if (db != null) {
-                try {
-                    db.closeConnection();
-                    logger.debug("Connessione database chiusa");
-                } catch (SQLException e) {
-                    logger.warn("Errore durante chiusura connessione DB", e);
-                }
+                db.closeConnection();
+                logger.debug("Connessione database chiusa");
             }
         }
     }
@@ -203,7 +204,7 @@ public class DataImportService {
 
         // Header attributi
         for (int j = 0; j < numAttributes; j++) {
-            preview.append(data.getAttributeSchema(j).getName());
+            preview.append(data.getExplanatoryAttribute(j).getName());
             if (j < numAttributes - 1) {
                 preview.append(", ");
             }
@@ -258,11 +259,7 @@ public class DataImportService {
 
         } finally {
             if (db != null) {
-                try {
-                    db.closeConnection();
-                } catch (SQLException e) {
-                    logger.warn("Errore chiusura connessione durante test", e);
-                }
+                db.closeConnection();
             }
         }
     }

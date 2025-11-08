@@ -112,7 +112,7 @@ public class ClusteringResult {
      * @return il numero di cluster trovati
      */
     public int getNumClusters() {
-        return clusterSet != null ? clusterSet.getSize() : 0;
+        return clusterSet != null ? clusterSet.getNumClusters() : 0;
     }
 
     /**

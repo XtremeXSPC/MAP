@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import mining.Cluster;
 import mining.ClusterSet;
 import mining.QTMiner;
 import org.slf4j.Logger;
@@ -236,10 +237,12 @@ public class ClusteringController {
                         clustersFoundLabel.setText(String.valueOf(finalNumClusters));
                         tuplesClusteredLabel.setText(totalTuples + " / " + totalTuples);
 
-                        // Mostra dettagli cluster
-                        for (int i = 0; i < finalNumClusters && i < 5; i++) {
-                            appendLog("Cluster " + (i + 1) + ": " +
-                                    clusterSet.get(i).getSize() + " tuple");
+                        // Mostra dettagli cluster (primi 5)
+                        int i = 0;
+                        for (Cluster cluster : clusterSet) {
+                            if (i >= 5) break;
+                            appendLog("Cluster " + (i + 1) + ": " + cluster.getSize() + " tuple");
+                            i++;
                         }
                         if (finalNumClusters > 5) {
                             appendLog("... e altri " + (finalNumClusters - 5) + " cluster");

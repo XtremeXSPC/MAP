@@ -215,7 +215,7 @@ public class ServerOneClient extends Thread {
             System.out.println("  → Salvataggio cluster in: " + fileName + ".dmp");
 
             // Serializza
-            qtMiner.salva(fileName);
+            qtMiner.save(fileName);
 
             System.out.println("  ✓ Cluster salvati");
 
@@ -261,7 +261,7 @@ public class ServerOneClient extends Thread {
             // 3. Serializza
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String fileName = tableName + "_" + timestamp;
-            qtMiner.salva(fileName);
+            qtMiner.save(fileName);
             System.out.println("    [3/3] Cluster salvati in: " + fileName + ".dmp");
 
             // Risposta

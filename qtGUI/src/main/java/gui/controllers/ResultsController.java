@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller per la vista Results.
@@ -58,6 +60,7 @@ public class ResultsController {
     private ClusteringResult clusteringResult;
     private ClusterSet clusterSet;
     private Data data;
+    private List<Cluster> clusterList; // Lista per accesso indicizzato
 
     /**
      * Inizializza il controller.
@@ -118,6 +121,12 @@ public class ResultsController {
         clusterSet = clusteringResult.getClusterSet();
         data = clusteringResult.getData();
 
+        // Converti ClusterSet in List per accesso indicizzato
+        clusterList = new ArrayList<>();
+        for (Cluster c : clusterSet) {
+            clusterList.add(c);
+        }
+
         int numClusters = clusteringResult.getNumClusters();
         int numTuples = clusteringResult.getNumTuples();
         double radius = clusteringResult.getRadius();
@@ -127,8 +136,8 @@ public class ResultsController {
         int maxSize = 0;
         int minSize = Integer.MAX_VALUE;
 
-        for (int i = 0; i < numClusters; i++) {
-            int size = clusterSet.get(i).getSize();
+        for (Cluster cluster : clusterList) {
+            int size = cluster.getSize();
             if (size > maxSize) maxSize = size;
             if (size < minSize) minSize = size;
         }
@@ -148,13 +157,13 @@ public class ResultsController {
         TreeItem<String> rootItem = new TreeItem<>("Risultati Clustering");
         rootItem.setExpanded(true);
 
-        for (int i = 0; i < numClusters; i++) {
-            Cluster cluster = clusterSet.get(i);
+        for (int i = 0; i < clusterList.size(); i++) {
+            Cluster cluster = clusterList.get(i);
             TreeItem<String> clusterItem = new TreeItem<>("Cluster " + (i + 1) +
                     " (" + cluster.getSize() + " tuple)");
 
             // Aggiungi tuple del cluster
-            int[] tupleIds = cluster.iterator();
+            int[] tupleIds = cluster.getTupleIDs();
             for (int tupleId : tupleIds) {
                 TreeItem<String> tupleItem = new TreeItem<>("Tupla " + tupleId);
                 clusterItem.getChildren().add(tupleItem);
@@ -193,10 +202,10 @@ public class ResultsController {
                 }
 
                 int clusterIndex = Integer.parseInt(clusterNumStr) - 1;
-                Cluster cluster = clusterSet.get(clusterIndex);
+                Cluster cluster = clusterList.get(clusterIndex);
 
             // Ottieni centroide
-            Tuple centroid = cluster.getCentroid(data);
+            Tuple centroid = cluster.getCentroid();
 
             // Aggiorna la scheda riepilogo
             summaryTextArea.setText(cluster.toString(data));
@@ -206,7 +215,7 @@ public class ResultsController {
             tuples.append("Tuple nel Cluster ").append(clusterIndex + 1).append("\n");
             tuples.append("=".repeat(50)).append("\n\n");
 
-            int[] tupleIds = cluster.iterator();
+            int[] tupleIds = cluster.getTupleIDs();
             for (int i = 0; i < tupleIds.length; i++) {
                 int tupleId = tupleIds[i];
                 Tuple tuple = data.getItemSet(tupleId);
@@ -270,15 +279,15 @@ public class ResultsController {
                 details.append("Valori attributi:\n");
 
                 for (int i = 0; i < data.getNumberOfExplanatoryAttributes(); i++) {
-                    details.append("  - ").append(data.getAttributeSchema(i).getName())
+                    details.append("  - ").append(data.getExplanatoryAttribute(i).getName())
                            .append(": ").append(tuple.get(i).getValue()).append("\n");
                 }
 
                 // Trova il cluster di appartenenza
-                for (int i = 0; i < clusterSet.getSize(); i++) {
-                    Cluster c = clusterSet.get(i);
+                for (int i = 0; i < clusterList.size(); i++) {
+                    Cluster c = clusterList.get(i);
                     if (c.contain(tupleId)) {
-                        Tuple centroid = c.getCentroid(data);
+                        Tuple centroid = c.getCentroid();
                         double distance = centroid.getDistance(tuple);
                         details.append("\nCluster di appartenenza: ").append(i + 1).append("\n");
                         details.append(String.format("Distanza dal centroide: %.3f\n", distance));

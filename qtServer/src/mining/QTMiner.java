@@ -122,7 +122,7 @@ public class QTMiner {
      * @throws FileNotFoundException se il percorso non è valido
      * @throws IOException se si verificano errori di I/O
      */
-    public void salva(String fileName) throws FileNotFoundException, IOException {
+    public void save(String fileName) throws FileNotFoundException, IOException {
         FileOutputStream fileOut = new FileOutputStream(fileName + ".dmp");
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(C);

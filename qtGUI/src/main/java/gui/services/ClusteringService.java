@@ -1,6 +1,7 @@
 package gui.services;
 
 import data.Data;
+import mining.Cluster;
 import mining.ClusterSet;
 import mining.QTMiner;
 import mining.ClusteringRadiusException;
@@ -68,9 +69,6 @@ public class ClusteringService {
 
             return miner.getC();
 
-        } catch (ClusteringRadiusException e) {
-            logger.error("Errore durante clustering: {}", e.getMessage());
-            throw e;
         } catch (Exception e) {
             logger.error("Errore inatteso durante clustering", e);
             throw new RuntimeException("Errore durante clustering: " + e.getMessage(), e);
@@ -126,7 +124,7 @@ public class ClusteringService {
         logger.info("Caricamento risultati clustering da: {}", filePath);
 
         try {
-            QTMiner miner = QTMiner.load(filePath);
+            QTMiner miner = new QTMiner(filePath);
             logger.info("Risultati caricati con successo");
             return miner;
 
@@ -154,7 +152,7 @@ public class ClusteringService {
             return "Nessuna statistica disponibile";
         }
 
-        int numClusters = clusterSet.getSize();
+        int numClusters = clusterSet.getNumClusters();
         int numTuples = data.getNumberOfExamples();
 
         // Gestisci caso cluster vuoto
@@ -169,8 +167,8 @@ public class ClusteringService {
         int maxSize = 0;
         int minSize = Integer.MAX_VALUE;
 
-        for (int i = 0; i < numClusters; i++) {
-            int size = clusterSet.get(i).getSize();
+        for (Cluster cluster : clusterSet) {
+            int size = cluster.getSize();
             if (size > maxSize) maxSize = size;
             if (size < minSize) minSize = size;
         }
