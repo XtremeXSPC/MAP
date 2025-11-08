@@ -6,6 +6,7 @@
 # Struttura:
 #   - qtClient: Applicazione client (package default e keyboardinput)
 #   - qtServer: Applicazione server (package data, mining, database, server)
+#   - qtExt: Extensions (test suite e utility per benchmark)
 # ============================================================================ #
 
 # Variabili di configurazione
@@ -22,6 +23,8 @@ CLIENT_SRC = qtClient/src
 CLIENT_BIN = qtClient/bin
 SERVER_SRC = qtServer/src
 SERVER_BIN = qtServer/bin
+EXT_SRC = qtExt
+EXT_BIN = qtExt/bin
 
 # Main classes
 CLIENT_MAIN = MainTest
@@ -32,18 +35,22 @@ CLIENT_JAR = qtClient.jar
 SERVER_JAR = qtServer.jar
 
 # MySQL JDBC Driver
-MYSQL_DRIVER = qtServer/database/JDBC/mysql-connector-java-8.0.17.jar
+MYSQL_DRIVER = qtServer/JDBC/mysql-connector-java-8.0.17.jar
 
 # Classpath con MySQL driver
 SERVER_CLASSPATH = $(SERVER_BIN):$(MYSQL_DRIVER)
+EXT_CLASSPATH = $(EXT_BIN):$(SERVER_BIN):$(MYSQL_DRIVER)
 
 # Trova tutti i file sorgente
 CLIENT_SOURCES = $(shell find $(CLIENT_SRC) -name '*.java')
 SERVER_SOURCES = $(shell find $(SERVER_SRC) -name '*.java')
+EXT_TESTS = $(shell find $(EXT_SRC)/tests -name '*.java' 2>/dev/null)
+EXT_UTILITY = $(shell find $(EXT_SRC)/utility -name '*.java' 2>/dev/null)
 
 # File marker per tracking compilazione
 CLIENT_MARKER = $(CLIENT_BIN)/.compiled
 SERVER_MARKER = $(SERVER_BIN)/.compiled
+EXT_MARKER = $(EXT_BIN)/.compiled
 
 # Colori per output (opzionali)
 GREEN = \033[0;32m
@@ -57,7 +64,7 @@ NC = \033[0m # No Color
 
 # Target di default: compila tutto
 .PHONY: all
-all: client server
+all: client server ext
 	@echo "$(GREEN)✓ Compilazione completata con successo!$(NC)"
 
 # Target help: mostra utilizzo
@@ -68,9 +75,10 @@ help:
 	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"
 	@echo ""
 	@echo "$(YELLOW)Target disponibili:$(NC)"
-	@echo "  make all          - Compila client e server"
+	@echo "  make all          - Compila client, server e extensions"
 	@echo "  make client       - Compila solo qtClient"
 	@echo "  make server       - Compila solo qtServer"
+	@echo "  make ext          - Compila solo qtExt (test e utility)"
 	@echo ""
 	@echo "  make jar          - Crea JAR per client e server"
 	@echo "  make client-jar   - Crea solo qtClient.jar"
@@ -79,9 +87,18 @@ help:
 	@echo "  make run-client   - Esegui client (args: IP=localhost PORT=8080)"
 	@echo "  make run-server   - Esegui server (args: PORT=8080)"
 	@echo ""
+	@echo "  make test         - Esegui tutti i test"
+	@echo "  make test-distance   - Test calcolo distanze"
+	@echo "  make test-qt         - Test algoritmo QT"
+	@echo "  make test-cluster    - Test operazioni cluster"
+	@echo "  make test-data       - Test operazioni data"
+	@echo "  make test-iterators  - Test iteratori"
+	@echo "  make test-continuous - Test attributi continui"
+	@echo ""
 	@echo "  make clean        - Rimuove tutti i file compilati"
 	@echo "  make clean-client - Rimuove solo file compilati del client"
 	@echo "  make clean-server - Rimuove solo file compilati del server"
+	@echo "  make clean-ext    - Rimuove solo file compilati di qtExt"
 	@echo "  make clean-jar    - Rimuove solo i file JAR"
 	@echo ""
 	@echo "  make rebuild      - Pulisci e ricompila tutto"
@@ -119,6 +136,18 @@ $(SERVER_MARKER): $(SERVER_SOURCES)
 	$(JAVAC) $(JFLAGS) $(SERVER_BIN) $(SERVER_SOURCES)
 	@touch $(SERVER_MARKER)
 	@echo "$(GREEN)✓ qtServer compilato$(NC)"
+
+# Compila qtExt (test e utility)
+.PHONY: ext
+ext: $(EXT_MARKER)
+
+$(EXT_MARKER): $(EXT_TESTS) $(EXT_UTILITY) server
+	@echo "$(BLUE)→ Compilazione qtExt (test e utility)...$(NC)"
+	@mkdir -p $(EXT_BIN)
+	@if [ -n "$(EXT_TESTS)" ]; then $(JAVAC) $(JFLAGS) $(EXT_BIN) -cp $(SERVER_CLASSPATH) $(EXT_TESTS); fi
+	@if [ -n "$(EXT_UTILITY)" ]; then $(JAVAC) $(JFLAGS) $(EXT_BIN) -cp $(SERVER_CLASSPATH) $(EXT_UTILITY); fi
+	@touch $(EXT_MARKER)
+	@echo "$(GREEN)✓ qtExt compilato$(NC)"
 
 # ============================================================================ #
 # Creazione JAR
@@ -177,12 +206,69 @@ run-client-jar: client-jar
 	$(JAVA) -jar $(CLIENT_JAR) $(IP) $(PORT)
 
 # ============================================================================ #
+# Testing
+# ============================================================================ #
+
+# Esegui tutti i test
+.PHONY: test
+test: ext
+	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)  Esecuzione Test Suite$(NC)"
+	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(NC)"
+	@echo ""
+	@$(MAKE) --no-print-directory test-distance
+	@echo ""
+	@$(MAKE) --no-print-directory test-qt
+	@echo ""
+	@$(MAKE) --no-print-directory test-cluster
+	@echo ""
+	@$(MAKE) --no-print-directory test-data
+	@echo ""
+	@echo "$(GREEN)✓ Test suite completata!$(NC)"
+
+# Test calcolo distanze
+.PHONY: test-distance
+test-distance: ext
+	@echo "$(YELLOW)→ Test Calcolo Distanze...$(NC)"
+	@$(JAVA) -cp $(EXT_CLASSPATH) tests.TestDistanceCalculations
+
+# Test algoritmo QT
+.PHONY: test-qt
+test-qt: ext
+	@echo "$(YELLOW)→ Test Algoritmo QT...$(NC)"
+	@$(JAVA) -cp $(EXT_CLASSPATH) tests.TestQTAlgorithm
+
+# Test operazioni cluster
+.PHONY: test-cluster
+test-cluster: ext
+	@echo "$(YELLOW)→ Test Operazioni Cluster...$(NC)"
+	@$(JAVA) -cp $(EXT_CLASSPATH) tests.TestClusterOperations
+
+# Test operazioni data
+.PHONY: test-data
+test-data: ext
+	@echo "$(YELLOW)→ Test Operazioni Data...$(NC)"
+	@$(JAVA) -cp $(EXT_CLASSPATH) tests.TestDataOperations
+
+# Test iteratori e comparatori
+.PHONY: test-iterators
+test-iterators: ext
+	@echo "$(YELLOW)→ Test Iteratori e Comparatori...$(NC)"
+	@$(JAVA) -cp $(EXT_CLASSPATH) tests.TestIteratorsComparators
+
+# Test attributi continui (interattivo)
+.PHONY: test-continuous
+test-continuous: ext
+	@echo "$(YELLOW)→ Test Attributi Continui (Interattivo)...$(NC)"
+	@$(JAVA) -cp $(EXT_CLASSPATH) tests.TestContinuousAttributes
+
+# ============================================================================ #
 # Pulizia
 # ============================================================================ #
 
 # Pulisci tutto
 .PHONY: clean
-clean: clean-client clean-server clean-jar
+clean: clean-client clean-server clean-ext clean-jar
 	@echo "$(GREEN)✓ Pulizia completata$(NC)"
 
 # Pulisci solo client
@@ -198,6 +284,13 @@ clean-server:
 	@echo "$(YELLOW)→ Pulizia qtServer...$(NC)"
 	@rm -rf $(SERVER_BIN)
 	@echo "$(GREEN)✓ qtServer pulito$(NC)"
+
+# Pulisci solo qtExt
+.PHONY: clean-ext
+clean-ext:
+	@echo "$(YELLOW)→ Pulizia qtExt...$(NC)"
+	@rm -rf $(EXT_BIN)
+	@echo "$(GREEN)✓ qtExt pulito$(NC)"
 
 # Pulisci solo JAR
 .PHONY: clean-jar
@@ -233,9 +326,16 @@ info:
 	@echo "  Main class:  $(SERVER_MAIN)"
 	@echo "  File Java:   $(words $(SERVER_SOURCES))"
 	@echo ""
+	@echo "$(YELLOW)Extensions (qtExt):$(NC)"
+	@echo "  Sorgenti:    $(EXT_SRC)"
+	@echo "  Binari:      $(EXT_BIN)"
+	@echo "  Test:        $(words $(EXT_TESTS))"
+	@echo "  Utility:     $(words $(EXT_UTILITY))"
+	@echo ""
 	@echo "$(YELLOW)Stato compilazione:$(NC)"
 	@if [ -f $(CLIENT_MARKER) ]; then echo "  Client:  $(GREEN)✓ compilato$(NC)"; else echo "  Client:  $(YELLOW)✗ non compilato$(NC)"; fi
 	@if [ -f $(SERVER_MARKER) ]; then echo "  Server:  $(GREEN)✓ compilato$(NC)"; else echo "  Server:  $(YELLOW)✗ non compilato$(NC)"; fi
+	@if [ -f $(EXT_MARKER) ]; then echo "  qtExt:   $(GREEN)✓ compilato$(NC)"; else echo "  qtExt:   $(YELLOW)✗ non compilato$(NC)"; fi
 	@echo ""
 	@echo "$(YELLOW)File JAR:$(NC)"
 	@if [ -f $(CLIENT_JAR) ]; then echo "  $(CLIENT_JAR): $(GREEN)✓ presente$(NC) ($$(du -h $(CLIENT_JAR) | cut -f1))"; else echo "  $(CLIENT_JAR): $(YELLOW)✗ non presente$(NC)"; fi
@@ -263,5 +363,11 @@ list-sources:
 	@echo ""
 	@echo "$(YELLOW)File sorgente qtServer:$(NC)"
 	@echo "$(SERVER_SOURCES)" | tr ' ' '\n'
+	@echo ""
+	@echo "$(YELLOW)File sorgente qtExt (Test):$(NC)"
+	@echo "$(EXT_TESTS)" | tr ' ' '\n'
+	@echo ""
+	@echo "$(YELLOW)File sorgente qtExt (Utility):$(NC)"
+	@echo "$(EXT_UTILITY)" | tr ' ' '\n'
 
 # ============================================================================ #
