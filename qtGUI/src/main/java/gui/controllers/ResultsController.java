@@ -423,9 +423,14 @@ public class ResultsController {
 
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // TODO: Tornare alla vista home
                 logger.info("Utente ha confermato nuova analisi");
-                statusLabel.setText("Avvio nuova analisi...");
+
+                // Reset context
+                ApplicationContext.getInstance().setCurrentConfiguration(null);
+                ApplicationContext.getInstance().setCurrentResult(null);
+
+                // Naviga a home
+                navigateToHome();
             }
         });
     }
@@ -444,6 +449,28 @@ public class ResultsController {
 
             statusLabel.setText("Dettagli copiati negli appunti");
             logger.info("Dettagli cluster copiati negli appunti");
+        }
+    }
+
+    /**
+     * Naviga alla schermata home.
+     */
+    private void navigateToHome() {
+        try {
+            // Carica la vista home e rimpiazza la scena corrente
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/views/main.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            javafx.scene.Scene currentScene = statusLabel.getScene();
+            currentScene.setRoot(root);
+
+            statusLabel.setText("Ritorno alla schermata iniziale...");
+            logger.info("Navigazione a home completata");
+
+        } catch (Exception e) {
+            logger.error("Errore durante navigazione a home", e);
+            showError("Errore", "Si è verificato un errore durante la navigazione: " + e.getMessage());
         }
     }
 

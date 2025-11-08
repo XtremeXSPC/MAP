@@ -1,5 +1,6 @@
 package gui.controllers;
 
+import gui.utils.ApplicationContext;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -179,7 +180,15 @@ public class MainController {
 
     private void handleRunClustering() {
         logger.info("Esegui Clustering cliccato");
-        navigateTo("clustering.fxml");
+
+        // Verifica se esiste una configurazione valida
+        if (ApplicationContext.getInstance().getCurrentConfiguration() == null) {
+            logger.warn("Nessuna configurazione trovata, reindirizzo a home per configurazione");
+            updateStatus("Configura prima i parametri di clustering");
+            navigateTo("home.fxml");
+        } else {
+            navigateTo("clustering.fxml");
+        }
     }
 
     private void handleExport() {

@@ -327,10 +327,11 @@ public class HomeController {
 
                 config.setDbTableName(tableNameField.getText().trim());
                 // Note: username e password dovrebbero essere richiesti in un dialog separato
-                // Per semplicità usiamo valori default
+                // TODO: Implementare campi GUI per credenziali DB (Sprint 3)
+                // Per ora usiamo valori hardcoded dal backend
                 config.setDbName("MapDB");
                 config.setDbUser("MapUser");
-                config.setDbPassword("");
+                config.setDbPassword("map");  // Password corretta dal backend
             }
 
             // Imposta opzioni
