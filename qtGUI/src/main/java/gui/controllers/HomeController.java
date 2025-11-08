@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 
 /**
- * Controller for the Home view.
- * Handles dataset selection and clustering parameter configuration.
+ * Controller per la vista Home.
+ * Gestisce la selezione del dataset e la configurazione dei parametri di clustering.
  */
 public class HomeController {
 
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
-    // Dataset selection
+    // Selezione dataset
     @FXML private ComboBox<String> dataSourceComboBox;
     @FXML private HBox csvFileSection;
     @FXML private TextField csvFilePathField;
@@ -29,44 +29,44 @@ public class HomeController {
     @FXML private TextField dbPortField;
     @FXML private Button btnPreviewDataset;
 
-    // Clustering parameters
+    // Parametri clustering
     @FXML private TextField radiusField;
     @FXML private Label radiusValidationLabel;
 
-    // Options
+    // Opzioni
     @FXML private CheckBox enableCachingCheckBox;
     @FXML private CheckBox verboseLoggingCheckBox;
 
-    // Action buttons
+    // Pulsanti azione
     @FXML private Button btnCancel;
     @FXML private Button btnStartClustering;
 
-    // Validation
+    // Validazione
     @FXML private HBox validationSummary;
     @FXML private Label validationMessageLabel;
 
     private File selectedCsvFile;
 
     /**
-     * Initialize the controller.
-     * Called automatically after FXML loading.
+     * Inizializza il controller.
+     * Chiamato automaticamente dopo il caricamento FXML.
      */
     @FXML
     public void initialize() {
-        logger.info("Initializing HomeController...");
+        logger.info("Inizializzazione HomeController...");
 
         setupDataSourceSelection();
         setupRadiusValidation();
         setupButtons();
 
-        // Set default data source
+        // Imposta la sorgente dati predefinita
         dataSourceComboBox.getSelectionModel().selectFirst();
 
-        logger.info("HomeController initialized successfully");
+        logger.info("HomeController inizializzato con successo");
     }
 
     /**
-     * Setup data source combo box behavior.
+     * Configura il comportamento della combo box per la selezione della sorgente dati.
      */
     private void setupDataSourceSelection() {
         dataSourceComboBox.getSelectionModel().selectedItemProperty().addListener(
@@ -78,20 +78,20 @@ public class HomeController {
     }
 
     /**
-     * Handle data source selection change.
+     * Gestisce il cambiamento della selezione della sorgente dati.
      *
-     * @param dataSource selected data source
+     * @param dataSource sorgente dati selezionata
      */
     private void handleDataSourceChange(String dataSource) {
-        logger.info("Data source changed to: {}", dataSource);
+        logger.info("Sorgente dati cambiata in: {}", dataSource);
 
-        // Hide all optional sections
+        // Nascondi tutte le sezioni opzionali
         csvFileSection.setVisible(false);
         csvFileSection.setManaged(false);
         databaseSection.setVisible(false);
         databaseSection.setManaged(false);
 
-        // Show relevant section based on selection
+        // Mostra la sezione rilevante in base alla selezione
         if (dataSource.contains("CSV")) {
             csvFileSection.setVisible(true);
             csvFileSection.setManaged(true);
@@ -102,7 +102,7 @@ public class HomeController {
     }
 
     /**
-     * Setup radius field validation.
+     * Configura la validazione del campo radius.
      */
     private void setupRadiusValidation() {
         radiusField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -112,33 +112,33 @@ public class HomeController {
     }
 
     /**
-     * Validate radius input.
+     * Valida l'input del radius.
      *
-     * @param value radius value
-     * @return true if valid
+     * @param value valore del radius
+     * @return true se valido
      */
     private boolean validateRadius(String value) {
         if (value == null || value.trim().isEmpty()) {
-            radiusValidationLabel.setText("Radius is required");
+            radiusValidationLabel.setText("Il radius è obbligatorio");
             return false;
         }
 
         try {
             double radius = Double.parseDouble(value.trim());
             if (radius < 0) {
-                radiusValidationLabel.setText("Radius must be non-negative");
+                radiusValidationLabel.setText("Il radius deve essere non negativo");
                 return false;
             }
             radiusValidationLabel.setText("");
             return true;
         } catch (NumberFormatException e) {
-            radiusValidationLabel.setText("Invalid number format");
+            radiusValidationLabel.setText("Formato numero non valido");
             return false;
         }
     }
 
     /**
-     * Setup button event handlers.
+     * Configura i gestori eventi dei pulsanti.
      */
     private void setupButtons() {
         btnBrowseFile.setOnAction(e -> handleBrowseFile());
@@ -148,36 +148,36 @@ public class HomeController {
     }
 
     /**
-     * Validate the entire form.
+     * Valida l'intero modulo.
      *
-     * @return true if form is valid
+     * @return true se il modulo è valido
      */
     private boolean validateForm() {
         boolean isValid = true;
         StringBuilder errors = new StringBuilder();
 
-        // Validate data source
+        // Valida la sorgente dati
         String dataSource = dataSourceComboBox.getValue();
         if (dataSource == null) {
             isValid = false;
-            errors.append("Please select a data source. ");
+            errors.append("Selezionare una sorgente dati. ");
         } else if (dataSource.contains("CSV") && selectedCsvFile == null) {
             isValid = false;
-            errors.append("Please select a CSV file. ");
+            errors.append("Selezionare un file CSV. ");
         } else if (dataSource.contains("Database")) {
             if (tableNameField.getText() == null || tableNameField.getText().trim().isEmpty()) {
                 isValid = false;
-                errors.append("Please enter a table name. ");
+                errors.append("Inserire un nome tabella. ");
             }
         }
 
-        // Validate radius
+        // Valida il radius
         if (!validateRadius(radiusField.getText())) {
             isValid = false;
-            errors.append("Please enter a valid radius. ");
+            errors.append("Inserire un radius valido. ");
         }
 
-        // Update UI based on validation
+        // Aggiorna l'UI in base alla validazione
         btnStartClustering.setDisable(!isValid);
 
         if (!isValid && errors.length() > 0) {
@@ -193,45 +193,45 @@ public class HomeController {
     }
 
     /**
-     * Handle browse file button click.
+     * Gestisce il clic del pulsante sfoglia file.
      */
     private void handleBrowseFile() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select CSV File");
+        fileChooser.setTitle("Seleziona File CSV");
         fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("CSV Files", "*.csv")
+            new FileChooser.ExtensionFilter("File CSV", "*.csv")
         );
 
         File file = fileChooser.showOpenDialog(btnBrowseFile.getScene().getWindow());
         if (file != null) {
             selectedCsvFile = file;
             csvFilePathField.setText(file.getAbsolutePath());
-            logger.info("Selected CSV file: {}", file.getAbsolutePath());
+            logger.info("File CSV selezionato: {}", file.getAbsolutePath());
             validateForm();
         }
     }
 
     /**
-     * Handle preview dataset button click.
+     * Gestisce il clic del pulsante anteprima dataset.
      */
     private void handlePreviewDataset() {
-        logger.info("Preview dataset clicked");
+        logger.info("Anteprima dataset cliccato");
 
-        // TODO: Implement dataset preview dialog
+        // TODO: Implementare dialogo anteprima dataset
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Dataset Preview");
-        alert.setHeaderText("Dataset Preview");
-        alert.setContentText("Dataset preview functionality will be implemented in Sprint 2.");
+        alert.setTitle("Anteprima Dataset");
+        alert.setHeaderText("Anteprima Dataset");
+        alert.setContentText("La funzionalità di anteprima dataset sarà implementata nello Sprint 2.");
         alert.showAndWait();
     }
 
     /**
-     * Handle cancel button click.
+     * Gestisce il clic del pulsante annulla.
      */
     private void handleCancel() {
-        logger.info("Cancel clicked");
+        logger.info("Annulla cliccato");
 
-        // Clear form
+        // Pulisce il modulo
         dataSourceComboBox.getSelectionModel().selectFirst();
         radiusField.clear();
         csvFilePathField.clear();
@@ -243,73 +243,73 @@ public class HomeController {
     }
 
     /**
-     * Handle start clustering button click.
+     * Gestisce il clic del pulsante avvia clustering.
      */
     private void handleStartClustering() {
         if (!validateForm()) {
-            logger.warn("Form validation failed");
+            logger.warn("Validazione modulo fallita");
             return;
         }
 
-        logger.info("Starting clustering with parameters:");
-        logger.info("  Data source: {}", dataSourceComboBox.getValue());
+        logger.info("Avvio clustering con parametri:");
+        logger.info("  Sorgente dati: {}", dataSourceComboBox.getValue());
         logger.info("  Radius: {}", radiusField.getText());
-        logger.info("  Enable caching: {}", enableCachingCheckBox.isSelected());
-        logger.info("  Verbose logging: {}", verboseLoggingCheckBox.isSelected());
+        logger.info("  Caching abilitato: {}", enableCachingCheckBox.isSelected());
+        logger.info("  Logging verboso: {}", verboseLoggingCheckBox.isSelected());
 
         if (selectedCsvFile != null) {
-            logger.info("  CSV file: {}", selectedCsvFile.getAbsolutePath());
+            logger.info("  File CSV: {}", selectedCsvFile.getAbsolutePath());
         }
 
-        // TODO: Navigate to clustering view and start clustering process
-        // This will be implemented in Sprint 2
+        // TODO: Navigare alla vista clustering e avviare il processo di clustering
+        // Questo sarà implementato nello Sprint 2
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Clustering");
-        alert.setHeaderText("Start Clustering");
-        alert.setContentText("Clustering functionality will be implemented in Sprint 2.\n\n" +
-                           "Parameters captured:\n" +
-                           "- Data Source: " + dataSourceComboBox.getValue() + "\n" +
+        alert.setHeaderText("Avvia Clustering");
+        alert.setContentText("La funzionalità di clustering sarà implementata nello Sprint 2.\n\n" +
+                           "Parametri acquisiti:\n" +
+                           "- Sorgente Dati: " + dataSourceComboBox.getValue() + "\n" +
                            "- Radius: " + radiusField.getText() + "\n" +
                            "- Caching: " + enableCachingCheckBox.isSelected());
         alert.showAndWait();
     }
 
     /**
-     * Get the selected radius value.
+     * Restituisce il valore del radius selezionato.
      *
-     * @return radius value
+     * @return valore del radius
      */
     public double getRadius() {
         try {
             return Double.parseDouble(radiusField.getText().trim());
         } catch (NumberFormatException e) {
-            logger.warn("Invalid radius value: '{}'", radiusField.getText(), e);
+            logger.warn("Valore radius non valido: '{}'", radiusField.getText(), e);
             return Double.NaN;
         }
     }
 
     /**
-     * Get the selected data source type.
+     * Restituisce il tipo di sorgente dati selezionato.
      *
-     * @return data source type
+     * @return tipo di sorgente dati
      */
     public String getDataSourceType() {
         return dataSourceComboBox.getValue();
     }
 
     /**
-     * Check if caching is enabled.
+     * Verifica se il caching è abilitato.
      *
-     * @return true if caching enabled
+     * @return true se il caching è abilitato
      */
     public boolean isCachingEnabled() {
         return enableCachingCheckBox.isSelected();
     }
 
     /**
-     * Get the selected CSV file.
+     * Restituisce il file CSV selezionato.
      *
-     * @return CSV file or null if not selected
+     * @return file CSV o null se non selezionato
      */
     public File getSelectedCsvFile() {
         return selectedCsvFile;

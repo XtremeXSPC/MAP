@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main JavaFX Application for QT Clustering GUI.
- * Entry point for the graphical user interface.
+ * Applicazione JavaFX principale per la GUI QT Clustering.
+ * Punto di ingresso per l'interfaccia grafica utente.
  */
 public class MainApp extends Application {
 
@@ -26,54 +26,54 @@ public class MainApp extends Application {
         this.primaryStage = stage;
 
         try {
-            logger.info("Starting QT Clustering GUI application...");
+            logger.info("Avvio applicazione GUI QT Clustering...");
 
-            // Load main FXML layout
+            // Carica il layout FXML principale
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/main.fxml"));
             Parent root = loader.load();
 
-            // Create scene with stylesheet
+            // Crea la scena con il foglio di stile
             Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
             scene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
 
-            // Configure stage
+            // Configura lo stage
             primaryStage.setTitle(APP_TITLE);
             primaryStage.setScene(scene);
             primaryStage.setMinWidth(800);
             primaryStage.setMinHeight(600);
 
-            // Show the stage
+            // Mostra lo stage
             primaryStage.show();
 
-            logger.info("Application started successfully");
+            logger.info("Applicazione avviata con successo");
 
         } catch (Exception e) {
-            logger.error("Failed to start application", e);
-            throw new RuntimeException("Failed to load main window", e);
+            logger.error("Impossibile avviare l'applicazione", e);
+            throw new RuntimeException("Impossibile caricare la finestra principale", e);
         }
     }
 
     @Override
     public void stop() {
-        logger.info("Application shutting down...");
+        logger.info("Chiusura applicazione...");
     }
 
     /**
-     * Returns the primary stage of the application.
+     * Restituisce lo stage primario dell'applicazione.
      *
-     * @return primary stage
+     * @return stage primario
      */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
     /**
-     * Main method to launch the JavaFX application.
+     * Metodo main per lanciare l'applicazione JavaFX.
      *
-     * @param args command line arguments
+     * @param args argomenti da linea di comando
      */
     public static void main(String[] args) {
-        logger.info("Launching QT Clustering GUI...");
+        logger.info("Lancio GUI QT Clustering...");
         launch(args);
     }
 }

@@ -14,31 +14,31 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Controller for the Settings view.
- * Manages application configuration and preferences.
+ * Controller per la vista Settings.
+ * Gestisce la configurazione dell'applicazione e le preferenze.
  */
 public class SettingsController {
 
     private static final Logger logger = LoggerFactory.getLogger(SettingsController.class);
     private static final String SETTINGS_FILE = "qtgui.properties";
 
-    // Appearance
+    // Aspetto
     @FXML private ComboBox<String> themeComboBox;
     @FXML private ComboBox<String> fontSizeComboBox;
     @FXML private CheckBox showWelcomeCheckBox;
 
-    // Performance
+    // Prestazioni
     @FXML private CheckBox enableCachingCheckBox;
     @FXML private Spinner<Integer> threadPoolSpinner;
     @FXML private TextField memoryLimitField;
     @FXML private CheckBox verboseLoggingCheckBox;
 
-    // Clustering Defaults
+    // Impostazioni predefinite clustering
     @FXML private TextField defaultRadiusField;
     @FXML private ComboBox<String> defaultDataSourceComboBox;
     @FXML private CheckBox autoStartClusteringCheckBox;
 
-    // Export Settings
+    // Impostazioni esportazione
     @FXML private ComboBox<String> exportFormatComboBox;
     @FXML private TextField exportDirectoryField;
     @FXML private Button btnBrowseExportDir;
@@ -52,24 +52,24 @@ public class SettingsController {
     @FXML private PasswordField dbPasswordField;
     @FXML private Button btnTestConnection;
 
-    // Buttons
+    // Pulsanti
     @FXML private Button btnResetDefaults;
     @FXML private Button btnCancel;
     @FXML private Button btnSaveSettings;
 
-    // Status
+    // Stato
     @FXML private HBox statusFooter;
     @FXML private Label statusMessageLabel;
 
     private Properties settings;
 
     /**
-     * Initialize the controller.
-     * Called automatically after FXML loading.
+     * Inizializza il controller.
+     * Chiamato automaticamente dopo il caricamento FXML.
      */
     @FXML
     public void initialize() {
-        logger.info("Initializing SettingsController...");
+        logger.info("Inizializzazione SettingsController...");
 
         settings = new Properties();
 
@@ -77,11 +77,11 @@ public class SettingsController {
         setupButtons();
         loadSettings();
 
-        logger.info("SettingsController initialized successfully");
+        logger.info("SettingsController inizializzato con successo");
     }
 
     /**
-     * Setup spinner controls.
+     * Configura i controlli spinner.
      */
     private void setupSpinners() {
         SpinnerValueFactory<Integer> valueFactory =
@@ -90,7 +90,7 @@ public class SettingsController {
     }
 
     /**
-     * Setup button event handlers.
+     * Configura i gestori eventi dei pulsanti.
      */
     private void setupButtons() {
         btnBrowseExportDir.setOnAction(e -> handleBrowseExportDirectory());
@@ -101,7 +101,7 @@ public class SettingsController {
     }
 
     /**
-     * Load settings from properties file.
+     * Carica le impostazioni dal file properties.
      */
     private void loadSettings() {
         try {
@@ -110,45 +110,45 @@ public class SettingsController {
                 try (FileInputStream fis = new FileInputStream(settingsFile)) {
                     settings.load(fis);
                     applySettings();
-                    logger.info("Settings loaded from {}", SETTINGS_FILE);
+                    logger.info("Impostazioni caricate da {}", SETTINGS_FILE);
                 }
             } else {
-                // Apply defaults
+                // Applica valori predefiniti
                 applyDefaults();
-                logger.info("No settings file found, using defaults");
+                logger.info("Nessun file di impostazioni trovato, uso valori predefiniti");
             }
         } catch (IOException e) {
-            logger.error("Failed to load settings", e);
+            logger.error("Impossibile caricare le impostazioni", e);
             applyDefaults();
         }
     }
 
     /**
-     * Apply settings to UI controls.
+     * Applica le impostazioni ai controlli dell'interfaccia.
      */
     private void applySettings() {
-        // Appearance
+        // Aspetto
         themeComboBox.setValue(settings.getProperty("theme", "Light"));
         fontSizeComboBox.setValue(settings.getProperty("fontSize", "Medium (14px)"));
         showWelcomeCheckBox.setSelected(Boolean.parseBoolean(settings.getProperty("showWelcome", "true")));
 
-        // Performance
+        // Prestazioni
         enableCachingCheckBox.setSelected(Boolean.parseBoolean(settings.getProperty("enableCaching", "true")));
         try {
             threadPoolSpinner.getValueFactory().setValue(Integer.parseInt(settings.getProperty("threadPoolSize", "4")));
         } catch (NumberFormatException e) {
-            logger.warn("Invalid threadPoolSize value: '{}', falling back to default (4)", settings.getProperty("threadPoolSize"));
+            logger.warn("Valore threadPoolSize non valido: '{}', utilizzo valore predefinito (4)", settings.getProperty("threadPoolSize"));
             threadPoolSpinner.getValueFactory().setValue(4);
         }
         memoryLimitField.setText(settings.getProperty("memoryLimit", "512"));
         verboseLoggingCheckBox.setSelected(Boolean.parseBoolean(settings.getProperty("verboseLogging", "false")));
 
-        // Clustering Defaults
+        // Impostazioni predefinite clustering
         defaultRadiusField.setText(settings.getProperty("defaultRadius", "0.5"));
         defaultDataSourceComboBox.setValue(settings.getProperty("defaultDataSource", "Hardcoded (PlayTennis)"));
         autoStartClusteringCheckBox.setSelected(Boolean.parseBoolean(settings.getProperty("autoStart", "false")));
 
-        // Export
+        // Esportazione
         exportFormatComboBox.setValue(settings.getProperty("exportFormat", "CSV"));
         exportDirectoryField.setText(settings.getProperty("exportDirectory", System.getProperty("user.home")));
         includeTimestampCheckBox.setSelected(Boolean.parseBoolean(settings.getProperty("includeTimestamp", "true")));
@@ -158,11 +158,11 @@ public class SettingsController {
         dbPortField.setText(settings.getProperty("dbPort", "3306"));
         dbNameField.setText(settings.getProperty("dbName", "MapDB"));
         dbUsernameField.setText(settings.getProperty("dbUsername", "MapUser"));
-        // Password not loaded from file for security
+        // Password non caricata dal file per sicurezza
     }
 
     /**
-     * Apply default values to UI controls.
+     * Applica i valori predefiniti ai controlli dell'interfaccia.
      */
     private void applyDefaults() {
         themeComboBox.setValue("Light");
@@ -190,11 +190,11 @@ public class SettingsController {
     }
 
     /**
-     * Handle browse export directory button.
+     * Gestisce il pulsante sfoglia directory esportazione.
      */
     private void handleBrowseExportDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Select Export Directory");
+        directoryChooser.setTitle("Seleziona Directory Esportazione");
 
         String currentDir = exportDirectoryField.getText();
         if (currentDir != null && !currentDir.isEmpty()) {
@@ -207,15 +207,15 @@ public class SettingsController {
         File selectedDirectory = directoryChooser.showDialog(btnBrowseExportDir.getScene().getWindow());
         if (selectedDirectory != null) {
             exportDirectoryField.setText(selectedDirectory.getAbsolutePath());
-            logger.info("Export directory set to: {}", selectedDirectory.getAbsolutePath());
+            logger.info("Directory esportazione impostata a: {}", selectedDirectory.getAbsolutePath());
         }
     }
 
     /**
-     * Handle test database connection button.
+     * Gestisce il pulsante test connessione database.
      */
     private void handleTestConnection() {
-        logger.info("Testing database connection...");
+        logger.info("Test connessione database...");
 
         String host = dbHostField.getText();
         String port = dbPortField.getText();
@@ -223,17 +223,17 @@ public class SettingsController {
         String username = dbUsernameField.getText();
         String password = dbPasswordField.getText();
 
-        // TODO: Implement actual database connection test in Sprint 2
-        // For now, show a simulated result
+        // TODO: Implementare test connessione database effettivo nello Sprint 2
+        // Per ora, mostra un risultato simulato
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Database Connection Test");
-        alert.setHeaderText("Connection Test");
+        alert.setTitle("Test Connessione Database");
+        alert.setHeaderText("Test Connessione");
         alert.setContentText(
-            "Database connection test will be implemented in Sprint 2.\n\n" +
-            "Configuration:\n" +
+            "Il test di connessione al database sarà implementato nello Sprint 2.\n\n" +
+            "Configurazione:\n" +
             "Host: " + host + "\n" +
-            "Port: " + port + "\n" +
+            "Porta: " + port + "\n" +
             "Database: " + dbName + "\n" +
             "Username: " + username
         );
@@ -241,46 +241,46 @@ public class SettingsController {
     }
 
     /**
-     * Handle reset to defaults button.
+     * Gestisce il pulsante ripristina predefiniti.
      */
     private void handleResetDefaults() {
-        logger.info("Reset to defaults clicked");
+        logger.info("Ripristina predefiniti cliccato");
 
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Reset Settings");
-        confirmAlert.setHeaderText("Reset all settings to defaults?");
-        confirmAlert.setContentText("This action cannot be undone.");
+        confirmAlert.setTitle("Ripristina Impostazioni");
+        confirmAlert.setHeaderText("Ripristinare tutte le impostazioni ai valori predefiniti?");
+        confirmAlert.setContentText("Questa azione non può essere annullata.");
 
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 applyDefaults();
-                showStatus("Settings reset to defaults", true);
-                logger.info("Settings reset to defaults");
+                showStatus("Impostazioni ripristinate ai valori predefiniti", true);
+                logger.info("Impostazioni ripristinate ai valori predefiniti");
             }
         });
     }
 
     /**
-     * Handle cancel button.
+     * Gestisce il pulsante annulla.
      */
     private void handleCancel() {
-        logger.info("Cancel clicked - reloading settings");
+        logger.info("Annulla cliccato - ricaricamento impostazioni");
         loadSettings();
-        showStatus("Settings reloaded", false);
+        showStatus("Impostazioni ricaricate", false);
     }
 
     /**
-     * Handle save settings button.
+     * Gestisce il pulsante salva impostazioni.
      */
     private void handleSaveSettings() {
-        logger.info("Save settings clicked");
+        logger.info("Salva impostazioni cliccato");
 
-        // Validate inputs
+        // Valida gli input
         if (!validateSettings()) {
             return;
         }
 
-        // Collect settings from UI
+        // Raccoglie le impostazioni dall'interfaccia
         settings.setProperty("theme", themeComboBox.getValue());
         settings.setProperty("fontSize", fontSizeComboBox.getValue());
         settings.setProperty("showWelcome", String.valueOf(showWelcomeCheckBox.isSelected()));
@@ -302,58 +302,58 @@ public class SettingsController {
         settings.setProperty("dbPort", dbPortField.getText());
         settings.setProperty("dbName", dbNameField.getText());
         settings.setProperty("dbUsername", dbUsernameField.getText());
-        // Note: Password not saved to file for security
+        // Nota: Password non salvata nel file per sicurezza
 
-        // Save to file
+        // Salva su file
         try (FileOutputStream fos = new FileOutputStream(SETTINGS_FILE)) {
             settings.store(fos, "QT Clustering GUI Settings");
-            showStatus("Settings saved successfully", true);
-            logger.info("Settings saved to {}", SETTINGS_FILE);
+            showStatus("Impostazioni salvate con successo", true);
+            logger.info("Impostazioni salvate in {}", SETTINGS_FILE);
         } catch (IOException e) {
-            logger.error("Failed to save settings", e);
-            showError("Failed to save settings", "Could not write settings file: " + e.getMessage());
+            logger.error("Impossibile salvare le impostazioni", e);
+            showError("Impossibile salvare le impostazioni", "Impossibile scrivere il file delle impostazioni: " + e.getMessage());
         }
     }
 
     /**
-     * Validate settings inputs.
+     * Valida gli input delle impostazioni.
      *
-     * @return true if all inputs are valid
+     * @return true se tutti gli input sono validi
      */
     private boolean validateSettings() {
-        // Validate default radius
+        // Valida il radius predefinito
         try {
             double radius = Double.parseDouble(defaultRadiusField.getText());
             if (radius < 0) {
-                showError("Invalid Input", "Default radius must be non-negative");
+                showError("Input Non Valido", "Il radius predefinito deve essere non negativo");
                 return false;
             }
         } catch (NumberFormatException e) {
-            showError("Invalid Input", "Default radius must be a valid number");
+            showError("Input Non Valido", "Il radius predefinito deve essere un numero valido");
             return false;
         }
 
-        // Validate memory limit
+        // Valida il limite di memoria
         try {
             int memory = Integer.parseInt(memoryLimitField.getText());
             if (memory < 128) {
-                showError("Invalid Input", "Memory limit must be at least 128 MB");
+                showError("Input Non Valido", "Il limite di memoria deve essere almeno 128 MB");
                 return false;
             }
         } catch (NumberFormatException e) {
-            showError("Invalid Input", "Memory limit must be a valid integer");
+            showError("Input Non Valido", "Il limite di memoria deve essere un intero valido");
             return false;
         }
 
-        // Validate database port
+        // Valida la porta del database
         try {
             int port = Integer.parseInt(dbPortField.getText());
             if (port < 1 || port > 65535) {
-                showError("Invalid Input", "Database port must be between 1 and 65535");
+                showError("Input Non Valido", "La porta del database deve essere tra 1 e 65535");
                 return false;
             }
         } catch (NumberFormatException e) {
-            showError("Invalid Input", "Database port must be a valid integer");
+            showError("Input Non Valido", "La porta del database deve essere un intero valido");
             return false;
         }
 
@@ -361,10 +361,10 @@ public class SettingsController {
     }
 
     /**
-     * Show status message.
+     * Mostra un messaggio di stato.
      *
-     * @param message status message
-     * @param success true if success, false if warning
+     * @param message messaggio di stato
+     * @param success true se successo, false se avviso
      */
     private void showStatus(String message, boolean success) {
         statusMessageLabel.setText(message);
@@ -373,7 +373,7 @@ public class SettingsController {
         statusFooter.setVisible(true);
         statusFooter.setManaged(true);
 
-        // Hide after 3 seconds
+        // Nasconde dopo 3 secondi
         new Thread(() -> {
             try {
                 Thread.sleep(3000);
@@ -382,16 +382,16 @@ public class SettingsController {
                     statusFooter.setManaged(false);
                 });
             } catch (InterruptedException e) {
-                // Ignore
+                // Ignora
             }
         }).start();
     }
 
     /**
-     * Show error dialog.
+     * Mostra un dialogo di errore.
      *
-     * @param title   dialog title
-     * @param message error message
+     * @param title   titolo del dialogo
+     * @param message messaggio di errore
      */
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
