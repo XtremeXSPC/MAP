@@ -280,7 +280,12 @@ public class HomeController {
      * @return radius value
      */
     public double getRadius() {
-        return Double.parseDouble(radiusField.getText().trim());
+        try {
+            return Double.parseDouble(radiusField.getText().trim());
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid radius value: '{}'", radiusField.getText(), e);
+            return Double.NaN;
+        }
     }
 
     /**
