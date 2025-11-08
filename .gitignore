@@ -37,3 +37,7 @@ qtServer/database/JDBC/*.jar
 # Temporary files
 .dmp/
 .compiled
+
+# JavaFX
+*.fxmlc
+target/

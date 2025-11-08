@@ -24,10 +24,6 @@ module qtGUI {
     // Export packages for reflection (required by FXML)
     exports gui;
     exports gui.controllers;
-    exports gui.models;
-    exports gui.services;
-    exports gui.charts;
-    exports gui.utils;
 
     // Open packages to JavaFX for FXML controller injection
     opens gui to javafx.fxml;
