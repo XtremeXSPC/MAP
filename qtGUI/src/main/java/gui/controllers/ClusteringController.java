@@ -55,7 +55,7 @@ public class ClusteringController {
 
     private Task<Void> clusteringTask;
     private Instant startTime;
-    private boolean isCancelled = false;
+    private volatile boolean isCancelled = false; // volatile per visibilità tra thread
     private QTMiner miner; // Conserva il miner per creare ClusteringResult
 
     /**

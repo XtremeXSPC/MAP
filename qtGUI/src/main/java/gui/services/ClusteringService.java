@@ -157,6 +157,11 @@ public class ClusteringService {
         int numClusters = clusterSet.getSize();
         int numTuples = data.getNumberOfExamples();
 
+        // Gestisci caso cluster vuoto
+        if (numClusters == 0) {
+            return "Nessun cluster trovato (dataset vuoto o radius troppo restrittivo)";
+        }
+
         // Calcola dimensione media cluster
         double avgClusterSize = (double) numTuples / numClusters;
 

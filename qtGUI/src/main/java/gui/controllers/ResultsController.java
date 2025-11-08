@@ -184,15 +184,16 @@ public class ResultsController {
         logger.info("Elemento selezionato: {}", value);
 
         if (value.startsWith("Cluster ")) {
-            // Estrae il numero del cluster (formato: "Cluster X (Y tuple)")
-            String clusterNumStr = value.substring(8); // Rimuovi "Cluster "
-            int spacePos = clusterNumStr.indexOf(' ');
-            if (spacePos > 0) {
-                clusterNumStr = clusterNumStr.substring(0, spacePos);
-            }
+            try {
+                // Estrae il numero del cluster (formato: "Cluster X (Y tuple)")
+                String clusterNumStr = value.substring(8); // Rimuovi "Cluster "
+                int spacePos = clusterNumStr.indexOf(' ');
+                if (spacePos > 0) {
+                    clusterNumStr = clusterNumStr.substring(0, spacePos);
+                }
 
-            int clusterIndex = Integer.parseInt(clusterNumStr) - 1;
-            Cluster cluster = clusterSet.get(clusterIndex);
+                int clusterIndex = Integer.parseInt(clusterNumStr) - 1;
+                Cluster cluster = clusterSet.get(clusterIndex);
 
             // Ottieni centroide
             Tuple centroid = cluster.getCentroid(data);
@@ -247,38 +248,59 @@ public class ResultsController {
 
             statusLabel.setText("Visualizzazione dettagli per Cluster " + (clusterIndex + 1));
 
+            } catch (NumberFormatException e) {
+                logger.error("Errore parsing numero cluster da: {}", value, e);
+                statusLabel.setText("Errore: formato cluster non valido");
+                showError("Errore", "Impossibile interpretare il numero del cluster selezionato.");
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Indice cluster non valido: {}", value, e);
+                statusLabel.setText("Errore: indice cluster non valido");
+                showError("Errore", "Il cluster selezionato non esiste.");
+            }
+
         } else if (value.startsWith("Tupla ")) {
-            // Mostra dettagli tupla
-            int tupleId = Integer.parseInt(value.substring(6));
-            Tuple tuple = data.getItemSet(tupleId);
+            try {
+                // Mostra dettagli tupla
+                int tupleId = Integer.parseInt(value.substring(6));
+                Tuple tuple = data.getItemSet(tupleId);
 
-            StringBuilder details = new StringBuilder();
-            details.append("Dettagli Tupla ").append(tupleId).append("\n");
-            details.append("=".repeat(50)).append("\n\n");
-            details.append("Valori attributi:\n");
+                StringBuilder details = new StringBuilder();
+                details.append("Dettagli Tupla ").append(tupleId).append("\n");
+                details.append("=".repeat(50)).append("\n\n");
+                details.append("Valori attributi:\n");
 
-            for (int i = 0; i < data.getNumberOfExplanatoryAttributes(); i++) {
-                details.append("  - ").append(data.getAttributeSchema(i).getName())
-                       .append(": ").append(tuple.get(i).getValue()).append("\n");
-            }
-
-            // Trova il cluster di appartenenza
-            for (int i = 0; i < clusterSet.getSize(); i++) {
-                Cluster c = clusterSet.get(i);
-                if (c.contain(tupleId)) {
-                    Tuple centroid = c.getCentroid(data);
-                    double distance = centroid.getDistance(tuple);
-                    details.append("\nCluster di appartenenza: ").append(i + 1).append("\n");
-                    details.append(String.format("Distanza dal centroide: %.3f\n", distance));
-                    break;
+                for (int i = 0; i < data.getNumberOfExplanatoryAttributes(); i++) {
+                    details.append("  - ").append(data.getAttributeSchema(i).getName())
+                           .append(": ").append(tuple.get(i).getValue()).append("\n");
                 }
+
+                // Trova il cluster di appartenenza
+                for (int i = 0; i < clusterSet.getSize(); i++) {
+                    Cluster c = clusterSet.get(i);
+                    if (c.contain(tupleId)) {
+                        Tuple centroid = c.getCentroid(data);
+                        double distance = centroid.getDistance(tuple);
+                        details.append("\nCluster di appartenenza: ").append(i + 1).append("\n");
+                        details.append(String.format("Distanza dal centroide: %.3f\n", distance));
+                        break;
+                    }
+                }
+
+                summaryTextArea.setText(details.toString());
+                tuplesTextArea.clear();
+                statisticsTextArea.clear();
+
+                statusLabel.setText("Visualizzazione dettagli per " + value);
+
+            } catch (NumberFormatException e) {
+                logger.error("Errore parsing numero tupla da: {}", value, e);
+                statusLabel.setText("Errore: formato tupla non valido");
+                showError("Errore", "Impossibile interpretare il numero della tupla selezionata.");
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Indice tupla non valido: {}", value, e);
+                statusLabel.setText("Errore: indice tupla non valido");
+                showError("Errore", "La tupla selezionata non esiste.");
             }
-
-            summaryTextArea.setText(details.toString());
-            tuplesTextArea.clear();
-            statisticsTextArea.clear();
-
-            statusLabel.setText("Visualizzazione dettagli per " + value);
         }
     }
 
