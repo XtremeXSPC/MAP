@@ -134,7 +134,12 @@ public class SettingsController {
 
         // Performance
         enableCachingCheckBox.setSelected(Boolean.parseBoolean(settings.getProperty("enableCaching", "true")));
-        threadPoolSpinner.getValueFactory().setValue(Integer.parseInt(settings.getProperty("threadPoolSize", "4")));
+        try {
+            threadPoolSpinner.getValueFactory().setValue(Integer.parseInt(settings.getProperty("threadPoolSize", "4")));
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid threadPoolSize value: '{}', falling back to default (4)", settings.getProperty("threadPoolSize"));
+            threadPoolSpinner.getValueFactory().setValue(4);
+        }
         memoryLimitField.setText(settings.getProperty("memoryLimit", "512"));
         verboseLoggingCheckBox.setSelected(Boolean.parseBoolean(settings.getProperty("verboseLogging", "false")));
 
