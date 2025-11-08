@@ -254,7 +254,18 @@ public class ClusterSet implements Iterable<Cluster>, Serializable {
                         + ") non compatibile con dataset (" + data.getNumberOfExplanatoryAttributes() + ")");
             }
             Attribute attr = data.getExplanatoryAttribute(i);
-            DiscreteItem item = new DiscreteItem((DiscreteAttribute) attr, centroidValues[i]);
+
+            // Gestisci sia attributi discreti che continui
+            Item item;
+            if (attr instanceof DiscreteAttribute) {
+                item = new DiscreteItem((DiscreteAttribute) attr, centroidValues[i]);
+            } else if (attr instanceof ContinuousAttribute) {
+                Double value = Double.parseDouble(centroidValues[i]);
+                item = new ContinuousItem((ContinuousAttribute) attr, value);
+            } else {
+                throw new InvalidFileFormatException("Tipo attributo non supportato: " + attr.getClass().getName());
+            }
+
             centroid.add(item, i);
         }
 

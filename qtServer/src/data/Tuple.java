@@ -49,18 +49,18 @@ public class Tuple implements Serializable {
     }
 
     /**
-     * Calcola la distanza tra la tupla corrente e un'altra tupla. La distanza è la somma
-     * delle distanze tra gli item nelle stesse posizioni.
+     * Calcola la distanza tra la tupla corrente e un'altra tupla. La distanza è la media
+     * delle distanze tra gli item nelle stesse posizioni, normalizzata nell'intervallo [0,1].
      *
      * @param obj tupla con cui calcolare la distanza
-     * @return distanza tra le tuple
+     * @return distanza normalizzata tra le tuple [0,1]
      */
     public double getDistance(Tuple obj) {
         double distance = 0.0;
         for (int i = 0; i < tuple.length; i++) {
             distance += tuple[i].distance(obj.get(i).getValue());
         }
-        return distance;
+        return distance / tuple.length;
     }
 
     /**
