@@ -1,13 +1,25 @@
 package gui.controllers;
 
+import data.Data;
+import gui.models.ClusteringConfiguration;
+import gui.models.ClusteringResult;
+import gui.services.ClusteringService;
+import gui.services.DataImportService;
+import gui.utils.ApplicationContext;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import mining.ClusterSet;
+import mining.QTMiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -44,6 +56,7 @@ public class ClusteringController {
     private Task<Void> clusteringTask;
     private Instant startTime;
     private boolean isCancelled = false;
+    private QTMiner miner; // Conserva il miner per creare ClusteringResult
 
     /**
      * Inizializza il controller.
@@ -98,8 +111,7 @@ public class ClusteringController {
     }
 
     /**
-     * Crea il task di clustering (simulato per lo Sprint 1).
-     * Nello Sprint 2, questo sarà integrato con il QTMiner effettivo.
+     * Crea il task di clustering con integrazione backend reale.
      *
      * @return task di clustering
      */
@@ -107,48 +119,162 @@ public class ClusteringController {
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                // Processo di clustering simulato per lo Sprint 1
-                // Questo sarà sostituito con l'integrazione del QTMiner effettivo nello Sprint 2
+                // Recupera configurazione da ApplicationContext
+                ClusteringConfiguration config =
+                        ApplicationContext.getInstance().getCurrentConfiguration();
 
-                int totalSteps = 10;
-                int totalTuples = 14; // Dimensione dataset PlayTennis
-
-                for (int step = 0; step < totalSteps; step++) {
-                    if (isCancelled()) {
-                        updateMessage("Annullato dall'utente");
-                        break;
-                    }
-
-                    // Aggiorna il progresso
-                    updateProgress(step, totalSteps);
-                    updateMessage("Costruzione cluster candidato " + (step + 1) + "/" + totalSteps);
-
-                    // Aggiorna i dettagli sul thread UI
-                    final int currentStep = step + 1;
-                    Platform.runLater(() -> {
-                        currentStepLabel.setText("Costruzione cluster " + currentStep);
-                        clustersFoundLabel.setText(String.valueOf(currentStep));
-                        tuplesClusteredLabel.setText(Math.min(currentStep * 2, totalTuples) + " / " + totalTuples);
-
-                        appendLog("Passo " + currentStep + ": Costruzione cluster candidato...");
-                        appendLog("  Valutazione tuple per cluster " + currentStep);
-                        appendLog("  Trovato cluster con " + (currentStep % 3 + 1) + " tuple");
-                    });
-
-                    // Simula il lavoro
-                    Thread.sleep(500);
+                if (config == null) {
+                    throw new IllegalStateException("Configurazione clustering non trovata");
                 }
 
-                if (!isCancelled()) {
-                    updateProgress(totalSteps, totalSteps);
+                updateMessage("Inizializzazione clustering...");
+                updateProgress(0, 100);
+
+                Platform.runLater(() -> {
+                    appendLog("=== INIZIO CLUSTERING ===");
+                    appendLog("Configurazione:");
+                    appendLog("  Sorgente: " + config.getDataSource());
+                    appendLog("  Radius: " + config.getRadius());
+                    appendLog("");
+                });
+
+                // Carica dati
+                updateMessage("Caricamento dataset...");
+                updateProgress(10, 100);
+
+                DataImportService dataService =
+                        ApplicationContext.getInstance().getDataImportService();
+
+                Data data;
+                try {
+                    data = switch (config.getDataSource()) {
+                        case HARDCODED -> {
+                            Platform.runLater(() -> appendLog("Caricamento dataset hardcoded (PlayTennis)..."));
+                            yield dataService.loadHardcodedData();
+                        }
+                        case CSV -> {
+                            Platform.runLater(() -> appendLog("Caricamento dataset da CSV: " +
+                                    config.getCsvFilePath()));
+                            yield dataService.loadDataFromCSV(config.getCsvFilePath());
+                        }
+                        case DATABASE -> {
+                            Platform.runLater(() -> appendLog("Connessione a database: " +
+                                    config.getDbHost() + ":" + config.getDbPort()));
+                            yield dataService.loadDataFromDatabase(
+                                    config.getDbTableName(),
+                                    config.getDbHost(),
+                                    config.getDbPort(),
+                                    config.getDbName(),
+                                    config.getDbUser(),
+                                    config.getDbPassword()
+                            );
+                        }
+                    };
+
+                    final int numExamples = data.getNumberOfExamples();
+                    final int numAttributes = data.getNumberOfExplanatoryAttributes();
+
+                    Platform.runLater(() -> {
+                        appendLog("Dataset caricato con successo:");
+                        appendLog("  Tuple: " + numExamples);
+                        appendLog("  Attributi: " + numAttributes);
+                        appendLog("");
+                        tuplesClusteredLabel.setText("0 / " + numExamples);
+                    });
+
+                } catch (Exception e) {
+                    Platform.runLater(() -> appendLog("ERRORE: " + e.getMessage()));
+                    throw new RuntimeException("Errore durante caricamento dataset: " + e.getMessage(), e);
+                }
+
+                if (isCancelled()) {
+                    return null;
+                }
+
+                // Esegui clustering
+                updateMessage("Esecuzione clustering Quality Threshold...");
+                updateProgress(30, 100);
+
+                Platform.runLater(() -> {
+                    appendLog("Avvio algoritmo QT...");
+                    currentStepLabel.setText("Costruzione cluster...");
+                });
+
+                ClusteringService clusteringService =
+                        ApplicationContext.getInstance().getClusteringService();
+
+                long startTimeMs = System.currentTimeMillis();
+
+                try {
+                    // Crea QTMiner
+                    miner = new QTMiner(config.getRadius());
+
+                    // Esegui compute (questo è il lavoro principale)
+                    updateProgress(40, 100);
+                    int numClusters = miner.compute(data);
+                    ClusterSet clusterSet = miner.getC();
+
+                    long executionTimeMs = System.currentTimeMillis() - startTimeMs;
+
+                    if (isCancelled()) {
+                        return null;
+                    }
+
+                    // Aggiorna progresso
+                    updateProgress(90, 100);
+
+                    final int finalNumClusters = numClusters;
+                    final int totalTuples = data.getNumberOfExamples();
+
+                    Platform.runLater(() -> {
+                        appendLog("");
+                        appendLog("Clustering completato!");
+                        appendLog("  Cluster trovati: " + finalNumClusters);
+                        appendLog("  Tempo esecuzione: " + executionTimeMs + "ms");
+                        appendLog("");
+
+                        clustersFoundLabel.setText(String.valueOf(finalNumClusters));
+                        tuplesClusteredLabel.setText(totalTuples + " / " + totalTuples);
+
+                        // Mostra dettagli cluster
+                        for (int i = 0; i < finalNumClusters && i < 5; i++) {
+                            appendLog("Cluster " + (i + 1) + ": " +
+                                    clusterSet.get(i).getSize() + " tuple");
+                        }
+                        if (finalNumClusters > 5) {
+                            appendLog("... e altri " + (finalNumClusters - 5) + " cluster");
+                        }
+                    });
+
+                    // Crea ClusteringResult
+                    ClusteringResult result = new ClusteringResult(
+                            clusterSet,
+                            data,
+                            config.getRadius(),
+                            executionTimeMs,
+                            miner
+                    );
+
+                    // Salva nel contesto
+                    ApplicationContext.getInstance().setCurrentResult(result);
+
+                    updateProgress(100, 100);
                     updateMessage("Clustering completato con successo");
 
                     Platform.runLater(() -> {
-                        appendLog("\n========================================");
-                        appendLog("Clustering completato con successo!");
-                        appendLog("Totale cluster trovati: " + totalSteps);
+                        appendLog("");
+                        appendLog("========================================");
+                        appendLog("CLUSTERING COMPLETATO CON SUCCESSO");
                         appendLog("========================================");
                     });
+
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        appendLog("");
+                        appendLog("ERRORE durante clustering:");
+                        appendLog("  " + e.getMessage());
+                    });
+                    throw new RuntimeException("Errore durante clustering: " + e.getMessage(), e);
                 }
 
                 return null;
@@ -283,13 +409,20 @@ public class ClusteringController {
     private void handleViewResults() {
         logger.info("Visualizza risultati cliccato");
 
-        // TODO: Navigare alla vista risultati
-        // Questo sarà implementato quando la navigazione sarà completata
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Risultati");
-        alert.setHeaderText("Visualizza Risultati");
-        alert.setContentText("La navigazione alla vista risultati sarà implementata nello Sprint 1.11.");
-        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/results.fxml"));
+            Parent resultsView = loader.load();
+
+            Scene currentScene = btnViewResults.getScene();
+            currentScene.setRoot(resultsView);
+
+            logger.info("Navigazione a vista results completata");
+
+        } catch (IOException e) {
+            logger.error("Errore durante navigazione a vista results", e);
+            showError("Errore Navigazione",
+                    "Impossibile caricare la vista risultati:\n" + e.getMessage());
+        }
     }
 
     /**
