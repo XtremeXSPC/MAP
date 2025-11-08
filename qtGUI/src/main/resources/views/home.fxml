@@ -62,16 +62,28 @@
         <!-- Database Configuration (visible when Database is selected) -->
         <VBox fx:id="databaseSection" spacing="10" visible="false" managed="false">
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Table Name:" minWidth="120" />
-                <TextField fx:id="tableNameField" prefWidth="250" promptText="Enter table name..." />
-            </HBox>
-            <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="DB Host:" minWidth="120" />
                 <TextField fx:id="dbHostField" prefWidth="250" text="localhost" />
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="DB Port:" minWidth="120" />
                 <TextField fx:id="dbPortField" prefWidth="100" text="3306" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Database Name:" minWidth="120" />
+                <TextField fx:id="dbNameField" prefWidth="250" text="MapDB" promptText="e.g., MapDB" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Username:" minWidth="120" />
+                <TextField fx:id="dbUserField" prefWidth="250" text="MapUser" promptText="e.g., MapUser" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Password:" minWidth="120" />
+                <PasswordField fx:id="dbPasswordField" prefWidth="250" text="map" promptText="Database password" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Table Name:" minWidth="120" />
+                <TextField fx:id="tableNameField" prefWidth="250" promptText="Enter table name..." />
             </HBox>
         </VBox>
 

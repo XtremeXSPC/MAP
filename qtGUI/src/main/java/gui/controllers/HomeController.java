@@ -31,9 +31,12 @@ public class HomeController {
     @FXML private TextField csvFilePathField;
     @FXML private Button btnBrowseFile;
     @FXML private VBox databaseSection;
-    @FXML private TextField tableNameField;
     @FXML private TextField dbHostField;
     @FXML private TextField dbPortField;
+    @FXML private TextField dbNameField;
+    @FXML private TextField dbUserField;
+    @FXML private PasswordField dbPasswordField;
+    @FXML private TextField tableNameField;
     @FXML private Button btnPreviewDataset;
 
     // Parametri clustering
@@ -172,9 +175,22 @@ public class HomeController {
             isValid = false;
             errors.append("Selezionare un file CSV. ");
         } else if (dataSource.contains("Database")) {
+            // Valida campi obbligatori database
+            if (dbNameField.getText() == null || dbNameField.getText().trim().isEmpty()) {
+                isValid = false;
+                errors.append("Inserire il nome del database. ");
+            }
+            if (dbUserField.getText() == null || dbUserField.getText().trim().isEmpty()) {
+                isValid = false;
+                errors.append("Inserire username database. ");
+            }
+            if (dbPasswordField.getText() == null || dbPasswordField.getText().isEmpty()) {
+                isValid = false;
+                errors.append("Inserire password database. ");
+            }
             if (tableNameField.getText() == null || tableNameField.getText().trim().isEmpty()) {
                 isValid = false;
-                errors.append("Inserire un nome tabella. ");
+                errors.append("Inserire nome tabella. ");
             }
         }
 
@@ -243,6 +259,15 @@ public class HomeController {
         radiusField.clear();
         csvFilePathField.clear();
         selectedCsvFile = null;
+
+        // Reset campi database ai valori predefiniti
+        dbHostField.setText("localhost");
+        dbPortField.setText("3306");
+        dbNameField.setText("MapDB");
+        dbUserField.setText("MapUser");
+        dbPasswordField.setText("map");
+        tableNameField.clear();
+
         enableCachingCheckBox.setSelected(true);
         verboseLoggingCheckBox.setSelected(false);
 
@@ -325,13 +350,16 @@ public class HomeController {
                     config.setDbPort(3306); // Default MySQL port
                 }
 
+                config.setDbName(dbNameField.getText() != null && !dbNameField.getText().trim().isEmpty()
+                        ? dbNameField.getText().trim() : "MapDB");
+
+                config.setDbUser(dbUserField.getText() != null && !dbUserField.getText().trim().isEmpty()
+                        ? dbUserField.getText().trim() : "MapUser");
+
+                config.setDbPassword(dbPasswordField.getText() != null && !dbPasswordField.getText().isEmpty()
+                        ? dbPasswordField.getText() : "map");
+
                 config.setDbTableName(tableNameField.getText().trim());
-                // Note: username e password dovrebbero essere richiesti in un dialog separato
-                // TODO: Implementare campi GUI per credenziali DB (Sprint 3)
-                // Per ora usiamo valori hardcoded dal backend
-                config.setDbName("MapDB");
-                config.setDbUser("MapUser");
-                config.setDbPassword("map");  // Password corretta dal backend
             }
 
             // Imposta opzioni
