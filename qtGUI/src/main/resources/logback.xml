@@ -1,0 +1,54 @@
+<!--
+  Configurazione Logback per QT Clustering GUI
+  Logging su file rotativo e console
+-->
+<configuration>
+
+    <!-- Definisce la directory dei log -->
+    <property name="LOG_DIR" value="logs" />
+    <property name="LOG_FILE" value="${LOG_DIR}/qtgui.log" />
+
+    <!-- Appender Console (solo INFO e superiori) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- Appender File (tutti i livelli) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+
+        <!-- Politica di rollover: un file per giorno -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/qtgui.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- Mantieni 30 giorni di log -->
+            <maxHistory>30</maxHistory>
+            <!-- Max dimensione totale archivio: 100MB -->
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Logger per i package dell'applicazione -->
+    <logger name="gui" level="DEBUG" />
+    <logger name="data" level="INFO" />
+    <logger name="mining" level="INFO" />
+    <logger name="database" level="INFO" />
+
+    <!-- Logger per JavaFX (riduce verbosità) -->
+    <logger name="javafx" level="WARN" />
+    <logger name="com.sun.javafx" level="WARN" />
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>
