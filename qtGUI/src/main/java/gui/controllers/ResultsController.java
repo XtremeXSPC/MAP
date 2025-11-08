@@ -2,6 +2,7 @@ package gui.controllers;
 
 import data.Data;
 import data.Tuple;
+import gui.charts.ChartViewer;
 import gui.models.ClusteringResult;
 import gui.utils.ApplicationContext;
 import javafx.fxml.FXML;
@@ -377,11 +378,36 @@ public class ResultsController {
     private void handleVisualize() {
         logger.info("Visualizza cliccato");
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Visualizzazione");
-        alert.setHeaderText("Visualizzazione Cluster");
-        alert.setContentText("La visualizzazione 2D/3D sarà implementata nello Sprint 3.");
-        alert.showAndWait();
+        if (clusteringResult == null) {
+            showError("Dati Non Disponibili",
+                "Nessun risultato di clustering disponibile per la visualizzazione.");
+            return;
+        }
+
+        try {
+            // Controlla se ci sono almeno 2 attributi per la visualizzazione 2D
+            if (data.getNumberOfExplanatoryAttributes() < 2) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Visualizzazione Non Disponibile");
+                alert.setHeaderText("Dataset Insufficiente");
+                alert.setContentText("Sono necessari almeno 2 attributi per la visualizzazione 2D.\n" +
+                    "Il dataset corrente ha solo " + data.getNumberOfExplanatoryAttributes() + " attributo/i.");
+                alert.showAndWait();
+                return;
+            }
+
+            // Apri finestra di visualizzazione
+            ChartViewer chartViewer = new ChartViewer(clusteringResult);
+            chartViewer.show();
+
+            statusLabel.setText("Finestra di visualizzazione aperta");
+            logger.info("ChartViewer aperto con successo");
+
+        } catch (Exception e) {
+            logger.error("Errore durante apertura visualizzazione", e);
+            showError("Errore Visualizzazione",
+                "Si è verificato un errore durante l'apertura della visualizzazione: " + e.getMessage());
+        }
     }
 
     /**

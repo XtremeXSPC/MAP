@@ -62,6 +62,9 @@ public class ClusteringConfiguration {
     }
 
     public void setRadius(double radius) {
+        if (radius < 0) {
+            throw new IllegalArgumentException("Radius deve essere non negativo, ricevuto: " + radius);
+        }
         this.radius = radius;
     }
 
@@ -86,6 +89,9 @@ public class ClusteringConfiguration {
     }
 
     public void setDbPort(int dbPort) {
+        if (dbPort < 1 || dbPort > 65535) {
+            throw new IllegalArgumentException("Porta database deve essere tra 1 e 65535, ricevuto: " + dbPort);
+        }
         this.dbPort = dbPort;
     }
 

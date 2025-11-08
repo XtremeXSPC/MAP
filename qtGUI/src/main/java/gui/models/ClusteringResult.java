@@ -6,6 +6,7 @@ import mining.QTMiner;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * Modello che incapsula i risultati di un'esecuzione del clustering.
@@ -41,11 +42,19 @@ public class ClusteringResult {
      */
     public ClusteringResult(ClusterSet clusterSet, Data data, double radius,
                            long executionTimeMs, QTMiner miner) {
-        this.clusterSet = clusterSet;
-        this.data = data;
+        this.clusterSet = Objects.requireNonNull(clusterSet, "ClusterSet non può essere null");
+        this.data = Objects.requireNonNull(data, "Data non può essere null");
+        this.miner = Objects.requireNonNull(miner, "QTMiner non può essere null");
+
+        if (radius < 0) {
+            throw new IllegalArgumentException("Radius deve essere non negativo, ricevuto: " + radius);
+        }
+        if (executionTimeMs < 0) {
+            throw new IllegalArgumentException("Execution time deve essere non negativo, ricevuto: " + executionTimeMs);
+        }
+
         this.radius = radius;
         this.executionTimeMs = executionTimeMs;
-        this.miner = miner;
         this.timestamp = LocalDateTime.now();
     }
 
