@@ -218,27 +218,32 @@ Creare una finestra Hello World di base per verificare che l'intero setup funzio
 ### Obiettivi Raggiunti
 
 ✅ **Setup Build System**
+
 - Progetto Maven configurato correttamente
 - Tutte le dipendenze JavaFX caricate
 - Plugin Maven funzionanti (compiler, javafx, shade)
 
 ✅ **Struttura Progetto**
+
 - Directory structure completa creata
 - Organizzazione package seguendo best practice
 - Separazione logica controllers/models/services
 
 ✅ **Module System**
+
 - `module-info.java` configurato
 - Gestione corretta dipendenze JPMS
 - Export e opens configurati per FXML
 
 ✅ **MainApp**
+
 - Applicazione JavaFX funzionante
 - Ciclo di vita gestito correttamente
 - Logging integrato
 - Gestione errori implementata
 
 ✅ **Verifica Funzionamento**
+
 - Build Maven completato con successo
 - Applicazione eseguibile via `mvn javafx:run`
 - Hello World visualizzato correttamente
@@ -246,24 +251,26 @@ Creare una finestra Hello World di base per verificare che l'intero setup funzio
 ### Problemi Riscontrati
 
 ⚠️ **Dipendenze Maven**
+
 - Maven richiede connessione internet per scaricare dipendenze
 - Prima esecuzione richiede download ~50MB di librerie
 - **Soluzione:** Documentato in README.md
 
 ⚠️ **JavaFX Module System**
+
 - Configurazione iniziale complessa per JPMS
 - Necessario specificare requires espliciti
 - **Soluzione:** module-info.java ben documentato
 
 ### Metriche
 
-| Metrica | Valore |
-|---------|--------|
-| File creati | 3 |
-| Directory create | 10 |
-| Righe codice | ~80 |
-| Dipendenze configurate | 8 |
-| Tempo effettivo | 4 ore |
+| Metrica                | Valore |
+| ---------------------- | ------ |
+| File creati            | 3      |
+| Directory create       | 10     |
+| Righe codice           | ~80    |
+| Dipendenze configurate | 8      |
+| Tempo effettivo        | 4 ore  |
 
 ### Lesson Learned
 

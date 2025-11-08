@@ -1,41 +1,41 @@
-# qtGUI - Quality Threshold Clustering GUI
+# qtGUI - Interfaccia Grafica per Quality Threshold Clustering
 
-JavaFX graphical user interface for the Quality Threshold Clustering algorithm.
+Interfaccia grafica JavaFX per l'algoritmo Quality Threshold Clustering.
 
-## Overview
+## Panoramica
 
-qtGUI is a modern, user-friendly desktop application that provides a graphical interface for executing and visualizing Quality Threshold clustering operations. Built with JavaFX 21, it offers an intuitive workflow from dataset selection to result visualization.
+qtGUI è un'applicazione desktop moderna e user-friendly che fornisce un'interfaccia grafica per eseguire e visualizzare operazioni di clustering Quality Threshold. Costruita con JavaFX 21, offre un flusso di lavoro intuitivo dalla selezione del dataset alla visualizzazione dei risultati.
 
-## Features
+## Funzionalità
 
-### Implemented (Sprint 0 & 1)
+### Implementate (Sprint 0 e 1)
 
-- Modern JavaFX-based user interface
-- Multi-view navigation system (Home, Clustering, Results, Settings)
-- Dataset selection (Hardcoded, CSV, Database)
-- Clustering parameter configuration with validation
-- Real-time progress feedback during clustering
-- Results visualization with cluster tree view
-- Configurable application settings
-- Responsive and polished UI with custom CSS styling
+- Interfaccia utente moderna basata su JavaFX
+- Sistema di navigazione multi-vista (Home, Clustering, Risultati, Impostazioni)
+- Selezione dataset (Hardcoded, CSV, Database)
+- Configurazione parametri di clustering con validazione
+- Feedback di progresso in tempo reale durante il clustering
+- Visualizzazione risultati con vista ad albero dei cluster
+- Impostazioni applicazione configurabili
+- UI responsiva e rifinita con stile CSS personalizzato
 
-### Planned (Future Sprints)
+### Pianificate (Sprint Futuri)
 
-- Backend integration with qtServer (Sprint 2)
-- 2D scatter plot visualization (Sprint 3)
-- Export functionality (CSV, PDF, PNG) (Sprint 4)
-- Save/Load clustering results (.dmp files) (Sprint 4)
-- Statistics dashboard (Sprint 4)
-- 3D visualization (Sprint 4 - optional)
+- Integrazione backend con qtServer (Sprint 2)
+- Visualizzazione scatter plot 2D (Sprint 3)
+- Funzionalità di esportazione (CSV, PDF, PNG) (Sprint 4)
+- Salvataggio/Caricamento risultati clustering (file .dmp) (Sprint 4)
+- Dashboard statistiche (Sprint 4)
+- Visualizzazione 3D (Sprint 4 - opzionale)
 
-## Requirements
+## Requisiti
 
-- Java 21 or higher
+- Java 21 o superiore
 - Maven 3.9+
 - JavaFX 21+
-- Internet connection (for downloading Maven dependencies)
+- Connessione internet (per scaricare le dipendenze Maven)
 
-## Project Structure
+## Struttura del Progetto
 
 ```
 qtGUI/
@@ -43,283 +43,288 @@ qtGUI/
 │   ├── main/
 │   │   ├── java/
 │   │   │   ├── gui/
-│   │   │   │   ├── MainApp.java              # Application entry point
+│   │   │   │   ├── MainApp.java              # Punto di ingresso applicazione
 │   │   │   │   ├── controllers/
-│   │   │   │   │   ├── MainController.java   # Main window controller
-│   │   │   │   │   ├── HomeController.java   # Dataset selection
-│   │   │   │   │   ├── ClusteringController.java  # Progress feedback
-│   │   │   │   │   ├── ResultsController.java     # Results display
-│   │   │   │   │   └── SettingsController.java    # Configuration
-│   │   │   │   ├── models/                   # Data models (future)
-│   │   │   │   ├── services/                 # Business logic (future)
-│   │   │   │   ├── charts/                   # Visualization (future)
-│   │   │   │   └── utils/                    # Utilities (future)
-│   │   │   └── module-info.java              # Java module descriptor
+│   │   │   │   │   ├── MainController.java   # Controller finestra principale
+│   │   │   │   │   ├── HomeController.java   # Selezione dataset
+│   │   │   │   │   ├── ClusteringController.java  # Feedback progresso
+│   │   │   │   │   ├── ResultsController.java     # Visualizzazione risultati
+│   │   │   │   │   └── SettingsController.java    # Configurazione
+│   │   │   │   ├── models/                   # Modelli dati (futuro)
+│   │   │   │   ├── services/                 # Logica business (futuro)
+│   │   │   │   ├── charts/                   # Visualizzazione (futuro)
+│   │   │   │   └── utils/                    # Utilità (futuro)
+│   │   │   └── module-info.java              # Descrittore modulo Java
 │   │   └── resources/
 │   │       ├── views/
-│   │       │   ├── main.fxml                 # Main layout
-│   │       │   ├── home.fxml                 # Home view
-│   │       │   ├── clustering.fxml           # Clustering view
-│   │       │   ├── results.fxml              # Results view
-│   │       │   └── settings.fxml             # Settings view
+│   │       │   ├── main.fxml                 # Layout principale
+│   │       │   ├── home.fxml                 # Vista home
+│   │       │   ├── clustering.fxml           # Vista clustering
+│   │       │   ├── results.fxml              # Vista risultati
+│   │       │   └── settings.fxml             # Vista impostazioni
 │   │       ├── styles/
-│   │       │   └── application.css           # Application stylesheet
-│   │       └── icons/                        # Icons (future)
+│   │       │   └── application.css           # Foglio di stile applicazione
+│   │       └── icons/                        # Icone (futuro)
 │   └── test/
-│       └── java/                             # Unit tests (future)
-├── pom.xml                                   # Maven configuration
-└── README.md                                 # This file
+│       └── java/                             # Test unitari (futuro)
+├── pom.xml                                   # Configurazione Maven
+└── README.md                                 # Questo file
 ```
 
-## Build and Run
+## Compilazione ed Esecuzione
 
-### Prerequisites
+### Prerequisiti
 
-Ensure Maven and Java 21 are installed:
+Assicurarsi che Maven e Java 21 siano installati:
 
 ```bash
 java --version
-# Should show Java 21 or higher
+# Dovrebbe mostrare Java 21 o superiore
 
 mvn --version
-# Should show Maven 3.9+
+# Dovrebbe mostrare Maven 3.9+
 ```
 
-### Build the Project
+### Compilare il Progetto
 
 ```bash
 cd qtGUI
 mvn clean compile
 ```
 
-### Run the Application
+### Eseguire l'Applicazione
 
 ```bash
 mvn javafx:run
 ```
 
-### Package as JAR
+### Pacchettizzare come JAR
 
 ```bash
 mvn clean package
 ```
 
-This creates an executable JAR in `target/qtGUI-1.0.0.jar`.
+Questo crea un JAR eseguibile in `target/qtGUI-1.0.0.jar`.
 
-### Run the JAR
+### Eseguire il JAR
 
 ```bash
 java -jar target/qtGUI-1.0.0.jar
 ```
 
-## Usage
+## Utilizzo
 
-### 1. Home View - Dataset Selection
+### 1. Vista Home - Selezione Dataset
 
-- Select data source: Hardcoded (PlayTennis), CSV File, or Database
-- Configure clustering radius (e.g., 0.5)
-- Enable/disable distance caching
-- Click "Start Clustering" to begin
+- Selezionare sorgente dati: Hardcoded (PlayTennis), File CSV o Database
+- Configurare raggio di clustering (es. 0.5)
+- Abilitare/disabilitare caching distanze
+- Cliccare "Avvia Clustering" per iniziare
 
-### 2. Clustering View - Progress Monitoring
+### 2. Vista Clustering - Monitoraggio Progresso
 
-- Real-time progress bar
-- Current step information
-- Clusters found counter
-- Tuples clustered counter
-- Elapsed time tracking
-- Activity log with detailed progress
+- Barra di progresso in tempo reale
+- Informazioni sul passo corrente
+- Contatore cluster trovati
+- Contatore tuple clusterizzate
+- Tracciamento tempo trascorso
+- Log attività con progresso dettagliato
 
-### 3. Results View - Cluster Analysis
+### 3. Vista Risultati - Analisi Cluster
 
-- Tree view with all clusters
-- Cluster details (centroid, size, average distance)
-- Tuple listing for each cluster
-- Statistics for each cluster
-- Export and save options (future)
+- Vista ad albero con tutti i cluster
+- Dettagli cluster (centroide, dimensione, distanza media)
+- Elenco tuple per ogni cluster
+- Statistiche per ogni cluster
+- Opzioni esportazione e salvataggio (futuro)
 
-### 4. Settings View - Configuration
+### 4. Vista Impostazioni - Configurazione
 
-- Appearance (theme, font size)
-- Performance (caching, threads, memory)
-- Clustering defaults (radius, data source)
-- Export settings (format, directory)
-- Database configuration
+- Aspetto (tema, dimensione font)
+- Prestazioni (caching, thread, memoria)
+- Impostazioni predefinite clustering (raggio, sorgente dati)
+- Impostazioni esportazione (formato, directory)
+- Configurazione database
 
-## Navigation
+## Navigazione
 
-- **File Menu**:
-  - New Analysis: Start a new clustering session
-  - Open: Load saved clustering (future)
-  - Save / Save As: Save clustering results (future)
-  - Exit: Close application
+- **Menu File**:
+  - Nuova Analisi: Avvia una nuova sessione di clustering
+  - Apri: Carica clustering salvato (futuro)
+  - Salva / Salva con Nome: Salva risultati clustering (futuro)
+  - Esci: Chiudi applicazione
 
-- **Edit Menu**:
-  - Settings: Configure application preferences
+- **Menu Modifica**:
+  - Impostazioni: Configura preferenze applicazione
 
-- **View Menu**:
-  - Show/Hide Toolbar
-  - Show/Hide Status Bar
+- **Menu Visualizza**:
+  - Mostra/Nascondi Barra degli Strumenti
+  - Mostra/Nascondi Barra di Stato
 
-- **Help Menu**:
-  - Documentation
-  - About
+- **Menu Aiuto**:
+  - Documentazione
+  - Informazioni
 
-## Keyboard Shortcuts
+## Scorciatoie da Tastiera
 
-- `Ctrl+N`: New Analysis
-- `Ctrl+O`: Open
-- `Ctrl+S`: Save
-- `Ctrl+E`: Export (future)
-- `F5`: Refresh (future)
+- `Ctrl+N`: Nuova Analisi
+- `Ctrl+O`: Apri
+- `Ctrl+S`: Salva
+- `Ctrl+E`: Esporta (futuro)
+- `F5`: Aggiorna (futuro)
 
-## Configuration
+## Configurazione
 
-Settings are saved in `qtgui.properties` in the application directory.
+Le impostazioni sono salvate in `qtgui.properties` nella directory dell'applicazione.
 
-Default values:
-- Theme: Light
-- Font Size: Medium (14px)
-- Radius: 0.5
-- Caching: Enabled
-- Thread Pool Size: 4
-- Memory Limit: 512 MB
+Valori predefiniti:
 
-## Dependencies
+- Tema: Chiaro
+- Dimensione Font: Media (14px)
+- Raggio: 0.5
+- Caching: Abilitato
+- Dimensione Pool Thread: 4
+- Limite Memoria: 512 MB
+
+## Dipendenze
 
 - JavaFX 21.0.1 (Controls, FXML)
-- XChart 3.8.5 (Charting - future use)
-- ControlsFX 11.2.0 (UI enhancements)
+- XChart 3.8.5 (Grafici - uso futuro)
+- ControlsFX 11.2.0 (Miglioramenti UI)
 - SLF4J 2.0.9 + Logback 1.4.14 (Logging)
-- JUnit 5.10.1 + TestFX 4.0.18 (Testing - future)
+- JUnit 5.10.1 + TestFX 4.0.18 (Testing - futuro)
 
-## Development Status
+## Stato di Sviluppo
 
-### Completed
+### Completato
 
-- [x] Sprint 0: Setup and configuration
-  - [x] Maven project structure
-  - [x] JavaFX dependencies
-  - [x] Module configuration (module-info.java)
-  - [x] Directory structure
+- [x] Sprint 0: Setup e configurazione
+  - [x] Struttura progetto Maven
+  - [x] Dipendenze JavaFX
+  - [x] Configurazione modulo (module-info.java)
+  - [x] Struttura directory
 
-- [x] Sprint 1: UI Base and Navigation
-  - [x] Main window layout (MenuBar, ToolBar, StatusBar)
-  - [x] Home view with dataset selection
-  - [x] Clustering view with progress feedback
-  - [x] Results view with cluster tree
-  - [x] Settings view with configuration
-  - [x] Navigation system
-  - [x] CSS styling
+- [x] Sprint 1: Base UI e Navigazione
+  - [x] Layout finestra principale (MenuBar, ToolBar, StatusBar)
+  - [x] Vista home con selezione dataset
+  - [x] Vista clustering con feedback progresso
+  - [x] Vista risultati con albero cluster
+  - [x] Vista impostazioni con configurazione
+  - [x] Sistema di navigazione
+  - [x] Stile CSS
 
-### In Progress / Planned
+### In Corso / Pianificato
 
-- [ ] Sprint 2: Backend Integration
-  - [ ] ClusteringService wrapper for QTMiner
+- [ ] Sprint 2: Integrazione Backend
+  - [ ] Wrapper ClusteringService per QTMiner
   - [ ] DataImportService (CSV, Database)
-  - [ ] JavaFX Task for async clustering
-  - [ ] Error handling and logging
+  - [ ] JavaFX Task per clustering asincrono
+  - [ ] Gestione errori e logging
 
-- [ ] Sprint 3: 2D Visualization
-  - [ ] Scatter plot implementation
-  - [ ] PCA for dimensionality reduction
-  - [ ] Interactive chart (zoom, pan, tooltip)
-  - [ ] Chart export (PNG, SVG)
+- [ ] Sprint 3: Visualizzazione 2D
+  - [ ] Implementazione scatter plot
+  - [ ] PCA per riduzione dimensionalità
+  - [ ] Grafico interattivo (zoom, pan, tooltip)
+  - [ ] Esportazione grafico (PNG, SVG)
 
-- [ ] Sprint 4: Advanced Features
-  - [ ] Save/Load clustering (.dmp files)
-  - [ ] Export results (CSV, PDF)
-  - [ ] Statistics dashboard
-  - [ ] Cluster comparison
-  - [ ] 3D visualization (optional)
-  - [ ] Dark mode theme
+- [ ] Sprint 4: Funzionalità Avanzate
+  - [ ] Salva/Carica clustering (file .dmp)
+  - [ ] Esporta risultati (CSV, PDF)
+  - [ ] Dashboard statistiche
+  - [ ] Confronto cluster
+  - [ ] Visualizzazione 3D (opzionale)
+  - [ ] Tema modalità scura
 
-- [ ] Sprint 5: Testing and Deployment
-  - [ ] Unit tests
-  - [ ] Integration tests
-  - [ ] Cross-platform testing
-  - [ ] Native installers (jpackage)
+- [ ] Sprint 5: Testing e Deployment
+  - [ ] Test unitari
+  - [ ] Test di integrazione
+  - [ ] Testing cross-platform
+  - [ ] Installer nativi (jpackage)
 
-## Known Issues
+## Problemi Noti
 
-- Maven build requires internet connection to download dependencies
-- Clustering functionality is currently simulated (Sprint 1)
-- Backend integration with qtServer pending (Sprint 2)
-- Chart visualization pending (Sprint 3)
+- La compilazione Maven richiede connessione internet per scaricare le dipendenze
+- La funzionalità di clustering è attualmente simulata (Sprint 1)
+- Integrazione backend con qtServer in sospeso (Sprint 2)
+- Visualizzazione grafico in sospeso (Sprint 3)
 
-## Troubleshooting
+## Risoluzione Problemi
 
-### Maven Cannot Download Dependencies
+### Maven Non Può Scaricare le Dipendenze
 
-If you see network errors during `mvn compile`:
-- Ensure you have internet connectivity
-- Check your firewall/proxy settings
-- Verify Maven repository access: https://repo.maven.apache.org/maven2
+Se vedi errori di rete durante `mvn compile`:
 
-### JavaFX Runtime Error
+- Assicurati di avere connettività internet
+- Controlla le impostazioni firewall/proxy
+- Verifica l'accesso al repository Maven: <https://repo.maven.apache.org/maven2>
 
-If you see "Error: JavaFX runtime components are missing":
-- Ensure JavaFX dependencies are correctly configured in pom.xml
-- Run via `mvn javafx:run` instead of direct `java` command
-- Verify Java 21+ is being used
+### Errore Runtime JavaFX
 
-### FXML Loading Failed
+Se vedi "Error: JavaFX runtime components are missing":
 
-If views don't load:
-- Check that FXML files are in `src/main/resources/views/`
-- Verify controller class names in FXML match actual classes
-- Check module-info.java exports and opens statements
+- Assicurati che le dipendenze JavaFX siano configurate correttamente in pom.xml
+- Esegui tramite `mvn javafx:run` invece del comando `java` diretto
+- Verifica che sia utilizzato Java 21+
 
-## Contributing
+### Caricamento FXML Fallito
 
-This is an academic project for the MAP (Metodi Avanzati di Programmazione) course.
+Se le viste non si caricano:
 
-### Code Style
+- Controlla che i file FXML siano in `src/main/resources/views/`
+- Verifica che i nomi delle classi controller negli FXML corrispondano alle classi effettive
+- Controlla le istruzioni exports e opens in module-info.java
 
-- Follow Java naming conventions
-- Use Javadoc for public methods
-- Keep controllers focused on UI logic
-- Separate business logic into services
+## Contributi
 
-### Commit Messages
+Questo è un progetto accademico per il corso MAP (Metodi Avanzati di Programmazione).
 
-- Use clear, descriptive commit messages
-- Reference sprint and task numbers
-- Example: "Sprint 1.3: Add home view with dataset selection"
+### Stile del Codice
 
-## License
+- Seguire le convenzioni di nomenclatura Java
+- Usare Javadoc per i metodi pubblici
+- Mantenere i controller focalizzati sulla logica UI
+- Separare la logica business nei servizi
 
-Academic project for MAP course.
+### Messaggi di Commit
 
-## Authors
+- Usare messaggi di commit chiari e descrittivi
+- Riferire numeri di sprint e task
+- Esempio: "Sprint 1.3: Aggiungi vista home con selezione dataset"
 
-- Developed with assistance from Claude (AI Assistant)
-- Course: Metodi Avanzati di Programmazione (MAP)
-- Year: 2025
+## Licenza
 
-## Version History
+Progetto accademico per il corso MAP.
 
-- **v1.0.0** (2025-11-08): Sprint 0 & 1 completed
-  - Initial JavaFX setup
-  - Complete UI base with all views
-  - Navigation system implemented
+## Autori
 
-## Support
+- Sviluppato con l'assistenza di Claude (AI Assistant)
+- Corso: Metodi Avanzati di Programmazione (MAP)
+- Anno: 2025
 
-For issues related to:
-- qtServer integration: See `../qtServer/README.md`
-- General project setup: See `../README.md`
-- Roadmap and planning: See `../QTGUI_ROADMAP.md`
+## Cronologia Versioni
 
-## Next Steps
+- **v1.0.0** (2025-11-08): Sprint 0 e 1 completati
+  - Setup iniziale JavaFX
+  - Base UI completa con tutte le viste
+  - Sistema di navigazione implementato
 
-1. Complete Sprint 2: Integrate with qtServer backend
-2. Implement ClusteringService to actually execute QTMiner
-3. Add DataImportService for CSV and Database loading
-4. Test end-to-end clustering workflow
+## Supporto
+
+Per problemi relativi a:
+
+- Integrazione qtServer: Vedere `../qtServer/README.md`
+- Setup generale progetto: Vedere `../README.md`
+- Roadmap e pianificazione: Vedere `../QTGUI_ROADMAP.md`
+
+## Prossimi Passi
+
+1. Completare Sprint 2: Integrare con backend qtServer
+2. Implementare ClusteringService per eseguire effettivamente QTMiner
+3. Aggiungere DataImportService per caricamento CSV e Database
+4. Testare workflow di clustering end-to-end
 
 ---
 
-**Last Updated**: 2025-11-08
-**Current Sprint**: 1 (Completed)
-**Next Sprint**: 2 (Backend Integration)
+**Ultimo Aggiornamento**: 2025-11-08
+**Sprint Corrente**: 1 (Completato)
+**Prossimo Sprint**: 2 (Integrazione Backend)
