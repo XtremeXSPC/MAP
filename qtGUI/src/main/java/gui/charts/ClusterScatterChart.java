@@ -124,12 +124,7 @@ public class ClusterScatterChart {
     private void configureStyling(XYChart chart) {
         Styler styler = chart.getStyler();
 
-        styler.setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-        styler.setChartTitleVisible(true);
-        styler.setChartBackgroundColor(Color.WHITE);
-        styler.setPlotBackgroundColor(Color.WHITE);
-        styler.setPlotGridLinesVisible(true);
-        styler.setPlotGridLinesColor(new Color(220, 220, 220));
+
         styler.setLegendVisible(true);
         styler.setLegendPosition(Styler.LegendPosition.OutsideE);
         styler.setMarkerSize(8);
@@ -194,7 +189,7 @@ public class ClusterScatterChart {
         centroidSeries.setMarkerColor(Color.BLACK);
         centroidSeries.setLineColor(Color.BLACK);
         centroidSeries.setMarker(SeriesMarkers.CROSS); // Marker diverso per centroidi
-        centroidSeries.setMarkerSize(12); // Più grandi
+
     }
 
     /**
@@ -246,9 +241,34 @@ public class ClusterScatterChart {
      * @throws IOException se si verifica un errore durante il salvataggio
      */
     public void saveAsPNG(File outputFile, int width, int height) throws IOException {
-        XYChart chart = createChart();
-        chart.setWidth(width);
-        chart.setHeight(height);
+        String xLabel = data.getExplanatoryAttribute(xAttributeIndex).getName();
+        String yLabel = data.getExplanatoryAttribute(yAttributeIndex).getName();
+
+        // Create chart with base configuration and specified dimensions
+        XYChart chart = new XYChartBuilder()
+            .width(width)
+            .height(height)
+            .title("Visualizzazione Cluster (Radius: " + String.format("%.3f", result.getRadius()) + ")")
+            .xAxisTitle(xLabel)
+            .yAxisTitle(yLabel)
+            .build();
+
+        // Configure styling
+        configureStyling(chart);
+
+        // Add series for each cluster
+        List<Cluster> clusterList = new ArrayList<>();
+        for (Cluster c : clusterSet) {
+            clusterList.add(c);
+        }
+
+        for (int i = 0; i < clusterList.size(); i++) {
+            Cluster cluster = clusterList.get(i);
+            addClusterSeries(chart, cluster, i);
+        }
+
+        // Add series for centroids
+        addCentroidsSeries(chart, clusterList);
 
         BitmapEncoder.saveBitmap(chart, outputFile.getAbsolutePath(), BitmapEncoder.BitmapFormat.PNG);
         logger.info("Grafico salvato in: {} ({}x{})", outputFile.getAbsolutePath(), width, height);
