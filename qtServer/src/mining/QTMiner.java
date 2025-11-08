@@ -2,7 +2,6 @@ package mining;
 
 import java.io.*;
 import data.*;
-import database.*;
 
 /**
  * Classe che implementa l'algoritmo Quality Threshold per il clustering. Versione

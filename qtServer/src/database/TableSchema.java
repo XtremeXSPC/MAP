@@ -12,7 +12,7 @@ import java.util.List;
  * Modella lo schema di una tabella nel database relazionale. Ricava i metadati delle
  * colonne e mappa i tipi SQL a tipi Java.
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class TableSchema {

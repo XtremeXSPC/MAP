@@ -2,11 +2,10 @@ package data;
 
 import java.io.Serializable;
 import java.util.Set;
-import data.*;
 
 /**
- * Classe che modella una tupla come sequenza di coppie attributo-valore.
- * Implementa Serializable per permettere la serializzazione binaria.
+ * Classe che modella una tupla come sequenza di coppie attributo-valore. Implementa
+ * Serializable per permettere la serializzazione binaria.
  */
 public class Tuple implements Serializable {
     private Item[] tuple;
@@ -50,8 +49,8 @@ public class Tuple implements Serializable {
     }
 
     /**
-     * Calcola la distanza tra la tupla corrente e un'altra tupla. La distanza è la somma delle
-     * distanze tra gli item nelle stesse posizioni.
+     * Calcola la distanza tra la tupla corrente e un'altra tupla. La distanza è la somma
+     * delle distanze tra gli item nelle stesse posizioni.
      *
      * @param obj tupla con cui calcolare la distanza
      * @return distanza tra le tuple
@@ -65,8 +64,8 @@ public class Tuple implements Serializable {
     }
 
     /**
-     * Calcola la distanza media tra la tupla corrente e le tuple in data identificate dagli indici
-     * in clusteredData.
+     * Calcola la distanza media tra la tupla corrente e le tuple in data identificate dagli
+     * indici in clusteredData.
      *
      * @param data insieme di dati
      * @param clusteredData set di indici delle tuple

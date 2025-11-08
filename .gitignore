@@ -32,3 +32,8 @@ replay_pid*
 # Benchmark output files
 benchmark_*.txt
 *_benchmark_results.txt
+qtServer/database/JDBC/*.jar
+
+# Temporary files
+.dmp/
+.compiled

@@ -1,6 +1,7 @@
 # CLAUDE.md - Contesto Progetto Quality Threshold Clustering
 
 > **Scopo:** Questo file fornisce a Claude tutte le informazioni di contesto necessarie per lavorare efficacemente sul progetto MAP (Quality Threshold Clustering Algorithm).
+> **Importante**: Non usare le emoticon nelle conversazioni sul progetto.
 
 ---
 
@@ -162,9 +163,9 @@ MAP/
 │ - numberOfExamples   │
 │ - explanatorySet[]   │
 │──────────────────────│
-│ + getItemSet(int)    │◄────┐
-│ + getValue(...)      │     │
-└──────────────────────┘     │
+│ + getItemSet(int)    │◄─────┐
+│ + getValue(...)      │      │
+└──────────────────────┘      │
                               │
 ┌─────────────────────┐       │
 │      QTMiner        │       │
@@ -179,15 +180,15 @@ MAP/
            │ contains
            │
            ▼ 1
-    ┌──────────────┐
-    │  ClusterSet  │◆────┐
-    │──────────────│     │
-    │ - C: Cluster[]│    │ 1..*
-    │──────────────│     │
-    │ + add(Cluster)│    │
-    │ + get(int)   │     │
-    └──────────────┘     │
-                         ▼
+    ┌───────────────┐
+    │  ClusterSet   │◆────┐
+    │───────────────│     │
+    │ - C: Cluster[]│     │ 1..*
+    │───────────────│     │
+    │ + add(Cluster)│     │
+    │ + get(int)    │     │
+    └───────────────┘     │
+                          ▼
                   ┌──────────-───-─┐
                   │     Cluster    │
                   │───────────-─-──│
@@ -197,11 +198,11 @@ MAP/
                   │ + addData()    │
                   │ + getSize()    │
                   │ + iterator()   │
-                  └──────┬─────────┘
-                         │ 1
-                         │ uses
-                         │
-                         ▼ 1
+                  └───────┬────────┘
+                          │ 1
+                          │ uses
+                          │
+                          ▼ 1
                   ┌──────────────┐
                   │   ArraySet   │
                   │──────────────│

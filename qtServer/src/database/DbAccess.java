@@ -8,7 +8,7 @@ import java.sql.SQLException;
  * Gestisce l'accesso al database MySQL tramite JDBC. Implementa i metodi per
  * inizializzare, ottenere e chiudere una connessione.
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class DbAccess {

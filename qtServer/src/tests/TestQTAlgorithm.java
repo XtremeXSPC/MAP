@@ -5,8 +5,8 @@ import mining.ClusterSet;
 import mining.QTMiner;
 
 /**
- * Test completo dell'algoritmo QT con diversi valori di radius.
- * Verifica correttezza dei cluster prodotti e proprietà dell'algoritmo.
+ * Test completo dell'algoritmo QT con diversi valori di radius. Verifica correttezza dei
+ * cluster prodotti e proprietà dell'algoritmo.
  */
 public class TestQTAlgorithm {
 
@@ -46,8 +46,7 @@ public class TestQTAlgorithm {
             // Con radius=0, tuple identiche formano un cluster, altre stanno da sole
             // Nel dataset PlayTennis dovremmo avere molti cluster piccoli
             assertTrue(numClusters > 0, "Dovrebbero esserci cluster");
-            assertTrue(numClusters <= data.getNumberOfExamples(),
-                      "Non più cluster che tuple");
+            assertTrue(numClusters <= data.getNumberOfExamples(), "Non più cluster che tuple");
 
             System.out.println("  ✓ Prodotti " + numClusters + " cluster\n");
             testsPassed++;
@@ -95,8 +94,7 @@ public class TestQTAlgorithm {
                 totalTuples += cluster.getSize();
             }
 
-            assertEqual(totalTuples, data.getNumberOfExamples(),
-                       "Tutte le tuple devono essere clusterizzate");
+            assertEqual(totalTuples, data.getNumberOfExamples(), "Tutte le tuple devono essere clusterizzate");
 
             System.out.println("  ✓ Tutte le " + totalTuples + " tuple sono clusterizzate\n");
             testsPassed++;
@@ -127,8 +125,7 @@ public class TestQTAlgorithm {
 
                     if (distance > radius + 0.0001) { // tolleranza numerica
                         allWithinRadius = false;
-                        System.out.println("  ✗ Tupla " + tupleId + " a distanza " +
-                                         distance + " > " + radius);
+                        System.out.println("  ✗ Tupla " + tupleId + " a distanza " + distance + " > " + radius);
                     }
                 }
             }
@@ -157,11 +154,10 @@ public class TestQTAlgorithm {
             QTMiner miner2 = new QTMiner(radius);
             int numClusters2 = miner2.compute(data);
 
-            assertEqual(numClusters1, numClusters2,
-                       "Stesso radius deve produrre stesso numero cluster");
+            assertEqual(numClusters1, numClusters2, "Stesso radius deve produrre stesso numero cluster");
 
-            System.out.println("  ✓ Algoritmo deterministico (" + numClusters1 +
-                             " cluster in entrambe le esecuzioni)\n");
+            System.out
+                    .println("  ✓ Algoritmo deterministico (" + numClusters1 + " cluster in entrambe le esecuzioni)\n");
             testsPassed++;
         } catch (Exception e) {
             System.out.println("  ✗ Test fallito: " + e.getMessage() + "\n");
@@ -178,8 +174,7 @@ public class TestQTAlgorithm {
 
     private static void assertEqual(int expected, int actual, String message) {
         if (expected != actual) {
-            throw new AssertionError(message + " - Atteso: " + expected +
-                                   ", Ottenuto: " + actual);
+            throw new AssertionError(message + " - Atteso: " + expected + ", Ottenuto: " + actual);
         }
     }
 }

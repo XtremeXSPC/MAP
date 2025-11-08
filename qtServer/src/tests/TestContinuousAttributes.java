@@ -5,8 +5,8 @@ import mining.ClusterSet;
 import mining.QTMiner;
 
 /**
- * Test Attributi Continui - Dimostra il clustering con attributi continui
- * usando generics e RTTI per discriminare tra DiscreteItem e ContinuousItem.
+ * Test Attributi Continui - Dimostra il clustering con attributi continui usando generics
+ * e RTTI per discriminare tra DiscreteItem e ContinuousItem.
  */
 public class TestContinuousAttributes {
     public static void main(String[] args) {

@@ -3,7 +3,7 @@ package database;
 /**
  * Eccezione lanciata quando un valore richiesto non esiste nel ResultSet.
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class NoValueException extends Exception {

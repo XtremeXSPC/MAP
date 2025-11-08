@@ -8,20 +8,20 @@
 
 ### Stato del Progetto
 
-| Sprint     | Nome                        | QT Module | Stato          | Durata      | Completamento |
-| ---------- | --------------------------- | --------- | -------------- | ----------- | ------------- |
-| Sprint 0   | Struttura Base              | QT01      | [x] Completato | 1 settimana | 100%          |
-| Sprint 1   | Algoritmo QT                | QT01/QT02 | [x] Completato | 1 settimana | 100%          |
-| Sprint 2   | Persistenza e I/O           | QT04      | [x] Completato | 1 settimana | 100%          |
-| Sprint 3   | Supporto Attributi Continui | -         | [x] Completato | 1 settimana | 100%          |
-| Sprint 4   | Keyboard Input              | QT03      | [x] Completato | 1 settimana | 100%          |
-| Sprint 5   | Contenitori e Iteratori     | QT05      | 🔜 Pianificato  | 1 settimana | 0%            |
-| Sprint 6   | Generics e RTTI             | QT06      | 🔜 Pianificato  | 1 settimana | 0%            |
-| Sprint 7   | Database Integration (JDBC) | QT07      | 🔜 Pianificato  | 2 settimane | 0%            |
-| Sprint 8   | Comunicazione Client-Server | QT08      | 🔜 Pianificato  | 2 settimane | 0%            |
-| Estensione | Interfaccia Grafica (GUI)   | -         | 🔜 Opzionale    | 2 settimane | 0%            |
-| Estensione | Ottimizzazioni Performance  | -         | 🔜 Opzionale    | 2 settimane | 0%            |
-| Estensione | Metriche Qualità            | -         | 🔜 Opzionale    | 1 settimana | 0%            |
+| Sprint     | Nome                        | QT Module | Stato         | Durata      | Completamento |
+| ---------- | --------------------------- | --------- | ------------- | ----------- | ------------- |
+| Sprint 0   | Struttura Base              | QT01      | ✓ Completato  | 1 settimana | 100%          |
+| Sprint 1   | Algoritmo QT                | QT01/QT02 | ✓ Completato  | 1 settimana | 100%          |
+| Sprint 2   | Persistenza e I/O           | QT04      | ✓ Completato  | 1 settimana | 100%          |
+| Sprint 3   | Supporto Attributi Continui | -         | ✓ Completato  | 1 settimana | 100%          |
+| Sprint 4   | Keyboard Input              | QT03      | ✓ Completato  | 1 settimana | 100%          |
+| Sprint 5   | Contenitori e Iteratori     | QT05      | 🔜 Pianificato | 1 settimana | 0%            |
+| Sprint 6   | Generics e RTTI             | QT06      | 🔜 Pianificato | 1 settimana | 0%            |
+| Sprint 7   | Database Integration (JDBC) | QT07      | 🔜 Pianificato | 2 settimane | 0%            |
+| Sprint 8   | Comunicazione Client-Server | QT08      | 🔜 Pianificato | 2 settimane | 0%            |
+| Estensione | Interfaccia Grafica (GUI)   | -         | 🔜 Opzionale   | 2 settimane | 0%            |
+| Estensione | Ottimizzazioni Performance  | -         | 🔜 Opzionale   | 2 settimane | 0%            |
+| Estensione | Metriche Qualità            | -         | 🔜 Opzionale   | 1 settimana | 0%            |
 
 ### Timeline Stimata
 
@@ -40,7 +40,7 @@
 ### Sprint 0 - Struttura Base del Progetto
 
 **Durata:** 1 settimana
-**Stato:** Completato
+**Stato:** ✓ Completato
 **Documentazione:** [`docs/sprints/SPRINT_0.md`](sprints/SPRINT_0.md)
 
 #### Obiettivi
@@ -76,7 +76,7 @@ Implementare le classi fondamentali per rappresentare dati e struttura base del 
 ### Sprint 1 - Algoritmo Quality Threshold
 
 **Durata:** 1 settimana
-**Stato:** Completato
+**Stato:** ✓ Completato
 **Documentazione:** [`docs/sprints/SPRINT_1.md`](sprints/SPRINT_1.md)
 **Prerequisiti:** Sprint 0
 
@@ -132,7 +132,7 @@ AvgDistance=0.133
 ### Sprint 2 - Persistenza e I/O
 
 **Durata:** 1 settimana
-**Stato:** Completato
+**Stato:** ✓ Completato
 **Documentazione:** [`docs/sprints/SPRINT_2.md`](sprints/SPRINT_2.md)
 **Prerequisiti:** Sprint 1
 
@@ -230,7 +230,7 @@ tupleIDs=0
 ### Sprint 3 - Supporto Attributi Continui
 
 **Durata:** 1 settimana
-**Stato:** Completato
+**Stato:** ✓ Completato
 **Priorità:** 🟡 Media
 **Prerequisiti:** Sprint 0, 1
 **Documentazione:** [`docs/sprints/SPRINT_3.md`](sprints/SPRINT_3.md) (ex SPRINT_4.md)
@@ -397,7 +397,7 @@ Ottimizzare l'algoritmo QT per gestire dataset più grandi (> 1000 tuple) miglio
 ### Sprint 4 - Keyboard Input (QT03)
 
 **Durata:** 1 settimana
-**Stato:** Completato
+**Stato:** ✓ Completato
 **QT Module:** QT03
 **Data Completamento:** 2025-11-07
 **Prerequisiti:** Sprint 1, 2
@@ -1195,11 +1195,11 @@ Sprint 8 (completato)
 
 | Sprint              | Nome                  | QT Module | Story Points | Stato              |
 | ------------------- | --------------------- | --------- | ------------ | ------------------ |
-| 0                   | Struttura Base        | QT01      | 22           | [x] Completato     |
-| 1                   | Algoritmo QT          | QT01/02   | 18           | [x] Completato     |
-| 2                   | Persistenza I/O       | QT04      | 13           | [x] Completato     |
-| 3                   | Attributi Continui    | -         | 13           | [x] Completato     |
-| 4                   | Keyboard Input        | QT03      | 8            | [x] Completato     |
+| 0                   | Struttura Base        | QT01      | 22           | ✓ Completato       |
+| 1                   | Algoritmo QT          | QT01/02   | 18           | ✓ Completato       |
+| 2                   | Persistenza I/O       | QT04      | 13           | ✓ Completato       |
+| 3                   | Attributi Continui    | -         | 13           | ✓ Completato       |
+| 4                   | Keyboard Input        | QT03      | 8            | ✓ Completato       |
 | 5                   | Iteratori/Comparatori | QT05      | 13           | 🔜 Pianificato      |
 | 6                   | Generics/RTTI         | QT06      | 13           | 🔜 Pianificato      |
 | 7                   | JDBC                  | QT07      | 21           | 🔜 Pianificato      |

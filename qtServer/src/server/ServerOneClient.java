@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 
 import data.Data;
 import database.*;
-import mining.*;
 
 /**
  * Thread dedicato alla gestione di un singolo client (QT08). Gestisce il protocollo di

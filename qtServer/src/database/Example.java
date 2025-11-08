@@ -7,7 +7,7 @@ import java.util.List;
  * Modella una transazione (riga) letta dal database. Ogni Example contiene una lista di
  * valori eterogenei (String, Double, ecc.).
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class Example implements Comparable<Example> {

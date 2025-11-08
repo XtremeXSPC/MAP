@@ -145,14 +145,12 @@ public class TestClusterOperations {
                 loadedCount++;
             }
 
-            assertEqual(loadedCount, originalNumClusters,
-                       "Numero cluster caricati dovrebbe corrispondere");
+            assertEqual(loadedCount, originalNumClusters, "Numero cluster caricati dovrebbe corrispondere");
 
             // Cleanup
             dumpFile.delete();
 
-            System.out.println("  ✓ Serializzazione/deserializzazione OK (" +
-                             originalNumClusters + " cluster)\n");
+            System.out.println("  ✓ Serializzazione/deserializzazione OK (" + originalNumClusters + " cluster)\n");
             testsPassed++;
         } catch (Exception e) {
             System.out.println("  ✗ Test fallito: " + e.getMessage() + "\n");
@@ -176,7 +174,7 @@ public class TestClusterOperations {
             for (Cluster cluster : clusters) {
                 int currentSize = cluster.getSize();
                 assertTrue(currentSize <= previousSize,
-                          "Cluster dovrebbero essere ordinati per dimensione decrescente");
+                        "Cluster dovrebbero essere ordinati per dimensione decrescente");
                 previousSize = currentSize;
             }
 
@@ -203,8 +201,7 @@ public class TestClusterOperations {
 
     private static void assertEqual(int expected, int actual, String message) {
         if (expected != actual) {
-            throw new AssertionError(message + " - Atteso: " + expected +
-                                   ", Ottenuto: " + actual);
+            throw new AssertionError(message + " - Atteso: " + expected + ", Ottenuto: " + actual);
         }
     }
 }

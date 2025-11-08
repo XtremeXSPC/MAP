@@ -3,7 +3,7 @@ package database;
 /**
  * Eccezione lanciata quando una query SQL restituisce un ResultSet vuoto.
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class EmptySetException extends Exception {

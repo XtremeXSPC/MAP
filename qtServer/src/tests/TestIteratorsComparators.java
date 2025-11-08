@@ -7,8 +7,8 @@ import mining.ClusterSet;
 import mining.QTMiner;
 
 /**
- * Test Iteratori e Comparatori - Dimostra le funzionalità di iterazione
- * e ordinamento su ClusterSet, Cluster e DiscreteAttribute.
+ * Test Iteratori e Comparatori - Dimostra le funzionalità di iterazione e ordinamento su
+ * ClusterSet, Cluster e DiscreteAttribute.
  */
 public class TestIteratorsComparators {
     public static void main(String[] args) {

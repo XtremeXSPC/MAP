@@ -3,7 +3,7 @@ package database;
 /**
  * Eccezione lanciata quando fallisce la connessione al database.
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public class DatabaseConnectionException extends Exception {

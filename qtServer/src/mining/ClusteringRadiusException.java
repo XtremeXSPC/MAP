@@ -1,8 +1,8 @@
 package mining;
 
 /**
- * Eccezione lanciata quando il raggio di clustering specificato non è valido.
- * Il raggio deve essere un valore non negativo.
+ * Eccezione lanciata quando il raggio di clustering specificato non è valido. Il raggio
+ * deve essere un valore non negativo.
  */
 public class ClusteringRadiusException extends Exception {
 

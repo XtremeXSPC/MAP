@@ -3,7 +3,7 @@ package database;
 /**
  * Enumerazione per i tipi di query aggregative (MIN, MAX).
  *
- * @author MAP corso
+ * @author Appice A.
  * @version 1.0
  */
 public enum QUERY_TYPE {

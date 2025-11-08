@@ -14,6 +14,7 @@ import data.*;
  * per dimensione e implementa Iterable per iterazione. Implementa Serializable per
  * permettere la serializzazione binaria.
  */
+@SuppressWarnings("unused")
 public class ClusterSet implements Iterable<Cluster>, Serializable {
     private Set<Cluster> C;
 

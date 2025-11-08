@@ -40,12 +40,10 @@ public class TestDataOperations {
             Data data = new Data();
 
             assertTrue(data.getNumberOfExamples() > 0, "Dataset non dovrebbe essere vuoto");
-            assertTrue(data.getNumberOfExplanatoryAttributes() > 0,
-                      "Dovrebbero esserci attributi");
+            assertTrue(data.getNumberOfExplanatoryAttributes() > 0, "Dovrebbero esserci attributi");
 
-            System.out.println("  ✓ Dataset caricato: " + data.getNumberOfExamples() +
-                             " tuple, " + data.getNumberOfExplanatoryAttributes() +
-                             " attributi\n");
+            System.out.println("  ✓ Dataset caricato: " + data.getNumberOfExamples() + " tuple, "
+                    + data.getNumberOfExplanatoryAttributes() + " attributi\n");
             testsPassed++;
         } catch (Exception e) {
             System.out.println("  ✗ Test fallito: " + e.getMessage() + "\n");
@@ -64,10 +62,8 @@ public class TestDataOperations {
             if (csvFile.exists()) {
                 Data data = new Data("../data/weather_mixed.csv");
 
-                assertTrue(data.getNumberOfExamples() > 0,
-                          "Dataset da CSV non dovrebbe essere vuoto");
-                System.out.println("  ✓ CSV caricato: " + data.getNumberOfExamples() +
-                                 " tuple\n");
+                assertTrue(data.getNumberOfExamples() > 0, "Dataset da CSV non dovrebbe essere vuoto");
+                System.out.println("  ✓ CSV caricato: " + data.getNumberOfExamples() + " tuple\n");
                 testsPassed++;
             } else {
                 System.out.println("  ⊘ CSV non trovato, test saltato\n");
@@ -144,8 +140,7 @@ public class TestDataOperations {
                 testsFailed++;
             } catch (Exception e) {
                 // Eccezione attesa
-                System.out.println("  ✓ Eccezione correttamente lanciata: " +
-                                 e.getClass().getSimpleName() + "\n");
+                System.out.println("  ✓ Eccezione correttamente lanciata: " + e.getClass().getSimpleName() + "\n");
                 testsPassed++;
             }
         } catch (Exception e) {
