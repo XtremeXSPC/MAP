@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.controllers.HomeController"
+      spacing="20"
+      styleClass="form-section">
+
+    <padding>
+        <Insets top="40" right="60" bottom="40" left="60" />
+    </padding>
+
+    <!-- Header -->
+    <VBox spacing="10" alignment="CENTER">
+        <Label text="New Clustering Analysis" styleClass="title-label">
+            <font>
+                <Font name="System Bold" size="28" />
+            </font>
+        </Label>
+        <Label text="Configure dataset and clustering parameters">
+            <font>
+                <Font size="14" />
+            </font>
+        </Label>
+    </VBox>
+
+    <Separator />
+
+    <!-- Dataset Selection Section -->
+    <VBox spacing="15" styleClass="card">
+        <Label text="Dataset Selection" styleClass="form-label">
+            <font>
+                <Font name="System Bold" size="16" />
+            </font>
+        </Label>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Source:" minWidth="120" />
+            <ComboBox fx:id="dataSourceComboBox" prefWidth="250">
+                <items>
+                    <javafx.collections.FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Hardcoded (PlayTennis)" />
+                        <String fx:value="CSV File" />
+                        <String fx:value="Database" />
+                    </javafx.collections.FXCollections>
+                </items>
+            </ComboBox>
+        </HBox>
+
+        <!-- CSV File Selection (visible when CSV is selected) -->
+        <HBox fx:id="csvFileSection" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+            <Label text="CSV File:" minWidth="120" />
+            <TextField fx:id="csvFilePathField" prefWidth="250" promptText="Select a CSV file..." editable="false" />
+            <Button fx:id="btnBrowseFile" text="Browse..." />
+        </HBox>
+
+        <!-- Database Configuration (visible when Database is selected) -->
+        <VBox fx:id="databaseSection" spacing="10" visible="false" managed="false">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Table Name:" minWidth="120" />
+                <TextField fx:id="tableNameField" prefWidth="250" promptText="Enter table name..." />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="DB Host:" minWidth="120" />
+                <TextField fx:id="dbHostField" prefWidth="250" text="localhost" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="DB Port:" minWidth="120" />
+                <TextField fx:id="dbPortField" prefWidth="100" text="3306" />
+            </HBox>
+        </VBox>
+
+        <!-- Dataset Preview Button -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnPreviewDataset" text="Preview Dataset..." />
+        </HBox>
+    </VBox>
+
+    <!-- Clustering Parameters Section -->
+    <VBox spacing="15" styleClass="card">
+        <Label text="Clustering Parameters" styleClass="form-label">
+            <font>
+                <Font name="System Bold" size="16" />
+            </font>
+        </Label>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Radius:" minWidth="120" />
+            <TextField fx:id="radiusField" prefWidth="150" promptText="e.g., 0.5" />
+            <Label fx:id="radiusValidationLabel" text="" styleClass="label-error" />
+        </HBox>
+
+        <Label text="The radius defines the maximum distance for points to be in the same cluster." wrapText="true">
+            <font>
+                <Font size="12" />
+            </font>
+        </Label>
+    </VBox>
+
+    <!-- Options Section -->
+    <VBox spacing="15" styleClass="card">
+        <Label text="Options" styleClass="form-label">
+            <font>
+                <Font name="System Bold" size="16" />
+            </font>
+        </Label>
+
+        <CheckBox fx:id="enableCachingCheckBox" text="Enable distance caching (faster for large datasets)" selected="true" />
+        <CheckBox fx:id="verboseLoggingCheckBox" text="Verbose logging" selected="false" />
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnCancel" text="Cancel" prefWidth="120" />
+        <Button fx:id="btnStartClustering" text="Start Clustering" prefWidth="150" styleClass="button-primary" disable="true" />
+    </HBox>
+
+    <!-- Validation Summary -->
+    <HBox fx:id="validationSummary" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+        <Label fx:id="validationMessageLabel" text="" wrapText="true" styleClass="label-error" />
+    </HBox>
+
+</VBox>

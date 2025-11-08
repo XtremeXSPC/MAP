@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.controllers.ClusteringController"
+      spacing="30"
+      alignment="CENTER"
+      styleClass="form-section">
+
+    <padding>
+        <Insets top="60" right="80" bottom="60" left="80" />
+    </padding>
+
+    <!-- Header -->
+    <VBox spacing="15" alignment="CENTER">
+        <Label text="Clustering in Progress" styleClass="title-label">
+            <font>
+                <Font name="System Bold" size="28" />
+            </font>
+        </Label>
+        <Label text="Please wait while the Quality Threshold algorithm processes your data...">
+            <font>
+                <Font size="14" />
+            </font>
+        </Label>
+    </VBox>
+
+    <!-- Progress Section -->
+    <VBox spacing="25" alignment="CENTER" styleClass="card" VBox.vgrow="ALWAYS" maxWidth="700">
+
+        <!-- Progress Bar -->
+        <VBox spacing="10">
+            <Label fx:id="progressLabel" text="Initializing..." styleClass="form-label" />
+            <ProgressBar fx:id="progressBar" prefWidth="600" prefHeight="30" progress="0.0" />
+            <Label fx:id="progressPercentLabel" text="0%" />
+        </VBox>
+
+        <Separator prefWidth="600" />
+
+        <!-- Status Information -->
+        <VBox spacing="15" alignment="CENTER_LEFT">
+            <HBox spacing="10">
+                <Label text="Current Step:" styleClass="form-label" minWidth="150" />
+                <Label fx:id="currentStepLabel" text="Starting..." />
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Clusters Found:" styleClass="form-label" minWidth="150" />
+                <Label fx:id="clustersFoundLabel" text="0" />
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Tuples Clustered:" styleClass="form-label" minWidth="150" />
+                <Label fx:id="tuplesClusteredLabel" text="0 / 0" />
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Elapsed Time:" styleClass="form-label" minWidth="150" />
+                <Label fx:id="elapsedTimeLabel" text="00:00:00" />
+            </HBox>
+        </VBox>
+
+        <Separator prefWidth="600" />
+
+        <!-- Detailed Log -->
+        <VBox spacing="10" VBox.vgrow="ALWAYS">
+            <Label text="Activity Log:" styleClass="form-label" />
+            <TextArea fx:id="logTextArea"
+                     editable="false"
+                     wrapText="true"
+                     prefHeight="200"
+                     prefWidth="600"
+                     styleClass="log-area" />
+        </VBox>
+
+    </VBox>
+
+    <!-- Control Buttons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button fx:id="btnCancel" text="Cancel Clustering" prefWidth="150" styleClass="button-danger" />
+        <Button fx:id="btnViewResults" text="View Results" prefWidth="150" styleClass="button-primary"
+                visible="false" managed="false" />
+    </HBox>
+
+    <!-- Status Footer -->
+    <HBox fx:id="statusFooter" spacing="10" alignment="CENTER" visible="false" managed="false">
+        <Label fx:id="statusMessageLabel" text="" styleClass="label-success">
+            <font>
+                <Font name="System Bold" size="14" />
+            </font>
+        </Label>
+    </HBox>
+
+</VBox>

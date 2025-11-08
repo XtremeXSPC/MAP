@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.controllers.SettingsController"
+      spacing="20"
+      styleClass="form-section">
+
+    <padding>
+        <Insets top="30" right="50" bottom="30" left="50" />
+    </padding>
+
+    <!-- Header -->
+    <VBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Settings" styleClass="title-label">
+            <font>
+                <Font name="System Bold" size="28" />
+            </font>
+        </Label>
+        <Label text="Configure application preferences and defaults">
+            <font>
+                <Font size="14" />
+            </font>
+        </Label>
+    </VBox>
+
+    <Separator />
+
+    <!-- Settings Sections -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <VBox spacing="20">
+
+            <!-- Appearance Section -->
+            <VBox spacing="15" styleClass="card">
+                <Label text="Appearance" styleClass="form-label">
+                    <font>
+                        <Font name="System Bold" size="16" />
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Theme:" minWidth="150" />
+                    <ComboBox fx:id="themeComboBox" prefWidth="200">
+                        <items>
+                            <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Light" />
+                                <String fx:value="Dark" />
+                                <String fx:value="System Default" />
+                            </javafx.collections.FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Font Size:" minWidth="150" />
+                    <ComboBox fx:id="fontSizeComboBox" prefWidth="200">
+                        <items>
+                            <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Small (12px)" />
+                                <String fx:value="Medium (14px)" />
+                                <String fx:value="Large (16px)" />
+                                <String fx:value="Extra Large (18px)" />
+                            </javafx.collections.FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+
+                <CheckBox fx:id="showWelcomeCheckBox" text="Show welcome screen on startup" />
+            </VBox>
+
+            <!-- Performance Section -->
+            <VBox spacing="15" styleClass="card">
+                <Label text="Performance" styleClass="form-label">
+                    <font>
+                        <Font name="System Bold" size="16" />
+                    </font>
+                </Label>
+
+                <CheckBox fx:id="enableCachingCheckBox" text="Enable distance caching (recommended for large datasets)" selected="true" />
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Thread Pool Size:" minWidth="150" />
+                    <Spinner fx:id="threadPoolSpinner" prefWidth="100" editable="true" />
+                    <Label text="(1-16 threads)" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Memory Limit (MB):" minWidth="150" />
+                    <TextField fx:id="memoryLimitField" prefWidth="100" text="512" />
+                </HBox>
+
+                <CheckBox fx:id="verboseLoggingCheckBox" text="Enable verbose logging (may impact performance)" />
+            </VBox>
+
+            <!-- Clustering Defaults Section -->
+            <VBox spacing="15" styleClass="card">
+                <Label text="Clustering Defaults" styleClass="form-label">
+                    <font>
+                        <Font name="System Bold" size="16" />
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Default Radius:" minWidth="150" />
+                    <TextField fx:id="defaultRadiusField" prefWidth="100" text="0.5" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Default Data Source:" minWidth="150" />
+                    <ComboBox fx:id="defaultDataSourceComboBox" prefWidth="200">
+                        <items>
+                            <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Hardcoded (PlayTennis)" />
+                                <String fx:value="CSV File" />
+                                <String fx:value="Database" />
+                            </javafx.collections.FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+
+                <CheckBox fx:id="autoStartClusteringCheckBox" text="Auto-start clustering after loading dataset" />
+            </VBox>
+
+            <!-- Export Section -->
+            <VBox spacing="15" styleClass="card">
+                <Label text="Export Settings" styleClass="form-label">
+                    <font>
+                        <Font name="System Bold" size="16" />
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Default Export Format:" minWidth="150" />
+                    <ComboBox fx:id="exportFormatComboBox" prefWidth="200">
+                        <items>
+                            <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                <String fx:value="CSV" />
+                                <String fx:value="JSON" />
+                                <String fx:value="XML" />
+                                <String fx:value="PDF Report" />
+                            </javafx.collections.FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Export Directory:" minWidth="150" />
+                    <TextField fx:id="exportDirectoryField" prefWidth="300" editable="false" />
+                    <Button fx:id="btnBrowseExportDir" text="Browse..." />
+                </HBox>
+
+                <CheckBox fx:id="includeTimestampCheckBox" text="Include timestamp in exported filenames" selected="true" />
+            </VBox>
+
+            <!-- Database Section -->
+            <VBox spacing="15" styleClass="card">
+                <Label text="Database Configuration" styleClass="form-label">
+                    <font>
+                        <Font name="System Bold" size="16" />
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Host:" minWidth="150" />
+                    <TextField fx:id="dbHostField" prefWidth="200" text="localhost" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Port:" minWidth="150" />
+                    <TextField fx:id="dbPortField" prefWidth="100" text="3306" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Database Name:" minWidth="150" />
+                    <TextField fx:id="dbNameField" prefWidth="200" text="MapDB" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Username:" minWidth="150" />
+                    <TextField fx:id="dbUsernameField" prefWidth="200" text="MapUser" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Password:" minWidth="150" />
+                    <PasswordField fx:id="dbPasswordField" prefWidth="200" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button fx:id="btnTestConnection" text="Test Connection" prefWidth="150" />
+                </HBox>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- Action Buttons -->
+    <Separator />
+
+    <HBox spacing="15" alignment="CENTER">
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnResetDefaults" text="Reset to Defaults" prefWidth="150" />
+        <Button fx:id="btnCancel" text="Cancel" prefWidth="120" />
+        <Button fx:id="btnSaveSettings" text="Save Settings" prefWidth="150" styleClass="button-primary" />
+    </HBox>
+
+    <!-- Status Footer -->
+    <HBox fx:id="statusFooter" spacing="10" alignment="CENTER" visible="false" managed="false">
+        <Label fx:id="statusMessageLabel" text="" styleClass="label-success" />
+    </HBox>
+
+</VBox>
