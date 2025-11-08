@@ -1,14 +1,22 @@
 package gui.controllers;
 
+import data.Data;
+import data.Tuple;
+import gui.models.ClusteringResult;
+import gui.utils.ApplicationContext;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import mining.Cluster;
+import mining.ClusterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller per la vista Results.
@@ -48,6 +56,12 @@ public class ResultsController {
     @FXML private Label statusLabel;
     @FXML private Label timestampLabel;
 
+    // Dati clustering
+    private ClusteringResult clusteringResult;
+    private ClusterSet clusterSet;
+    private Data data;
+    private List<Cluster> clusterList; // Lista per accesso indicizzato
+
     /**
      * Inizializza il controller.
      * Chiamato automaticamente dopo il caricamento FXML.
@@ -58,7 +72,7 @@ public class ResultsController {
 
         setupTreeView();
         setupButtons();
-        loadSampleData(); // Per la demo dello Sprint 1
+        loadClusteringResults(); // Carica risultati reali da ApplicationContext
         updateTimestamp();
 
         logger.info("ResultsController inizializzato con successo");
@@ -91,32 +105,67 @@ public class ResultsController {
     }
 
     /**
-     * Carica dati di clustering di esempio (per la dimostrazione dello Sprint 1).
-     * Nello Sprint 2, questo sarà sostituito con i risultati di clustering effettivi.
+     * Carica i risultati del clustering da ApplicationContext.
      */
-    private void loadSampleData() {
-        // Statistiche di esempio
-        totalClustersLabel.setText("11");
-        totalTuplesLabel.setText("14");
-        radiusLabel.setText("0.0");
-        avgClusterSizeLabel.setText("1.27");
-        largestClusterLabel.setText("3");
-        smallestClusterLabel.setText("1");
+    private void loadClusteringResults() {
+        // Recupera risultati dal contesto
+        clusteringResult = ApplicationContext.getInstance().getCurrentResult();
 
-        summaryLabel.setText("Clustering completato con 11 cluster da 14 tuple (radius: 0.0)");
+        if (clusteringResult == null) {
+            logger.error("Nessun risultato clustering disponibile");
+            showError("Dati Non Disponibili",
+                    "Nessun risultato di clustering trovato. Eseguire prima un clustering.");
+            return;
+        }
 
-        // Costruisce albero di esempio
+        clusterSet = clusteringResult.getClusterSet();
+        data = clusteringResult.getData();
+
+        // Converti ClusterSet in List per accesso indicizzato
+        clusterList = new ArrayList<>();
+        for (Cluster c : clusterSet) {
+            clusterList.add(c);
+        }
+
+        int numClusters = clusteringResult.getNumClusters();
+        int numTuples = clusteringResult.getNumTuples();
+        double radius = clusteringResult.getRadius();
+
+        // Calcola statistiche
+        double avgSize = (double) numTuples / numClusters;
+        int maxSize = 0;
+        int minSize = Integer.MAX_VALUE;
+
+        for (Cluster cluster : clusterList) {
+            int size = cluster.getSize();
+            if (size > maxSize) maxSize = size;
+            if (size < minSize) minSize = size;
+        }
+
+        // Aggiorna etichette statistiche
+        totalClustersLabel.setText(String.valueOf(numClusters));
+        totalTuplesLabel.setText(String.valueOf(numTuples));
+        radiusLabel.setText(String.format("%.3f", radius));
+        avgClusterSizeLabel.setText(String.format("%.2f", avgSize));
+        largestClusterLabel.setText(String.valueOf(maxSize));
+        smallestClusterLabel.setText(String.valueOf(minSize));
+
+        summaryLabel.setText(String.format("Clustering completato con %d cluster da %d tuple (radius: %.3f)",
+                numClusters, numTuples, radius));
+
+        // Costruisce albero cluster
         TreeItem<String> rootItem = new TreeItem<>("Risultati Clustering");
         rootItem.setExpanded(true);
 
-        // Cluster di esempio
-        for (int i = 1; i <= 11; i++) {
-            TreeItem<String> clusterItem = new TreeItem<>("Cluster " + i);
+        for (int i = 0; i < clusterList.size(); i++) {
+            Cluster cluster = clusterList.get(i);
+            TreeItem<String> clusterItem = new TreeItem<>("Cluster " + (i + 1) +
+                    " (" + cluster.getSize() + " tuple)");
 
-            // Tuple di esempio nel cluster
-            int tupleCount = (i % 3) + 1;
-            for (int j = 0; j < tupleCount; j++) {
-                TreeItem<String> tupleItem = new TreeItem<>("Tupla " + ((i - 1) * 2 + j + 1));
+            // Aggiungi tuple del cluster
+            int[] tupleIds = cluster.getTupleIDs();
+            for (int tupleId : tupleIds) {
+                TreeItem<String> tupleItem = new TreeItem<>("Tupla " + tupleId);
                 clusterItem.getChildren().add(tupleItem);
             }
 
@@ -126,7 +175,8 @@ public class ResultsController {
         clusterTreeView.setRoot(rootItem);
         clusterTreeView.setShowRoot(false);
 
-        statusLabel.setText("11 cluster caricati con successo");
+        statusLabel.setText(numClusters + " cluster caricati con successo");
+        logger.info("Risultati clustering caricati: {} cluster, {} tuple", numClusters, numTuples);
     }
 
     /**
@@ -135,71 +185,131 @@ public class ResultsController {
      * @param item elemento dell'albero selezionato
      */
     private void handleClusterSelection(TreeItem<String> item) {
+        if (clusterSet == null || data == null) {
+            return;
+        }
+
         String value = item.getValue();
-        logger.info("Cluster selezionato: {}", value);
+        logger.info("Elemento selezionato: {}", value);
 
         if (value.startsWith("Cluster ")) {
-            // Estrae il numero del cluster
-            String clusterNum = value.replace("Cluster ", "");
+            try {
+                // Estrae il numero del cluster (formato: "Cluster X (Y tuple)")
+                String clusterNumStr = value.substring(8); // Rimuovi "Cluster "
+                int spacePos = clusterNumStr.indexOf(' ');
+                if (spacePos > 0) {
+                    clusterNumStr = clusterNumStr.substring(0, spacePos);
+                }
+
+                int clusterIndex = Integer.parseInt(clusterNumStr) - 1;
+                Cluster cluster = clusterList.get(clusterIndex);
+
+            // Ottieni centroide
+            Tuple centroid = cluster.getCentroid();
 
             // Aggiorna la scheda riepilogo
-            summaryTextArea.setText(
-                "Riepilogo Cluster " + clusterNum + "\n" +
-                "================================\n\n" +
-                "Centroide: (sunny, hot, high, weak, no)\n" +
-                "Dimensione: " + item.getChildren().size() + " tuple\n" +
-                "Distanza Media: 0.133\n\n" +
-                "Questo cluster contiene tuple con caratteristiche simili."
-            );
+            summaryTextArea.setText(cluster.toString(data));
 
             // Aggiorna la scheda tuple
             StringBuilder tuples = new StringBuilder();
-            tuples.append("Tuple nel Cluster ").append(clusterNum).append("\n");
-            tuples.append("================================\n\n");
+            tuples.append("Tuple nel Cluster ").append(clusterIndex + 1).append("\n");
+            tuples.append("=".repeat(50)).append("\n\n");
 
-            int tupleNum = 1;
-            for (TreeItem<String> child : item.getChildren()) {
-                tuples.append(tupleNum++).append(". ")
-                      .append(child.getValue())
-                      .append(": (sunny, hot, high, weak, no) - distanza: 0.0\n");
+            int[] tupleIds = cluster.getTupleIDs();
+            for (int i = 0; i < tupleIds.length; i++) {
+                int tupleId = tupleIds[i];
+                Tuple tuple = data.getItemSet(tupleId);
+                double distance = centroid.getDistance(tuple);
+
+                tuples.append(String.format("%d. Tupla %d - distanza: %.3f\n",
+                        i + 1, tupleId, distance));
+                tuples.append("   ").append(tuple.toString()).append("\n\n");
             }
 
             tuplesTextArea.setText(tuples.toString());
 
             // Aggiorna la scheda statistiche
-            statisticsTextArea.setText(
-                "Statistiche Cluster " + clusterNum + "\n" +
-                "================================\n\n" +
-                "Numero di tuple: " + item.getChildren().size() + "\n" +
-                "Distanza minima: 0.0\n" +
-                "Distanza massima: 0.2\n" +
-                "Distanza media: 0.133\n" +
-                "Distanza mediana: 0.1\n\n" +
-                "Metriche di qualità:\n" +
-                "- Coesione: 0.867 (alta)\n" +
-                "- Separazione: 0.654 (moderata)"
-            );
+            StringBuilder stats = new StringBuilder();
+            stats.append("Statistiche Cluster ").append(clusterIndex + 1).append("\n");
+            stats.append("=".repeat(50)).append("\n\n");
+            stats.append("Numero di tuple: ").append(cluster.getSize()).append("\n");
+            stats.append("Centroide:\n  ").append(centroid.toString()).append("\n\n");
 
-            statusLabel.setText("Visualizzazione dettagli per Cluster " + clusterNum);
+            // Calcola distanze
+            double minDist = Double.MAX_VALUE;
+            double maxDist = 0;
+            double sumDist = 0;
+
+            for (int tupleId : tupleIds) {
+                double dist = centroid.getDistance(data.getItemSet(tupleId));
+                if (dist < minDist) minDist = dist;
+                if (dist > maxDist) maxDist = dist;
+                sumDist += dist;
+            }
+
+            double avgDist = sumDist / tupleIds.length;
+
+            stats.append(String.format("Distanza minima: %.3f\n", minDist));
+            stats.append(String.format("Distanza massima: %.3f\n", maxDist));
+            stats.append(String.format("Distanza media: %.3f\n", avgDist));
+
+            statisticsTextArea.setText(stats.toString());
+
+            statusLabel.setText("Visualizzazione dettagli per Cluster " + (clusterIndex + 1));
+
+            } catch (NumberFormatException e) {
+                logger.error("Errore parsing numero cluster da: {}", value, e);
+                statusLabel.setText("Errore: formato cluster non valido");
+                showError("Errore", "Impossibile interpretare il numero del cluster selezionato.");
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Indice cluster non valido: {}", value, e);
+                statusLabel.setText("Errore: indice cluster non valido");
+                showError("Errore", "Il cluster selezionato non esiste.");
+            }
 
         } else if (value.startsWith("Tupla ")) {
-            // Mostra dettagli tupla
-            summaryTextArea.setText(
-                "Dettagli " + value + "\n" +
-                "================================\n\n" +
-                "Attributi:\n" +
-                "- Outlook: sunny\n" +
-                "- Temperature: hot\n" +
-                "- Humidity: high\n" +
-                "- Wind: weak\n" +
-                "- PlayTennis: no\n\n" +
-                "Distanza dal centroide: 0.0"
-            );
+            try {
+                // Mostra dettagli tupla
+                int tupleId = Integer.parseInt(value.substring(6));
+                Tuple tuple = data.getItemSet(tupleId);
 
-            tuplesTextArea.clear();
-            statisticsTextArea.clear();
+                StringBuilder details = new StringBuilder();
+                details.append("Dettagli Tupla ").append(tupleId).append("\n");
+                details.append("=".repeat(50)).append("\n\n");
+                details.append("Valori attributi:\n");
 
-            statusLabel.setText("Visualizzazione dettagli per " + value);
+                for (int i = 0; i < data.getNumberOfExplanatoryAttributes(); i++) {
+                    details.append("  - ").append(data.getExplanatoryAttribute(i).getName())
+                           .append(": ").append(tuple.get(i).getValue()).append("\n");
+                }
+
+                // Trova il cluster di appartenenza
+                for (int i = 0; i < clusterList.size(); i++) {
+                    Cluster c = clusterList.get(i);
+                    if (c.contain(tupleId)) {
+                        Tuple centroid = c.getCentroid();
+                        double distance = centroid.getDistance(tuple);
+                        details.append("\nCluster di appartenenza: ").append(i + 1).append("\n");
+                        details.append(String.format("Distanza dal centroide: %.3f\n", distance));
+                        break;
+                    }
+                }
+
+                summaryTextArea.setText(details.toString());
+                tuplesTextArea.clear();
+                statisticsTextArea.clear();
+
+                statusLabel.setText("Visualizzazione dettagli per " + value);
+
+            } catch (NumberFormatException e) {
+                logger.error("Errore parsing numero tupla da: {}", value, e);
+                statusLabel.setText("Errore: formato tupla non valido");
+                showError("Errore", "Impossibile interpretare il numero della tupla selezionata.");
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Indice tupla non valido: {}", value, e);
+                statusLabel.setText("Errore: indice tupla non valido");
+                showError("Errore", "La tupla selezionata non esiste.");
+            }
         }
     }
 
@@ -313,9 +423,14 @@ public class ResultsController {
 
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // TODO: Tornare alla vista home
                 logger.info("Utente ha confermato nuova analisi");
-                statusLabel.setText("Avvio nuova analisi...");
+
+                // Reset context
+                ApplicationContext.getInstance().setCurrentConfiguration(null);
+                ApplicationContext.getInstance().setCurrentResult(null);
+
+                // Naviga a home
+                navigateToHome();
             }
         });
     }
@@ -335,5 +450,41 @@ public class ResultsController {
             statusLabel.setText("Dettagli copiati negli appunti");
             logger.info("Dettagli cluster copiati negli appunti");
         }
+    }
+
+    /**
+     * Naviga alla schermata home.
+     */
+    private void navigateToHome() {
+        try {
+            // Carica la vista home e rimpiazza la scena corrente
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/views/main.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            javafx.scene.Scene currentScene = statusLabel.getScene();
+            currentScene.setRoot(root);
+
+            statusLabel.setText("Ritorno alla schermata iniziale...");
+            logger.info("Navigazione a home completata");
+
+        } catch (Exception e) {
+            logger.error("Errore durante navigazione a home", e);
+            showError("Errore", "Si è verificato un errore durante la navigazione: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Mostra un dialogo di errore.
+     *
+     * @param title   titolo del dialogo
+     * @param message messaggio di errore
+     */
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

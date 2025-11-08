@@ -44,9 +44,9 @@
             <ComboBox fx:id="dataSourceComboBox" prefWidth="250">
                 <items>
                     <javafx.collections.FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Hardcoded (PlayTennis)" />
-                        <String fx:value="CSV File" />
-                        <String fx:value="Database" />
+                        <java.lang.String fx:value="Hardcoded (PlayTennis)" />
+                        <java.lang.String fx:value="CSV File" />
+                        <java.lang.String fx:value="Database" />
                     </javafx.collections.FXCollections>
                 </items>
             </ComboBox>

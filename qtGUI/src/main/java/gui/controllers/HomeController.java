@@ -1,6 +1,12 @@
 package gui.controllers;
 
+import gui.models.ClusteringConfiguration;
+import gui.services.DataImportService.DataSource;
+import gui.utils.ApplicationContext;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -9,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Controller per la vista Home.
@@ -251,26 +258,125 @@ public class HomeController {
             return;
         }
 
-        logger.info("Avvio clustering con parametri:");
-        logger.info("  Sorgente dati: {}", dataSourceComboBox.getValue());
-        logger.info("  Radius: {}", radiusField.getText());
-        logger.info("  Caching abilitato: {}", enableCachingCheckBox.isSelected());
-        logger.info("  Logging verboso: {}", verboseLoggingCheckBox.isSelected());
+        // Crea la configurazione clustering
+        ClusteringConfiguration config = buildConfiguration();
 
-        if (selectedCsvFile != null) {
-            logger.info("  File CSV: {}", selectedCsvFile.getAbsolutePath());
+        if (config == null || !config.isValid()) {
+            logger.error("Configurazione clustering non valida");
+            showError("Configurazione Non Valida",
+                    "Impossibile creare la configurazione clustering. Verifica i parametri inseriti.");
+            return;
         }
 
-        // TODO: Navigare alla vista clustering e avviare il processo di clustering
-        // Questo sarà implementato nello Sprint 2
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Clustering");
-        alert.setHeaderText("Avvia Clustering");
-        alert.setContentText("La funzionalità di clustering sarà implementata nello Sprint 2.\n\n" +
-                           "Parametri acquisiti:\n" +
-                           "- Sorgente Dati: " + dataSourceComboBox.getValue() + "\n" +
-                           "- Radius: " + radiusField.getText() + "\n" +
-                           "- Caching: " + enableCachingCheckBox.isSelected());
+        logger.info("Avvio clustering con parametri:");
+        logger.info("  Sorgente dati: {}", config.getDataSource());
+        logger.info("  Radius: {}", config.getRadius());
+        logger.info("  Caching abilitato: {}", config.isEnableCaching());
+        logger.info("  Logging verboso: {}", config.isVerboseLogging());
+
+        // Salva la configurazione nel contesto applicazione
+        ApplicationContext.getInstance().setCurrentConfiguration(config);
+
+        // Naviga alla vista clustering
+        navigateToClusteringView();
+    }
+
+    /**
+     * Costruisce la configurazione clustering dai valori del form.
+     *
+     * @return configurazione clustering o null se errore
+     */
+    private ClusteringConfiguration buildConfiguration() {
+        try {
+            // Determina data source
+            DataSource dataSource;
+            String dataSourceStr = dataSourceComboBox.getValue();
+
+            if (dataSourceStr.contains("Hardcoded")) {
+                dataSource = DataSource.HARDCODED;
+            } else if (dataSourceStr.contains("CSV")) {
+                dataSource = DataSource.CSV;
+            } else if (dataSourceStr.contains("Database")) {
+                dataSource = DataSource.DATABASE;
+            } else {
+                logger.error("Sorgente dati non riconosciuta: {}", dataSourceStr);
+                return null;
+            }
+
+            // Ottieni radius
+            double radius = Double.parseDouble(radiusField.getText().trim());
+
+            // Crea configurazione
+            ClusteringConfiguration config = new ClusteringConfiguration(dataSource, radius);
+
+            // Imposta parametri CSV
+            if (dataSource == DataSource.CSV && selectedCsvFile != null) {
+                config.setCsvFilePath(selectedCsvFile.getAbsolutePath());
+            }
+
+            // Imposta parametri Database
+            if (dataSource == DataSource.DATABASE) {
+                config.setDbHost(dbHostField.getText() != null && !dbHostField.getText().trim().isEmpty()
+                        ? dbHostField.getText().trim() : "localhost");
+
+                try {
+                    config.setDbPort(Integer.parseInt(dbPortField.getText().trim()));
+                } catch (NumberFormatException e) {
+                    config.setDbPort(3306); // Default MySQL port
+                }
+
+                config.setDbTableName(tableNameField.getText().trim());
+                // Note: username e password dovrebbero essere richiesti in un dialog separato
+                // TODO: Implementare campi GUI per credenziali DB (Sprint 3)
+                // Per ora usiamo valori hardcoded dal backend
+                config.setDbName("MapDB");
+                config.setDbUser("MapUser");
+                config.setDbPassword("map");  // Password corretta dal backend
+            }
+
+            // Imposta opzioni
+            config.setEnableCaching(enableCachingCheckBox.isSelected());
+            config.setVerboseLogging(verboseLoggingCheckBox.isSelected());
+
+            return config;
+
+        } catch (Exception e) {
+            logger.error("Errore durante creazione configurazione", e);
+            return null;
+        }
+    }
+
+    /**
+     * Naviga alla vista clustering.
+     */
+    private void navigateToClusteringView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/clustering.fxml"));
+            Parent clusteringView = loader.load();
+
+            Scene currentScene = btnStartClustering.getScene();
+            currentScene.setRoot(clusteringView);
+
+            logger.info("Navigazione a vista clustering completata");
+
+        } catch (IOException e) {
+            logger.error("Errore durante navigazione a vista clustering", e);
+            showError("Errore Navigazione",
+                    "Impossibile caricare la vista clustering:\n" + e.getMessage());
+        }
+    }
+
+    /**
+     * Mostra un dialogo di errore.
+     *
+     * @param title   titolo del dialogo
+     * @param message messaggio di errore
+     */
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 

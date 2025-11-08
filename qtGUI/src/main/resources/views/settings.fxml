@@ -48,9 +48,9 @@
                     <ComboBox fx:id="themeComboBox" prefWidth="200">
                         <items>
                             <javafx.collections.FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Light" />
-                                <String fx:value="Dark" />
-                                <String fx:value="System Default" />
+                                <java.lang.String fx:value="Light" />
+                                <java.lang.String fx:value="Dark" />
+                                <java.lang.String fx:value="System Default" />
                             </javafx.collections.FXCollections>
                         </items>
                     </ComboBox>
@@ -61,10 +61,10 @@
                     <ComboBox fx:id="fontSizeComboBox" prefWidth="200">
                         <items>
                             <javafx.collections.FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Small (12px)" />
-                                <String fx:value="Medium (14px)" />
-                                <String fx:value="Large (16px)" />
-                                <String fx:value="Extra Large (18px)" />
+                                <java.lang.String fx:value="Small (12px)" />
+                                <java.lang.String fx:value="Medium (14px)" />
+                                <java.lang.String fx:value="Large (16px)" />
+                                <java.lang.String fx:value="Extra Large (18px)" />
                             </javafx.collections.FXCollections>
                         </items>
                     </ComboBox>
@@ -115,9 +115,9 @@
                     <ComboBox fx:id="defaultDataSourceComboBox" prefWidth="200">
                         <items>
                             <javafx.collections.FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Hardcoded (PlayTennis)" />
-                                <String fx:value="CSV File" />
-                                <String fx:value="Database" />
+                                <java.lang.String fx:value="Hardcoded (PlayTennis)" />
+                                <java.lang.String fx:value="CSV File" />
+                                <java.lang.String fx:value="Database" />
                             </javafx.collections.FXCollections>
                         </items>
                     </ComboBox>
@@ -139,10 +139,10 @@
                     <ComboBox fx:id="exportFormatComboBox" prefWidth="200">
                         <items>
                             <javafx.collections.FXCollections fx:factory="observableArrayList">
-                                <String fx:value="CSV" />
-                                <String fx:value="JSON" />
-                                <String fx:value="XML" />
-                                <String fx:value="PDF Report" />
+                                <java.lang.String fx:value="CSV" />
+                                <java.lang.String fx:value="JSON" />
+                                <java.lang.String fx:value="XML" />
+                                <java.lang.String fx:value="PDF Report" />
                             </javafx.collections.FXCollections>
                         </items>
                     </ComboBox>
