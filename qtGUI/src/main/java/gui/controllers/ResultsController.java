@@ -11,17 +11,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Controller for the Results view.
- * Displays clustering results with cluster tree and detailed information.
+ * Controller per la vista Results.
+ * Visualizza i risultati del clustering con albero dei cluster e informazioni dettagliate.
  */
 public class ResultsController {
 
     private static final Logger logger = LoggerFactory.getLogger(ResultsController.class);
 
-    // Header and summary
+    // Intestazione e riepilogo
     @FXML private Label summaryLabel;
 
-    // Statistics labels
+    // Etichette statistiche
     @FXML private Label totalClustersLabel;
     @FXML private Label totalTuplesLabel;
     @FXML private Label radiusLabel;
@@ -29,13 +29,13 @@ public class ResultsController {
     @FXML private Label largestClusterLabel;
     @FXML private Label smallestClusterLabel;
 
-    // TreeView and details
+    // TreeView e dettagli
     @FXML private TreeView<String> clusterTreeView;
     @FXML private TextArea summaryTextArea;
     @FXML private TextArea tuplesTextArea;
     @FXML private TextArea statisticsTextArea;
 
-    // Buttons
+    // Pulsanti
     @FXML private Button btnVisualize;
     @FXML private Button btnExport;
     @FXML private Button btnSave;
@@ -49,23 +49,23 @@ public class ResultsController {
     @FXML private Label timestampLabel;
 
     /**
-     * Initialize the controller.
-     * Called automatically after FXML loading.
+     * Inizializza il controller.
+     * Chiamato automaticamente dopo il caricamento FXML.
      */
     @FXML
     public void initialize() {
-        logger.info("Initializing ResultsController...");
+        logger.info("Inizializzazione ResultsController...");
 
         setupTreeView();
         setupButtons();
-        loadSampleData(); // For Sprint 1 demo
+        loadSampleData(); // Per la demo dello Sprint 1
         updateTimestamp();
 
-        logger.info("ResultsController initialized successfully");
+        logger.info("ResultsController inizializzato con successo");
     }
 
     /**
-     * Setup TreeView with selection listener.
+     * Configura la TreeView con listener di selezione.
      */
     private void setupTreeView() {
         clusterTreeView.getSelectionModel().selectedItemProperty().addListener(
@@ -78,7 +78,7 @@ public class ResultsController {
     }
 
     /**
-     * Setup button event handlers.
+     * Configura i gestori eventi dei pulsanti.
      */
     private void setupButtons() {
         btnVisualize.setOnAction(e -> handleVisualize());
@@ -91,11 +91,11 @@ public class ResultsController {
     }
 
     /**
-     * Load sample clustering data (for Sprint 1 demonstration).
-     * In Sprint 2, this will be replaced with actual clustering results.
+     * Carica dati di clustering di esempio (per la dimostrazione dello Sprint 1).
+     * Nello Sprint 2, questo sarà sostituito con i risultati di clustering effettivi.
      */
     private void loadSampleData() {
-        // Sample statistics
+        // Statistiche di esempio
         totalClustersLabel.setText("11");
         totalTuplesLabel.setText("14");
         radiusLabel.setText("0.0");
@@ -103,20 +103,20 @@ public class ResultsController {
         largestClusterLabel.setText("3");
         smallestClusterLabel.setText("1");
 
-        summaryLabel.setText("Clustering completed with 11 clusters from 14 tuples (radius: 0.0)");
+        summaryLabel.setText("Clustering completato con 11 cluster da 14 tuple (radius: 0.0)");
 
-        // Build sample tree
-        TreeItem<String> rootItem = new TreeItem<>("Clustering Results");
+        // Costruisce albero di esempio
+        TreeItem<String> rootItem = new TreeItem<>("Risultati Clustering");
         rootItem.setExpanded(true);
 
-        // Sample clusters
+        // Cluster di esempio
         for (int i = 1; i <= 11; i++) {
             TreeItem<String> clusterItem = new TreeItem<>("Cluster " + i);
 
-            // Sample tuples in cluster
+            // Tuple di esempio nel cluster
             int tupleCount = (i % 3) + 1;
             for (int j = 0; j < tupleCount; j++) {
-                TreeItem<String> tupleItem = new TreeItem<>("Tuple " + ((i - 1) * 2 + j + 1));
+                TreeItem<String> tupleItem = new TreeItem<>("Tupla " + ((i - 1) * 2 + j + 1));
                 clusterItem.getChildren().add(tupleItem);
             }
 
@@ -126,98 +126,98 @@ public class ResultsController {
         clusterTreeView.setRoot(rootItem);
         clusterTreeView.setShowRoot(false);
 
-        statusLabel.setText("11 clusters loaded successfully");
+        statusLabel.setText("11 cluster caricati con successo");
     }
 
     /**
-     * Handle cluster selection in tree.
+     * Gestisce la selezione di un cluster nell'albero.
      *
-     * @param item selected tree item
+     * @param item elemento dell'albero selezionato
      */
     private void handleClusterSelection(TreeItem<String> item) {
         String value = item.getValue();
-        logger.info("Cluster selected: {}", value);
+        logger.info("Cluster selezionato: {}", value);
 
         if (value.startsWith("Cluster ")) {
-            // Extract cluster number
+            // Estrae il numero del cluster
             String clusterNum = value.replace("Cluster ", "");
 
-            // Update summary tab
+            // Aggiorna la scheda riepilogo
             summaryTextArea.setText(
-                "Cluster " + clusterNum + " Summary\n" +
+                "Riepilogo Cluster " + clusterNum + "\n" +
                 "================================\n\n" +
-                "Centroid: (sunny, hot, high, weak, no)\n" +
-                "Size: " + item.getChildren().size() + " tuples\n" +
-                "Average Distance: 0.133\n\n" +
-                "This cluster contains tuples with similar characteristics."
+                "Centroide: (sunny, hot, high, weak, no)\n" +
+                "Dimensione: " + item.getChildren().size() + " tuple\n" +
+                "Distanza Media: 0.133\n\n" +
+                "Questo cluster contiene tuple con caratteristiche simili."
             );
 
-            // Update tuples tab
+            // Aggiorna la scheda tuple
             StringBuilder tuples = new StringBuilder();
-            tuples.append("Tuples in Cluster ").append(clusterNum).append("\n");
+            tuples.append("Tuple nel Cluster ").append(clusterNum).append("\n");
             tuples.append("================================\n\n");
 
             int tupleNum = 1;
             for (TreeItem<String> child : item.getChildren()) {
                 tuples.append(tupleNum++).append(". ")
                       .append(child.getValue())
-                      .append(": (sunny, hot, high, weak, no) - distance: 0.0\n");
+                      .append(": (sunny, hot, high, weak, no) - distanza: 0.0\n");
             }
 
             tuplesTextArea.setText(tuples.toString());
 
-            // Update statistics tab
+            // Aggiorna la scheda statistiche
             statisticsTextArea.setText(
-                "Cluster " + clusterNum + " Statistics\n" +
+                "Statistiche Cluster " + clusterNum + "\n" +
                 "================================\n\n" +
-                "Number of tuples: " + item.getChildren().size() + "\n" +
-                "Minimum distance: 0.0\n" +
-                "Maximum distance: 0.2\n" +
-                "Average distance: 0.133\n" +
-                "Median distance: 0.1\n\n" +
-                "Quality metrics:\n" +
-                "- Cohesion: 0.867 (high)\n" +
-                "- Separation: 0.654 (moderate)"
+                "Numero di tuple: " + item.getChildren().size() + "\n" +
+                "Distanza minima: 0.0\n" +
+                "Distanza massima: 0.2\n" +
+                "Distanza media: 0.133\n" +
+                "Distanza mediana: 0.1\n\n" +
+                "Metriche di qualità:\n" +
+                "- Coesione: 0.867 (alta)\n" +
+                "- Separazione: 0.654 (moderata)"
             );
 
-            statusLabel.setText("Viewing details for Cluster " + clusterNum);
+            statusLabel.setText("Visualizzazione dettagli per Cluster " + clusterNum);
 
-        } else if (value.startsWith("Tuple ")) {
-            // Show tuple details
+        } else if (value.startsWith("Tupla ")) {
+            // Mostra dettagli tupla
             summaryTextArea.setText(
-                value + " Details\n" +
+                "Dettagli " + value + "\n" +
                 "================================\n\n" +
-                "Attributes:\n" +
+                "Attributi:\n" +
                 "- Outlook: sunny\n" +
                 "- Temperature: hot\n" +
                 "- Humidity: high\n" +
                 "- Wind: weak\n" +
                 "- PlayTennis: no\n\n" +
-                "Distance from centroid: 0.0"
+                "Distanza dal centroide: 0.0"
             );
 
             tuplesTextArea.clear();
             statisticsTextArea.clear();
 
-            statusLabel.setText("Viewing details for " + value);
+            statusLabel.setText("Visualizzazione dettagli per " + value);
         }
     }
 
     /**
-     * Expand all tree nodes.
+     * Espande tutti i nodi dell'albero.
      */
     private void expandAllNodes() {
         TreeItem<String> root = clusterTreeView.getRoot();
         if (root != null) {
             expandTreeView(root);
         }
-        statusLabel.setText("All clusters expanded");
+        statusLabel.setText("Tutti i cluster espansi");
     }
 
     /**
-     * Recursively expand tree item and children.
+     * Espande ricorsivamente l'elemento dell'albero e i suoi figli.
      *
-     * @param item tree item to expand
+     * @param item elemento dell'albero da espandere
      */
     private void expandTreeView(TreeItem<String> item) {
         if (item != null && !item.isLeaf()) {
@@ -229,20 +229,20 @@ public class ResultsController {
     }
 
     /**
-     * Collapse all tree nodes.
+     * Comprime tutti i nodi dell'albero.
      */
     private void collapseAllNodes() {
         TreeItem<String> root = clusterTreeView.getRoot();
         if (root != null) {
             collapseTreeView(root);
         }
-        statusLabel.setText("All clusters collapsed");
+        statusLabel.setText("Tutti i cluster compressi");
     }
 
     /**
-     * Recursively collapse tree item and children.
+     * Comprime ricorsivamente l'elemento dell'albero e i suoi figli.
      *
-     * @param item tree item to collapse
+     * @param item elemento dell'albero da comprimere
      */
     private void collapseTreeView(TreeItem<String> item) {
         if (item != null && !item.isLeaf()) {
@@ -254,74 +254,74 @@ public class ResultsController {
     }
 
     /**
-     * Update timestamp label with current time.
+     * Aggiorna l'etichetta del timestamp con l'ora corrente.
      */
     private void updateTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        timestampLabel.setText("Generated: " + LocalDateTime.now().format(formatter));
+        timestampLabel.setText("Generato: " + LocalDateTime.now().format(formatter));
     }
 
     /**
-     * Handle visualize button click.
+     * Gestisce il clic del pulsante visualizza.
      */
     private void handleVisualize() {
-        logger.info("Visualize clicked");
+        logger.info("Visualizza cliccato");
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Visualization");
-        alert.setHeaderText("Cluster Visualization");
-        alert.setContentText("2D/3D visualization will be implemented in Sprint 3.");
+        alert.setTitle("Visualizzazione");
+        alert.setHeaderText("Visualizzazione Cluster");
+        alert.setContentText("La visualizzazione 2D/3D sarà implementata nello Sprint 3.");
         alert.showAndWait();
     }
 
     /**
-     * Handle export button click.
+     * Gestisce il clic del pulsante esporta.
      */
     private void handleExport() {
-        logger.info("Export clicked");
+        logger.info("Esporta cliccato");
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Export");
-        alert.setHeaderText("Export Results");
-        alert.setContentText("Export functionality (CSV, PDF, PNG) will be implemented in Sprint 4.");
+        alert.setTitle("Esporta");
+        alert.setHeaderText("Esporta Risultati");
+        alert.setContentText("La funzionalità di esportazione (CSV, PDF, PNG) sarà implementata nello Sprint 4.");
         alert.showAndWait();
     }
 
     /**
-     * Handle save button click.
+     * Gestisce il clic del pulsante salva.
      */
     private void handleSave() {
-        logger.info("Save clicked");
+        logger.info("Salva cliccato");
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Save");
-        alert.setHeaderText("Save Clustering");
-        alert.setContentText("Save functionality (.dmp files) will be implemented in Sprint 4.");
+        alert.setTitle("Salva");
+        alert.setHeaderText("Salva Clustering");
+        alert.setContentText("La funzionalità di salvataggio (file .dmp) sarà implementata nello Sprint 4.");
         alert.showAndWait();
     }
 
     /**
-     * Handle new analysis button click.
+     * Gestisce il clic del pulsante nuova analisi.
      */
     private void handleNewAnalysis() {
-        logger.info("New Analysis clicked");
+        logger.info("Nuova Analisi cliccato");
 
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("New Analysis");
-        confirmAlert.setHeaderText("Start a new clustering analysis?");
-        confirmAlert.setContentText("Current results will be cleared.");
+        confirmAlert.setTitle("Nuova Analisi");
+        confirmAlert.setHeaderText("Avviare una nuova analisi di clustering?");
+        confirmAlert.setContentText("I risultati correnti saranno cancellati.");
 
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // TODO: Navigate back to home view
-                logger.info("User confirmed new analysis");
-                statusLabel.setText("Starting new analysis...");
+                // TODO: Tornare alla vista home
+                logger.info("Utente ha confermato nuova analisi");
+                statusLabel.setText("Avvio nuova analisi...");
             }
         });
     }
 
     /**
-     * Handle copy details button click.
+     * Gestisce il clic del pulsante copia dettagli.
      */
     private void handleCopyDetails() {
         String content = summaryTextArea.getText();
@@ -332,8 +332,8 @@ public class ResultsController {
             clipboardContent.putString(content);
             clipboard.setContent(clipboardContent);
 
-            statusLabel.setText("Details copied to clipboard");
-            logger.info("Cluster details copied to clipboard");
+            statusLabel.setText("Dettagli copiati negli appunti");
+            logger.info("Dettagli cluster copiati negli appunti");
         }
     }
 }

@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Main controller for the application window.
- * Manages navigation between different views and main window components.
+ * Controller principale per la finestra dell'applicazione.
+ * Gestisce la navigazione tra le diverse viste e i componenti della finestra principale.
  */
 public class MainController {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    // MenuBar items
+    // Elementi MenuBar
     @FXML private MenuItem menuNew;
     @FXML private MenuItem menuOpen;
     @FXML private MenuItem menuSave;
@@ -39,52 +39,52 @@ public class MainController {
     @FXML private Button btnRun;
     @FXML private Button btnExport;
 
-    // Content area and status bar
+    // Area contenuti e barra di stato
     @FXML private StackPane contentArea;
     @FXML private HBox statusBar;
     @FXML private Label statusLabel;
     @FXML private Label progressLabel;
 
     /**
-     * Initialize the controller.
-     * Called automatically after FXML loading.
+     * Inizializza il controller.
+     * Chiamato automaticamente dopo il caricamento FXML.
      */
     @FXML
     public void initialize() {
-        logger.info("Initializing MainController...");
+        logger.info("Inizializzazione MainController...");
 
         setupMenuHandlers();
         setupToolbarHandlers();
         setupStatusBar();
 
-        logger.info("MainController initialized successfully");
+        logger.info("MainController inizializzato con successo");
     }
 
     /**
-     * Setup menu item event handlers.
+     * Configura i gestori eventi per le voci di menu.
      */
     private void setupMenuHandlers() {
-        // File menu
+        // Menu File
         menuNew.setOnAction(e -> handleNewAnalysis());
         menuOpen.setOnAction(e -> handleOpen());
         menuSave.setOnAction(e -> handleSave());
         menuSaveAs.setOnAction(e -> handleSaveAs());
         menuExit.setOnAction(e -> handleExit());
 
-        // Edit menu
+        // Menu Edit
         menuSettings.setOnAction(e -> handleSettings());
 
-        // View menu
+        // Menu View
         menuShowToolbar.setOnAction(e -> toolbar.setVisible(menuShowToolbar.isSelected()));
         menuShowStatusBar.setOnAction(e -> statusBar.setVisible(menuShowStatusBar.isSelected()));
 
-        // Help menu
+        // Menu Help
         menuHelp.setOnAction(e -> handleHelp());
         menuAbout.setOnAction(e -> handleAbout());
     }
 
     /**
-     * Setup toolbar button event handlers.
+     * Configura i gestori eventi per i pulsanti della toolbar.
      */
     private void setupToolbarHandlers() {
         btnNew.setOnAction(e -> handleNewAnalysis());
@@ -95,113 +95,113 @@ public class MainController {
     }
 
     /**
-     * Setup status bar initial state.
+     * Configura lo stato iniziale della barra di stato.
      */
     private void setupStatusBar() {
-        updateStatus("Ready");
+        updateStatus("Pronto");
     }
 
     /**
-     * Update status bar message.
+     * Aggiorna il messaggio della barra di stato.
      *
-     * @param message status message to display
+     * @param message messaggio di stato da visualizzare
      */
     public void updateStatus(String message) {
         Platform.runLater(() -> statusLabel.setText(message));
     }
 
     /**
-     * Update progress label in status bar.
+     * Aggiorna l'etichetta di progresso nella barra di stato.
      *
-     * @param progress progress message
+     * @param progress messaggio di progresso
      */
     public void updateProgress(String progress) {
         Platform.runLater(() -> progressLabel.setText(progress));
     }
 
     /**
-     * Navigate to a specific view by loading its FXML.
+     * Naviga verso una vista specifica caricando il suo file FXML.
      *
-     * @param fxmlFile FXML file name (e.g., "home.fxml")
+     * @param fxmlFile nome del file FXML (es. "home.fxml")
      */
     public void navigateTo(String fxmlFile) {
         try {
-            logger.info("Navigating to view: {}", fxmlFile);
+            logger.info("Navigazione verso la vista: {}", fxmlFile);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/" + fxmlFile));
             Parent view = loader.load();
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
 
-            updateStatus("Loaded view: " + fxmlFile);
+            updateStatus("Vista caricata: " + fxmlFile);
         } catch (IOException e) {
-            logger.error("Failed to load view: {}", fxmlFile, e);
-            showError("Failed to load view", "Could not load " + fxmlFile);
+            logger.error("Impossibile caricare la vista: {}", fxmlFile, e);
+            showError("Impossibile caricare la vista", "Impossibile caricare " + fxmlFile);
         }
     }
 
-    // Event handlers
+    // Gestori eventi
 
     private void handleNewAnalysis() {
-        logger.info("New Analysis clicked");
+        logger.info("Nuova Analisi cliccato");
         navigateTo("home.fxml");
-        updateStatus("Ready to start new clustering analysis");
+        updateStatus("Pronto per avviare nuova analisi di clustering");
     }
 
     private void handleOpen() {
-        logger.info("Open clicked");
-        // TODO: Implement file chooser for opening .dmp files
-        updateStatus("Open clustering file...");
+        logger.info("Apri cliccato");
+        // TODO: Implementare file chooser per aprire file .dmp
+        updateStatus("Apertura file clustering...");
     }
 
     private void handleSave() {
-        logger.info("Save clicked");
-        // TODO: Implement save functionality
-        updateStatus("Save clustering...");
+        logger.info("Salva cliccato");
+        // TODO: Implementare funzionalità di salvataggio
+        updateStatus("Salvataggio clustering...");
     }
 
     private void handleSaveAs() {
-        logger.info("Save As clicked");
-        // TODO: Implement save as functionality
-        updateStatus("Save clustering as...");
+        logger.info("Salva con nome cliccato");
+        // TODO: Implementare funzionalità salva con nome
+        updateStatus("Salvataggio clustering con nome...");
     }
 
     private void handleExit() {
-        logger.info("Exit clicked");
+        logger.info("Esci cliccato");
         Platform.exit();
     }
 
     private void handleSettings() {
-        logger.info("Settings clicked");
+        logger.info("Impostazioni cliccato");
         navigateTo("settings.fxml");
     }
 
     private void handleRunClustering() {
-        logger.info("Run Clustering clicked");
+        logger.info("Esegui Clustering cliccato");
         navigateTo("clustering.fxml");
     }
 
     private void handleExport() {
-        logger.info("Export clicked");
-        // TODO: Implement export functionality
-        updateStatus("Export results...");
+        logger.info("Esporta cliccato");
+        // TODO: Implementare funzionalità di esportazione
+        updateStatus("Esportazione risultati...");
     }
 
     private void handleHelp() {
-        logger.info("Help clicked");
-        showInfo("Help", "QT Clustering GUI Documentation\n\nFor more information, visit the documentation.");
+        logger.info("Aiuto cliccato");
+        showInfo("Aiuto", "Documentazione GUI QT Clustering\n\nPer maggiori informazioni, consulta la documentazione.");
     }
 
     private void handleAbout() {
-        logger.info("About clicked");
-        showInfo("About QT Clustering",
+        logger.info("Informazioni cliccato");
+        showInfo("Informazioni su QT Clustering",
                 "QT Clustering GUI v1.0.0\n\n" +
-                "Quality Threshold Clustering Algorithm\n" +
-                "Developed for MAP Course\n\n" +
-                "JavaFX GUI Application");
+                "Algoritmo Quality Threshold Clustering\n" +
+                "Sviluppato per il corso MAP\n\n" +
+                "Applicazione GUI JavaFX");
     }
 
-    // Utility methods for dialogs
+    // Metodi di utilità per i dialoghi
 
     private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
