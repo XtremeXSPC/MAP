@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="gui.controllers.MainController"
+            stylesheets="@../styles/application.css">
+
+    <!-- Top: MenuBar -->
+    <top>
+        <VBox>
+            <MenuBar>
+                <Menu text="File">
+                    <MenuItem text="New Analysis" fx:id="menuNew" />
+                    <MenuItem text="Open..." fx:id="menuOpen" />
+                    <SeparatorMenuItem />
+                    <MenuItem text="Save" fx:id="menuSave" />
+                    <MenuItem text="Save As..." fx:id="menuSaveAs" />
+                    <SeparatorMenuItem />
+                    <MenuItem text="Exit" fx:id="menuExit" />
+                </Menu>
+                <Menu text="Edit">
+                    <MenuItem text="Settings" fx:id="menuSettings" />
+                </Menu>
+                <Menu text="View">
+                    <CheckMenuItem text="Show Toolbar" fx:id="menuShowToolbar" selected="true" />
+                    <CheckMenuItem text="Show Status Bar" fx:id="menuShowStatusBar" selected="true" />
+                </Menu>
+                <Menu text="Help">
+                    <MenuItem text="Documentation" fx:id="menuHelp" />
+                    <MenuItem text="About" fx:id="menuAbout" />
+                </Menu>
+            </MenuBar>
+
+            <!-- ToolBar -->
+            <ToolBar fx:id="toolbar">
+                <Button text="New" fx:id="btnNew" />
+                <Button text="Open" fx:id="btnOpen" />
+                <Button text="Save" fx:id="btnSave" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Run Clustering" fx:id="btnRun" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Export" fx:id="btnExport" />
+            </ToolBar>
+        </VBox>
+    </top>
+
+    <!-- Center: Content Area (will be dynamically replaced) -->
+    <center>
+        <StackPane fx:id="contentArea">
+            <VBox alignment="CENTER" spacing="20">
+                <Label text="QT Clustering GUI" styleClass="title-label">
+                    <font>
+                        <Font name="System Bold" size="32" />
+                    </font>
+                </Label>
+                <Label text="Quality Threshold Clustering Algorithm">
+                    <font>
+                        <Font size="18" />
+                    </font>
+                </Label>
+                <Label text="Welcome! Use File > New Analysis to start." />
+            </VBox>
+        </StackPane>
+    </center>
+
+    <!-- Bottom: StatusBar -->
+    <bottom>
+        <HBox fx:id="statusBar" spacing="10" styleClass="status-bar">
+            <padding>
+                <Insets top="5" right="10" bottom="5" left="10" />
+            </padding>
+            <Label fx:id="statusLabel" text="Ready" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="progressLabel" text="" />
+        </HBox>
+    </bottom>
+
+</BorderPane>
