@@ -129,6 +129,7 @@ public class TestDataOperations {
     /**
      * Test gestione CSV non valido.
      */
+    @SuppressWarnings("unused")
     private static void testInvalidCSV() {
         System.out.println("Test 5: Gestione CSV non valido");
         try {

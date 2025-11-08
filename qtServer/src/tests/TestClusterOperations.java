@@ -119,6 +119,7 @@ public class TestClusterOperations {
     /**
      * Test serializzazione e deserializzazione cluster.
      */
+    @SuppressWarnings("unused")
     private static void testClusterSerialization() {
         System.out.println("Test 4: Serializzazione cluster");
         try {
