@@ -3,5 +3,10 @@
   "[java]": {
     "editor.tabSize": 4,
     "editor.detectIndentation": false
+  },
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "maven.view": "hierarchical",
+  "files.watcherExclude": {
+    "**/target": true
   }
 }

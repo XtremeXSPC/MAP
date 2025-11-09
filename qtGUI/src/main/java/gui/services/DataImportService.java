@@ -142,17 +142,13 @@ public class DataImportService {
 
         try {
             // Connessione database
-            String dbUrl = String.format("jdbc:mysql://%s:%d/%s", dbHost, dbPort, dbName);
-            db = new DbAccess(dbUrl, dbUser, dbPassword);
+            db = new DbAccess(dbHost, String.valueOf(dbPort), dbName, dbUser, dbPassword);
 
             logger.info("Connessione database stabilita");
 
-            // Carica schema tabella
-            TableSchema schema = new TableSchema(db, tableName);
-
-            // Carica dati
-            TableData tableData = new TableData(db);
-            Data data = new Data(tableName, true);
+            // Carica dati usando il costruttore che accetta DbAccess esistente
+            // IMPORTANTE: Usa la connessione gia creata, non ne crea una nuova
+            Data data = new Data(db, tableName);
 
             logger.info("Dataset caricato dal database: {} tuple, {} attributi",
                     data.getNumberOfExamples(),
@@ -247,8 +243,7 @@ public class DataImportService {
         DbAccess db = null;
 
         try {
-            String dbUrl = String.format("jdbc:mysql://%s:%d/%s", dbHost, dbPort, dbName);
-            db = new DbAccess(dbUrl, dbUser, dbPassword);
+            db = new DbAccess(dbHost, String.valueOf(dbPort), dbName, dbUser, dbPassword);
 
             logger.info("Test connessione riuscito");
             return true;

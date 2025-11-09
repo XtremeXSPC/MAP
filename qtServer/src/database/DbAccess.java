@@ -54,7 +54,8 @@ public class DbAccess {
 
     /**
      * Costruttore di default.
-     * Usa parametri di connessione hardcoded (localhost:3306/MapDB).
+     * Usa parametri di connessione predefiniti (localhost:3306/MapDB, user=MapUser, password=map).
+     * I valori possono essere sovrascritti usando gli altri costruttori.
      * Richiede chiamata esplicita a initConnection().
      */
     public DbAccess() {
@@ -62,8 +63,7 @@ public class DbAccess {
     }
 
     /**
-     * Costruttore con JDBC URL completo.
-     * Inizializza automaticamente la connessione.
+     * Costruttore con JDBC URL completo. Inizializza automaticamente la connessione.
      *
      * @param jdbcUrl URL completo JDBC (es. "jdbc:mysql://localhost:3306/MapDB")
      * @param user username per l'accesso
@@ -71,14 +71,22 @@ public class DbAccess {
      * @throws DatabaseConnectionException se la connessione fallisce o l'URL è malformato
      */
     public DbAccess(String jdbcUrl, String user, String password) throws DatabaseConnectionException {
-        // Parse JDBC URL: jdbc:mysql://server:port/database
+        // Parse JDBC URL: jdbc:mysql://server:port/database[?params]
         try {
             String[] parts = jdbcUrl.replace("jdbc:mysql://", "").split("/");
             String[] serverPart = parts[0].split(":");
 
             this.SERVER = serverPart[0];
             this.PORT = serverPart.length > 1 ? serverPart[1] : "3306";
-            this.DATABASE = parts.length > 1 ? parts[1] : "MapDB";
+
+            // Rimuove parametri query dal nome database (es. "MapDB?serverTimezone=UTC" -> "MapDB")
+            if (parts.length > 1) {
+                String dbPart = parts[1];
+                this.DATABASE = dbPart.contains("?") ? dbPart.split("\\?")[0] : dbPart;
+            } else {
+                this.DATABASE = "MapDB";
+            }
+
             this.USER_ID = user;
             this.PASSWORD = password;
 
@@ -89,8 +97,8 @@ public class DbAccess {
     }
 
     /**
-     * Costruttore con parametri di connessione personalizzati separati.
-     * Inizializza automaticamente la connessione.
+     * Costruttore con parametri di connessione personalizzati separati. Inizializza
+     * automaticamente la connessione.
      *
      * @param server indirizzo server MySQL
      * @param port porta server MySQL
@@ -121,12 +129,11 @@ public class DbAccess {
             // Carica il driver MySQL
             Class.forName(DRIVER_CLASS_NAME);
 
-            // Costruisce la connection string
-            String connectionString = DBMS + "://" + SERVER + ":" + PORT + "/" + DATABASE + "?user=" + USER_ID
-                    + "&password=" + PASSWORD + "&serverTimezone=UTC";
+            // Costruisce la connection string (senza credenziali per sicurezza)
+            String connectionString = DBMS + "://" + SERVER + ":" + PORT + "/" + DATABASE + "?serverTimezone=UTC";
 
-            // Stabilisce la connessione
-            conn = DriverManager.getConnection(connectionString);
+            // Stabilisce la connessione con credenziali separate
+            conn = DriverManager.getConnection(connectionString, USER_ID, PASSWORD);
 
         } catch (ClassNotFoundException e) {
             throw new DatabaseConnectionException("Driver MySQL non trovato: " + e.getMessage());

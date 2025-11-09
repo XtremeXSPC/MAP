@@ -1,5 +1,8 @@
 package gui.controllers;
 
+import database.DbAccess;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -11,11 +14,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Controller per la vista Settings.
- * Gestisce la configurazione dell'applicazione e le preferenze.
+ * Controller per la vista Settings. Gestisce la configurazione dell'applicazione e le
+ * preferenze.
  */
 public class SettingsController {
 
@@ -23,49 +27,73 @@ public class SettingsController {
     private static final String SETTINGS_FILE = "qtgui.properties";
 
     // Aspetto
-    @FXML private ComboBox<String> themeComboBox;
-    @FXML private ComboBox<String> fontSizeComboBox;
-    @FXML private CheckBox showWelcomeCheckBox;
+    @FXML
+    private ComboBox<String> themeComboBox;
+    @FXML
+    private ComboBox<String> fontSizeComboBox;
+    @FXML
+    private CheckBox showWelcomeCheckBox;
 
     // Prestazioni
-    @FXML private CheckBox enableCachingCheckBox;
-    @FXML private Spinner<Integer> threadPoolSpinner;
-    @FXML private TextField memoryLimitField;
-    @FXML private CheckBox verboseLoggingCheckBox;
+    @FXML
+    private CheckBox enableCachingCheckBox;
+    @FXML
+    private Spinner<Integer> threadPoolSpinner;
+    @FXML
+    private TextField memoryLimitField;
+    @FXML
+    private CheckBox verboseLoggingCheckBox;
 
     // Impostazioni predefinite clustering
-    @FXML private TextField defaultRadiusField;
-    @FXML private ComboBox<String> defaultDataSourceComboBox;
-    @FXML private CheckBox autoStartClusteringCheckBox;
+    @FXML
+    private TextField defaultRadiusField;
+    @FXML
+    private ComboBox<String> defaultDataSourceComboBox;
+    @FXML
+    private CheckBox autoStartClusteringCheckBox;
 
     // Impostazioni esportazione
-    @FXML private ComboBox<String> exportFormatComboBox;
-    @FXML private TextField exportDirectoryField;
-    @FXML private Button btnBrowseExportDir;
-    @FXML private CheckBox includeTimestampCheckBox;
+    @FXML
+    private ComboBox<String> exportFormatComboBox;
+    @FXML
+    private TextField exportDirectoryField;
+    @FXML
+    private Button btnBrowseExportDir;
+    @FXML
+    private CheckBox includeTimestampCheckBox;
 
     // Database
-    @FXML private TextField dbHostField;
-    @FXML private TextField dbPortField;
-    @FXML private TextField dbNameField;
-    @FXML private TextField dbUsernameField;
-    @FXML private PasswordField dbPasswordField;
-    @FXML private Button btnTestConnection;
+    @FXML
+    private TextField dbHostField;
+    @FXML
+    private TextField dbPortField;
+    @FXML
+    private TextField dbNameField;
+    @FXML
+    private TextField dbUsernameField;
+    @FXML
+    private PasswordField dbPasswordField;
+    @FXML
+    private Button btnTestConnection;
 
     // Pulsanti
-    @FXML private Button btnResetDefaults;
-    @FXML private Button btnCancel;
-    @FXML private Button btnSaveSettings;
+    @FXML
+    private Button btnResetDefaults;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnSaveSettings;
 
     // Stato
-    @FXML private HBox statusFooter;
-    @FXML private Label statusMessageLabel;
+    @FXML
+    private HBox statusFooter;
+    @FXML
+    private Label statusMessageLabel;
 
     private Properties settings;
 
     /**
-     * Inizializza il controller.
-     * Chiamato automaticamente dopo il caricamento FXML.
+     * Inizializza il controller. Chiamato automaticamente dopo il caricamento FXML.
      */
     @FXML
     public void initialize() {
@@ -84,8 +112,7 @@ public class SettingsController {
      * Configura i controlli spinner.
      */
     private void setupSpinners() {
-        SpinnerValueFactory<Integer> valueFactory =
-            new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16, 4);
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16, 4);
         threadPoolSpinner.setValueFactory(valueFactory);
     }
 
@@ -137,7 +164,8 @@ public class SettingsController {
         try {
             threadPoolSpinner.getValueFactory().setValue(Integer.parseInt(settings.getProperty("threadPoolSize", "4")));
         } catch (NumberFormatException e) {
-            logger.warn("Valore threadPoolSize non valido: '{}', utilizzo valore predefinito (4)", settings.getProperty("threadPoolSize"));
+            logger.warn("Valore threadPoolSize non valido: '{}', utilizzo valore predefinito (4)",
+                    settings.getProperty("threadPoolSize"));
             threadPoolSpinner.getValueFactory().setValue(4);
         }
         memoryLimitField.setText(settings.getProperty("memoryLimit", "512"));
@@ -215,29 +243,125 @@ public class SettingsController {
      * Gestisce il pulsante test connessione database.
      */
     private void handleTestConnection() {
-        logger.info("Test connessione database...");
+        logger.info("Test connessione database richiesto");
 
+        // Valida i campi
         String host = dbHostField.getText();
-        String port = dbPortField.getText();
+        String portStr = dbPortField.getText();
         String dbName = dbNameField.getText();
         String username = dbUsernameField.getText();
         String password = dbPasswordField.getText();
 
-        // TODO: Implementare test connessione database effettivo nello Sprint 2
-        // Per ora, mostra un risultato simulato
+        if (host == null || host.trim().isEmpty()) {
+            showError("Campo Obbligatorio", "Inserisci l'host del database.");
+            return;
+        }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Test Connessione Database");
-        alert.setHeaderText("Test Connessione");
-        alert.setContentText(
-            "Il test di connessione al database sarà implementato nello Sprint 2.\n\n" +
-            "Configurazione:\n" +
-            "Host: " + host + "\n" +
-            "Porta: " + port + "\n" +
-            "Database: " + dbName + "\n" +
-            "Username: " + username
-        );
-        alert.showAndWait();
+        if (dbName == null || dbName.trim().isEmpty()) {
+            showError("Campo Obbligatorio", "Inserisci il nome del database.");
+            return;
+        }
+
+        if (username == null || username.trim().isEmpty()) {
+            showError("Campo Obbligatorio", "Inserisci lo username del database.");
+            return;
+        }
+
+        int port;
+        try {
+            port = Integer.parseInt(portStr);
+            if (port < 1 || port > 65535) {
+                showError("Porta Non Valida", "La porta deve essere tra 1 e 65535.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showError("Porta Non Valida", "Inserisci un numero di porta valido.");
+            return;
+        }
+
+        // Disabilita il pulsante durante il test
+        btnTestConnection.setDisable(true);
+        btnTestConnection.setText("Test in corso...");
+
+        // Esegui test in background thread
+        Task<Boolean> testTask = new Task<Boolean>() {
+            private String errorMessage = "";
+
+            @Override
+            protected Boolean call() {
+                DbAccess db = null;
+                try {
+                    logger.info("Tentativo connessione a: {}:{}/{} con utente: {}",
+                               host.trim(), port, dbName.trim(), username.trim());
+
+                    db = new DbAccess(host.trim(), String.valueOf(port), dbName.trim(),
+                                     username.trim(), password);
+
+                    // Se arriviamo qui, la connessione è riuscita
+                    logger.info("Connessione database riuscita!");
+                    return true;
+
+                } catch (database.DatabaseConnectionException e) {
+                    errorMessage = e.getMessage();
+                    logger.error("Errore connessione database", e);
+                    return false;
+                } finally {
+                    if (db != null) {
+                        try {
+                            db.closeConnection();
+                        } catch (Exception e) {
+                            logger.warn("Errore chiusura connessione test", e);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            protected void succeeded() {
+                Platform.runLater(() -> {
+                    btnTestConnection.setDisable(false);
+                    btnTestConnection.setText("Test Connessione");
+
+                    if (getValue()) {
+                        // Connessione riuscita
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Test Connessione");
+                        alert.setHeaderText("Connessione Riuscita");
+                        alert.setContentText("La connessione al database è stata stabilita con successo!\n\n"
+                                + "Configurazione:\n" + "Host: " + host + "\n" + "Porta: " + port + "\n" + "Database: "
+                                + dbName + "\n" + "Username: " + username);
+                        alert.showAndWait();
+                        showStatus("Connessione database riuscita", true);
+                    } else {
+                        // Connessione fallita
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Test Connessione");
+                        alert.setHeaderText("Connessione Fallita");
+                        alert.setContentText("Impossibile connettersi al database.\n\n" + "Errore:\n" + errorMessage
+                                + "\n\n" + "Verifica i parametri di connessione e assicurati che:\n"
+                                + "- Il server MySQL sia in esecuzione\n" + "- Le credenziali siano corrette\n"
+                                + "- Il database esista\n" + "- Non ci siano firewall che bloccano la connessione");
+                        alert.showAndWait();
+                        showStatus("Connessione database fallita", false);
+                    }
+                });
+            }
+
+            @Override
+            protected void failed() {
+                Platform.runLater(() -> {
+                    btnTestConnection.setDisable(false);
+                    btnTestConnection.setText("Test Connessione");
+                    showError("Errore Test",
+                            "Errore imprevisto durante test connessione:\n" + getException().getMessage());
+                });
+            }
+        };
+
+        // Avvia task in background
+        Thread testThread = new Thread(testTask);
+        testThread.setDaemon(true);
+        testThread.start();
     }
 
     /**
@@ -311,7 +435,8 @@ public class SettingsController {
             logger.info("Impostazioni salvate in {}", SETTINGS_FILE);
         } catch (IOException e) {
             logger.error("Impossibile salvare le impostazioni", e);
-            showError("Impossibile salvare le impostazioni", "Impossibile scrivere il file delle impostazioni: " + e.getMessage());
+            showError("Impossibile salvare le impostazioni",
+                    "Impossibile scrivere il file delle impostazioni: " + e.getMessage());
         }
     }
 
@@ -390,7 +515,7 @@ public class SettingsController {
     /**
      * Mostra un dialogo di errore.
      *
-     * @param title   titolo del dialogo
+     * @param title titolo del dialogo
      * @param message messaggio di errore
      */
     private void showError(String title, String message) {

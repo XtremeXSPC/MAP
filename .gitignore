@@ -41,3 +41,7 @@ qtServer/database/JDBC/*.jar
 # JavaFX
 *.fxmlc
 target/
+
+# Scala
+.metals/
+.worksheet/

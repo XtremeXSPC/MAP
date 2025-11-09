@@ -1,5 +1,8 @@
 package gui.controllers;
 
+import data.Data;
+import database.DbAccess;
+import gui.dialogs.DatasetPreviewDialog;
 import gui.models.ClusteringConfiguration;
 import gui.services.DataImportService.DataSource;
 import gui.utils.ApplicationContext;
@@ -31,9 +34,12 @@ public class HomeController {
     @FXML private TextField csvFilePathField;
     @FXML private Button btnBrowseFile;
     @FXML private VBox databaseSection;
-    @FXML private TextField tableNameField;
     @FXML private TextField dbHostField;
     @FXML private TextField dbPortField;
+    @FXML private TextField dbNameField;
+    @FXML private TextField dbUserField;
+    @FXML private PasswordField dbPasswordField;
+    @FXML private TextField tableNameField;
     @FXML private Button btnPreviewDataset;
 
     // Parametri clustering
@@ -116,6 +122,14 @@ public class HomeController {
             validateRadius(newValue);
             validateForm();
         });
+
+        // Aggiungi listener per campi database per rivalidare quando cambiano
+        tableNameField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbNameField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbUserField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbPasswordField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbHostField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbPortField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
     }
 
     /**
@@ -172,9 +186,22 @@ public class HomeController {
             isValid = false;
             errors.append("Selezionare un file CSV. ");
         } else if (dataSource.contains("Database")) {
+            // Valida campi obbligatori database
+            if (dbNameField.getText() == null || dbNameField.getText().trim().isEmpty()) {
+                isValid = false;
+                errors.append("Inserire il nome del database. ");
+            }
+            if (dbUserField.getText() == null || dbUserField.getText().trim().isEmpty()) {
+                isValid = false;
+                errors.append("Inserire username database. ");
+            }
+            if (dbPasswordField.getText() == null || dbPasswordField.getText().isEmpty()) {
+                isValid = false;
+                errors.append("Inserire password database. ");
+            }
             if (tableNameField.getText() == null || tableNameField.getText().trim().isEmpty()) {
                 isValid = false;
-                errors.append("Inserire un nome tabella. ");
+                errors.append("Inserire nome tabella. ");
             }
         }
 
@@ -222,14 +249,82 @@ public class HomeController {
      * Gestisce il clic del pulsante anteprima dataset.
      */
     private void handlePreviewDataset() {
-        logger.info("Anteprima dataset cliccato");
+        logger.info("Anteprima dataset richiesta");
 
-        // TODO: Implementare dialogo anteprima dataset
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Anteprima Dataset");
-        alert.setHeaderText("Anteprima Dataset");
-        alert.setContentText("La funzionalità di anteprima dataset sarà implementata nello Sprint 2.");
-        alert.showAndWait();
+        String dataSourceStr = dataSourceComboBox.getValue();
+        if (dataSourceStr == null) {
+            showError("Sorgente Dati Non Selezionata", "Seleziona una sorgente dati prima di visualizzare l'anteprima.");
+            return;
+        }
+
+        Data data = null;
+        DbAccess db = null;
+
+        try {
+            if (dataSourceStr.contains("Hardcoded")) {
+                // Dataset hardcoded PlayTennis
+                data = new Data();
+                logger.info("Caricato dataset hardcoded per preview");
+
+            } else if (dataSourceStr.contains("CSV")) {
+                // CSV non ancora supportato
+                showError("CSV Non Supportato", "La preview da file CSV sarà implementata in futuro.");
+                return;
+
+            } else if (dataSourceStr.contains("Database")) {
+                // Valida parametri database
+                String dbHost = dbHostField.getText() != null && !dbHostField.getText().trim().isEmpty()
+                        ? dbHostField.getText().trim() : "localhost";
+                int dbPort;
+                try {
+                    dbPort = Integer.parseInt(dbPortField.getText().trim());
+                } catch (NumberFormatException e) {
+                    dbPort = 3306;
+                }
+                String dbName = dbNameField.getText() != null && !dbNameField.getText().trim().isEmpty()
+                        ? dbNameField.getText().trim() : "MapDB";
+                String dbUser = dbUserField.getText() != null && !dbUserField.getText().trim().isEmpty()
+                        ? dbUserField.getText().trim() : "MapUser";
+                String dbPassword = dbPasswordField.getText() != null && !dbPasswordField.getText().isEmpty()
+                        ? dbPasswordField.getText() : "map";
+                String tableName = tableNameField.getText();
+
+                if (tableName == null || tableName.trim().isEmpty()) {
+                    showError("Nome Tabella Mancante", "Inserisci il nome della tabella database.");
+                    return;
+                }
+
+                // Connetti al database
+                logger.info("Connessione database per preview: {}:{}/{} con utente: {}",
+                           dbHost, dbPort, dbName, dbUser);
+
+                db = new DbAccess(dbHost, String.valueOf(dbPort), dbName, dbUser, dbPassword);
+                data = new Data(db, tableName.trim());
+
+                logger.info("Caricato dataset da database per preview: {}", tableName);
+            }
+
+            if (data != null) {
+                // Mostra dialog preview
+                DatasetPreviewDialog previewDialog = new DatasetPreviewDialog(data);
+                previewDialog.show();
+            }
+
+        } catch (Exception e) {
+            logger.error("Errore durante caricamento dataset per preview", e);
+            showError("Errore Caricamento Dataset",
+                    "Impossibile caricare il dataset per l'anteprima:\n" + e.getMessage());
+        } finally {
+            // Chiudi connessione database se aperta
+            if (db != null) {
+                try {
+                    db.closeConnection();
+                    logger.info("Connessione database chiusa dopo preview");
+                } catch (Exception e) {
+                    logger.warn("Errore durante chiusura connessione database", e);
+                }
+            }
+        }
     }
 
     /**
@@ -243,6 +338,15 @@ public class HomeController {
         radiusField.clear();
         csvFilePathField.clear();
         selectedCsvFile = null;
+
+        // Reset campi database ai valori predefiniti
+        dbHostField.setText("localhost");
+        dbPortField.setText("3306");
+        dbNameField.setText("MapDB");
+        dbUserField.setText("MapUser");
+        dbPasswordField.setText("map");
+        tableNameField.clear();
+
         enableCachingCheckBox.setSelected(true);
         verboseLoggingCheckBox.setSelected(false);
 
@@ -325,13 +429,16 @@ public class HomeController {
                     config.setDbPort(3306); // Default MySQL port
                 }
 
+                config.setDbName(dbNameField.getText() != null && !dbNameField.getText().trim().isEmpty()
+                        ? dbNameField.getText().trim() : "MapDB");
+
+                config.setDbUser(dbUserField.getText() != null && !dbUserField.getText().trim().isEmpty()
+                        ? dbUserField.getText().trim() : "MapUser");
+
+                config.setDbPassword(dbPasswordField.getText() != null && !dbPasswordField.getText().isEmpty()
+                        ? dbPasswordField.getText() : "map");
+
                 config.setDbTableName(tableNameField.getText().trim());
-                // Note: username e password dovrebbero essere richiesti in un dialog separato
-                // TODO: Implementare campi GUI per credenziali DB (Sprint 3)
-                // Per ora usiamo valori hardcoded dal backend
-                config.setDbName("MapDB");
-                config.setDbUser("MapUser");
-                config.setDbPassword("map");  // Password corretta dal backend
             }
 
             // Imposta opzioni

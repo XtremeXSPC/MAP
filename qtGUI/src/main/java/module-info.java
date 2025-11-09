@@ -6,6 +6,7 @@ module qtGUI {
     // JavaFX modules
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.swing;  // Per SwingNode integration
 
     // Charting library
     requires org.knowm.xchart;
@@ -20,6 +21,7 @@ module qtGUI {
 
     // Java base modules
     requires java.sql;
+    requires java.desktop;  // Per Swing (JPanel, SwingUtilities, etc.)
 
     // Export packages for reflection (required by FXML)
     exports gui;
@@ -27,8 +29,11 @@ module qtGUI {
     exports gui.services;
     exports gui.models;
     exports gui.utils;
+    exports gui.charts;
+    exports gui.dialogs;
 
     // Open packages to JavaFX for FXML controller injection
     opens gui to javafx.fxml;
     opens gui.controllers to javafx.fxml;
+    opens gui.dialogs to javafx.fxml;
 }
