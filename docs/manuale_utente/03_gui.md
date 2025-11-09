@@ -18,7 +18,7 @@ java application.Main
 
 ```
 ┌──────────────────────────────────────────────────┐
-│  Quality Threshold Clustering          [- □ X]  │
+│  Quality Threshold Clustering           [- □ X]  │
 ├──────────┬───────────────────────────────────────┤
 │          │                                       │
 │  Home    │                                       │
@@ -36,12 +36,12 @@ java application.Main
 
 ### Barra Laterale (Sidebar)
 
-| Bottone | Funzione | Icona |
-|---------|----------|-------|
-| **Home** | Caricamento dataset | Cartella |
-| **Clustering** | Configurazione e avvio | Grafico |
-| **Results** | Visualizzazione risultati | Tabella |
-| **Settings** | Configurazione app | Ingranaggio |
+| Bottone        | Funzione                  | Icona       |
+| -------------- | ------------------------- | ----------- |
+| **Home**       | Caricamento dataset       | Cartella    |
+| **Clustering** | Configurazione e avvio    | Grafico     |
+| **Results**    | Visualizzazione risultati | Tabella     |
+| **Settings**   | Configurazione app        | Ingranaggio |
 
 ### Barra di Stato (Status Bar)
 
@@ -96,11 +96,11 @@ Dopo caricamento appare:
 
 #### Gestione Errori CSV
 
-| Errore | Causa | Soluzione |
-|--------|-------|-----------|
-| "Invalid CSV format" | Header mancante | Aggiungi riga intestazione |
-| "Inconsistent columns" | Righe con colonne diverse | Uniforma numero colonne |
-| "File too large" | File > 10MB | Riduci dataset o usa database |
+| Errore                 | Causa                     | Soluzione                     |
+| ---------------------- | ------------------------- | ----------------------------- |
+| "Invalid CSV format"   | Header mancante           | Aggiungi riga intestazione    |
+| "Inconsistent columns" | Righe con colonne diverse | Uniforma numero colonne       |
+| "File too large"       | File > 10MB               | Riduci dataset o usa database |
 
 ### Caricamento da Database
 
@@ -113,15 +113,15 @@ Si apre dialog configurazione connessione.
 
 #### Passo 2: Inserisci Credenziali
 
-| Campo | Esempio | Descrizione |
-|-------|---------|-------------|
-| **DB Type** | MySQL | Tipo database (MySQL, PostgreSQL) |
-| **Host** | localhost | Indirizzo server database |
-| **Port** | 3306 | Porta MySQL (default 3306) |
-| **Database** | qtclustering | Nome database |
-| **Username** | root | Utente database |
-| **Password** | ••••• | Password utente |
-| **Table** | playtennis | Nome tabella da caricare |
+| Campo        | Esempio      | Descrizione                       |
+| ------------ | ------------ | --------------------------------- |
+| **DB Type**  | MySQL        | Tipo database (MySQL, PostgreSQL) |
+| **Host**     | localhost    | Indirizzo server database         |
+| **Port**     | 3306         | Porta MySQL (default 3306)        |
+| **Database** | qtclustering | Nome database                     |
+| **Username** | root         | Utente database                   |
+| **Password** | •••••        | Password utente                   |
+| **Table**    | playtennis   | Nome tabella da caricare          |
 
 #### Passo 3: Test Connection
 
@@ -146,12 +146,12 @@ Click "Load Data" per importare tabella.
 
 #### Gestione Errori Database
 
-| Errore | Causa | Soluzione |
-|--------|-------|-----------|
-| "Access denied" | Credenziali errate | Verifica user/password |
-| "Unknown database" | Database inesistente | Crea database prima |
-| "Table not found" | Nome tabella errato | Verifica nome (case-sensitive!) |
-| "Connection timeout" | Server non raggiungibile | Verifica host e firewall |
+| Errore               | Causa                    | Soluzione                       |
+| -------------------- | ------------------------ | ------------------------------- |
+| "Access denied"      | Credenziali errate       | Verifica user/password          |
+| "Unknown database"   | Database inesistente     | Crea database prima             |
+| "Table not found"    | Nome tabella errato      | Verifica nome (case-sensitive!) |
+| "Connection timeout" | Server non raggiungibile | Verifica host e firewall        |
 
 ### Caricamento Dataset Esempio (PlayTennis)
 
@@ -185,14 +185,14 @@ Dopo caricamento (da qualsiasi sorgente), è disponibile "Preview Dataset".
 
 #### Funzionalità Anteprima
 
-| Elemento | Descrizione |
-|----------|-------------|
-| **TableView** | Griglia dati interattiva |
-| **Colonne** | Nome attributo + tipo (D/C) |
-| **Righe** | Max 100 tuple (per performance) |
-| **Scroll** | Orizzontale e verticale |
-| **Sort** | Click su header colonna |
-| **Filtro** | Casella ricerca testuale |
+| Elemento      | Descrizione                     |
+| ------------- | ------------------------------- |
+| **TableView** | Griglia dati interattiva        |
+| **Colonne**   | Nome attributo + tipo (D/C)     |
+| **Righe**     | Max 100 tuple (per performance) |
+| **Scroll**    | Orizzontale e verticale         |
+| **Sort**      | Click su header colonna         |
+| **Filtro**    | Casella ricerca testuale        |
 
 <!-- [IMMAGINE]: Dataset preview dialog - dimensione: 800x600 -->
 <!-- Mostra: TableView con colonne "Outlook", "Temperature", etc. e dati -->
@@ -219,12 +219,12 @@ Schermata per configurare parametri e avviare clustering.
 
 #### Slider Radius
 
-| Parametro | Valore | Comportamento |
-|-----------|--------|---------------|
-| **Min** | 0.0 | Cluster molto piccoli (max qualità) |
-| **Max** | 1.0 | Cluster molto grandi (min qualità) |
-| **Default** | 0.5 | Bilanciato |
-| **Step** | 0.01 | Precisione 2 decimali |
+| Parametro   | Valore | Comportamento                       |
+| ----------- | ------ | ----------------------------------- |
+| **Min**     | 0.0    | Cluster molto piccoli (max qualità) |
+| **Max**     | 1.0    | Cluster molto grandi (min qualità)  |
+| **Default** | 0.5    | Bilanciato                          |
+| **Step**    | 0.01   | Precisione 2 decimali               |
 
 #### Interpretazione Radius
 
@@ -282,12 +282,12 @@ Durante esecuzione:
 
 #### Tempi di Esecuzione Tipici
 
-| Dataset Size | Radius | Tempo Atteso |
-|--------------|--------|--------------|
-| 14 tuple (PlayTennis) | 0.0 | < 1 secondo |
-| 100 tuple | 0.5 | 2-5 secondi |
-| 1000 tuple | 0.5 | 30-60 secondi |
-| 5000 tuple | 0.5 | 5-10 minuti |
+| Dataset Size          | Radius | Tempo Atteso  |
+| --------------------- | ------ | ------------- |
+| 14 tuple (PlayTennis) | 0.0    | < 1 secondo   |
+| 100 tuple             | 0.5    | 2-5 secondi   |
+| 1000 tuple            | 0.5    | 30-60 secondi |
+| 5000 tuple            | 0.5    | 5-10 minuti   |
 
 **Nota**: Complessità O(k × n²) rende algoritmo lento per dataset grandi (> 10000 tuple).
 
@@ -295,21 +295,21 @@ Durante esecuzione:
 
 Espandi pannello "Advanced Options" per:
 
-| Opzione | Default | Descrizione |
-|---------|---------|-------------|
-| **Distance Metric** | Hamming | Metrica distanza (Hamming/Euclidean) |
-| **Enable Cache** | ON | Cache distanze calcolate (speedup) |
-| **Thread Pool Size** | 4 | Thread paralleli (se supportato) |
-| **Timeout** | 300s | Timeout massimo esecuzione |
+| Opzione              | Default | Descrizione                          |
+| -------------------- | ------- | ------------------------------------ |
+| **Distance Metric**  | Hamming | Metrica distanza (Hamming/Euclidean) |
+| **Enable Cache**     | ON      | Cache distanze calcolate (speedup)   |
+| **Thread Pool Size** | 4       | Thread paralleli (se supportato)     |
+| **Timeout**          | 300s    | Timeout massimo esecuzione           |
 
 ### Gestione Errori Clustering
 
-| Errore | Causa | Soluzione |
-|--------|-------|-----------|
-| "No dataset loaded" | Dataset non caricato | Carica prima dataset |
-| "Server not reachable" | Server offline | Avvia server |
-| "Clustering timeout" | Dataset troppo grande | Riduci dataset o aumenta timeout |
-| "Out of memory" | RAM insufficiente | Aumenta heap JVM o riduci dataset |
+| Errore                 | Causa                 | Soluzione                         |
+| ---------------------- | --------------------- | --------------------------------- |
+| "No dataset loaded"    | Dataset non caricato  | Carica prima dataset              |
+| "Server not reachable" | Server offline        | Avvia server                      |
+| "Clustering timeout"   | Dataset troppo grande | Riduci dataset o aumenta timeout  |
+| "Out of memory"        | RAM insufficiente     | Aumenta heap JVM o riduci dataset |
 
 ---
 
