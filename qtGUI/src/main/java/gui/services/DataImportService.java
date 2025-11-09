@@ -142,8 +142,7 @@ public class DataImportService {
 
         try {
             // Connessione database
-            String dbUrl = String.format("jdbc:mysql://%s:%d/%s", dbHost, dbPort, dbName);
-            db = new DbAccess(dbUrl, dbUser, dbPassword);
+            db = new DbAccess(dbHost, String.valueOf(dbPort), dbName, dbUser, dbPassword);
 
             logger.info("Connessione database stabilita");
 
@@ -244,8 +243,7 @@ public class DataImportService {
         DbAccess db = null;
 
         try {
-            String dbUrl = String.format("jdbc:mysql://%s:%d/%s", dbHost, dbPort, dbName);
-            db = new DbAccess(dbUrl, dbUser, dbPassword);
+            db = new DbAccess(dbHost, String.valueOf(dbPort), dbName, dbUser, dbPassword);
 
             logger.info("Test connessione riuscito");
             return true;

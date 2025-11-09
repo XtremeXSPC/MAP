@@ -291,12 +291,11 @@ public class SettingsController {
             protected Boolean call() {
                 DbAccess db = null;
                 try {
-                    String dbUrl =
-                            "jdbc:mysql://" + host.trim() + ":" + port + "/" + dbName.trim() + "?serverTimezone=UTC";
+                    logger.info("Tentativo connessione a: {}:{}/{} con utente: {}",
+                               host.trim(), port, dbName.trim(), username.trim());
 
-                    logger.info("Tentativo connessione a: {}", dbUrl);
-
-                    db = new DbAccess(dbUrl, username.trim(), password);
+                    db = new DbAccess(host.trim(), String.valueOf(port), dbName.trim(),
+                                     username.trim(), password);
 
                     // Se arriviamo qui, la connessione è riuscita
                     logger.info("Connessione database riuscita!");

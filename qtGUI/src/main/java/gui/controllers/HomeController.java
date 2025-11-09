@@ -295,10 +295,10 @@ public class HomeController {
                 }
 
                 // Connetti al database
-                String dbUrl = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName
-                        + "?serverTimezone=UTC";
+                logger.info("Connessione database per preview: {}:{}/{} con utente: {}",
+                           dbHost, dbPort, dbName, dbUser);
 
-                db = new DbAccess(dbUrl, dbUser, dbPassword);
+                db = new DbAccess(dbHost, String.valueOf(dbPort), dbName, dbUser, dbPassword);
                 data = new Data(db, tableName.trim());
 
                 logger.info("Caricato dataset da database per preview: {}", tableName);
