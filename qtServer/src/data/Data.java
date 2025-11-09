@@ -78,11 +78,65 @@ public class Data {
     }
 
     /**
+     * Costruttore che carica dataset da tabella database MySQL usando connessione esistente.
+     * Questo costruttore NON chiude la connessione, che deve essere gestita dal chiamante.
+     *
+     * @param db connessione database gia inizializzata
+     * @param tableName nome della tabella nel database
+     * @throws SQLException in caso di errore SQL
+     * @throws EmptySetException se la tabella e vuota
+     * @throws NoValueException se valori aggregati non trovati
+     */
+    public Data(DbAccess db, String tableName)
+            throws SQLException, EmptySetException, NoValueException {
+        if (db == null) {
+            throw new IllegalArgumentException("DbAccess non puo essere null");
+        }
+        if (tableName == null || tableName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Table name non puo essere vuoto");
+        }
+
+        // Carica transazioni dal database
+        TableData tableData = new TableData(db);
+        data = tableData.getDistinctTransazioni(tableName);
+        numberOfExamples = data.size();
+
+        // Costruisci schema attributi
+        TableSchema schema = new TableSchema(db, tableName);
+        explanatorySet = new LinkedList<>();
+
+        for (int i = 0; i < schema.getNumberOfAttributes(); i++) {
+            TableSchema.Column col = schema.getColumn(i);
+
+            if (col.isNumber()) {
+                // Attributo continuo: ricava min e max
+                Float minObj = (Float) tableData.getAggregateColumnValue(tableName, col, QUERY_TYPE.MIN);
+                Float maxObj = (Float) tableData.getAggregateColumnValue(tableName, col, QUERY_TYPE.MAX);
+                double min = minObj.doubleValue();
+                double max = maxObj.doubleValue();
+                explanatorySet.add(new ContinuousAttribute(col.getColumnName(), i, min, max));
+            } else {
+                // Attributo discreto: ricava valori distinti
+                Set<Object> values = tableData.getDistinctColumnValues(tableName, col);
+                String[] valuesArray = new String[values.size()];
+                int idx = 0;
+                for (Object v : values) {
+                    valuesArray[idx++] = (String) v;
+                }
+                explanatorySet.add(new DiscreteAttribute(col.getColumnName(), i, valuesArray));
+            }
+        }
+        // NOTA: La connessione NON viene chiusa qui, il chiamante deve gestirla
+    }
+
+    /**
      * Costruttore che carica dataset da tabella database MySQL (QT07).
+     * Crea una nuova connessione con parametri hardcoded.
      *
      * @param tableName nome della tabella nel database MapDB
+     * @param fromDatabase deve essere true per usare questo costruttore
      * @throws SQLException in caso di errore SQL
-     * @throws EmptySetException se la tabella è vuota
+     * @throws EmptySetException se la tabella e vuota
      * @throws DatabaseConnectionException se la connessione al database fallisce
      * @throws NoValueException se valori aggregati non trovati
      */
@@ -92,41 +146,18 @@ public class Data {
             throw new IllegalArgumentException("Usare costruttore Data(String) per CSV");
         }
 
-        // Connessione al database
+        // Connessione al database con parametri hardcoded
         DbAccess db = new DbAccess();
         db.initConnection();
 
         try {
-            // Carica transazioni dal database
-            TableData tableData = new TableData(db);
-            data = tableData.getDistinctTransazioni(tableName);
-            numberOfExamples = data.size();
+            // Delega al nuovo costruttore che accetta DbAccess
+            Data tempData = new Data(db, tableName);
 
-            // Costruisci schema attributi
-            TableSchema schema = new TableSchema(db, tableName);
-            explanatorySet = new LinkedList<>();
-
-            for (int i = 0; i < schema.getNumberOfAttributes(); i++) {
-                TableSchema.Column col = schema.getColumn(i);
-
-                if (col.isNumber()) {
-                    // Attributo continuo: ricava min e max
-                    Float minObj = (Float) tableData.getAggregateColumnValue(tableName, col, QUERY_TYPE.MIN);
-                    Float maxObj = (Float) tableData.getAggregateColumnValue(tableName, col, QUERY_TYPE.MAX);
-                    double min = minObj.doubleValue();
-                    double max = maxObj.doubleValue();
-                    explanatorySet.add(new ContinuousAttribute(col.getColumnName(), i, min, max));
-                } else {
-                    // Attributo discreto: ricava valori distinti
-                    Set<Object> values = tableData.getDistinctColumnValues(tableName, col);
-                    String[] valuesArray = new String[values.size()];
-                    int idx = 0;
-                    for (Object v : values) {
-                        valuesArray[idx++] = (String) v;
-                    }
-                    explanatorySet.add(new DiscreteAttribute(col.getColumnName(), i, valuesArray));
-                }
-            }
+            // Copia dati nell'istanza corrente
+            this.data = tempData.data;
+            this.numberOfExamples = tempData.numberOfExamples;
+            this.explanatorySet = tempData.explanatorySet;
         } finally {
             db.closeConnection();
         }
