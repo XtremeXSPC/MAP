@@ -1,0 +1,98 @@
+@startuml services_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package gui.services {
+  ' ===== Clustering Service =====
+  class ClusteringService {
+    - {static} logger: Logger
+    --
+    + runClustering(data: Data, radius: double): ClusterSet
+    + saveClustering(fileName: String, result: ClusteringResult): void
+    + loadClustering(fileName: String): ClusteringResult
+    - validateInputs(data: Data, radius: double): void
+  }
+
+  ' ===== Data Import Service =====
+  class DataImportService {
+    - {static} logger: Logger
+    --
+    + loadFromCSV(filePath: String): Data
+    + loadFromDatabase(tableName: String): Data
+    + loadFromSerializedFile(filePath: String): Data
+    - parseCSV(filePath: String): Data
+    - connectToDatabase(): DbAccess
+  }
+
+  ' ===== Export Service =====
+  class ExportService {
+    - {static} logger: Logger
+    --
+    + exportToCsv(filePath: String, result: ClusteringResult): void
+    + exportToTextReport(filePath: String, result: ClusteringResult): void
+    + exportToZip(zipFilePath: String, result: ClusteringResult): void
+    - escapeCSV(value: String): String
+    - generateReadme(result: ClusteringResult): String
+  }
+
+  ' ===== Relazioni con qtServer =====
+  ClusteringService ..> "mining.QTMiner" : <<uses>>
+  ClusteringService ..> "mining.ClusterSet" : <<uses>>
+  ClusteringService ..> "data.Data" : <<uses>>
+
+  DataImportService ..> "data.Data" : <<creates>>
+  DataImportService ..> "database.DbAccess" : <<uses>>
+
+  ExportService ..> "gui.models.ClusteringResult" : <<uses>>
+}
+
+note right of ClusteringService
+  Wrapper per QTMiner.
+
+  Funzionalità:
+  - Esecuzione clustering
+  - Salvataggio risultati (.dmp)
+  - Caricamento risultati
+  - Logging operazioni
+  - Gestione eccezioni
+
+  Delega computazione a qtServer
+end note
+
+note top of DataImportService
+  Import dati da sorgenti multiple.
+
+  Sorgenti supportate:
+  - CSV file (parsing con inferenza tipi)
+  - Database MySQL (via JDBC)
+  - File serializzati (.dmp)
+
+  Gestione errori robusto
+end note
+
+note bottom of ExportService
+  Export risultati multipli formati.
+
+  Formati:
+  - CSV: Tabulare (ClusterID, TupleID, Distance, Attrs)
+  - TXT: Report testuale con statistiche
+  - ZIP: Pacchetto completo (.dmp + CSV + TXT + README)
+
+  Timestamp automatico nei nomi file
+end note
+
+note as N1
+  Pattern: Service Layer
+
+  Controller → Service → qtServer
+
+  Vantaggi:
+  - Controller snelli (solo UI logic)
+  - Business logic centralizzata
+  - Riusabilità Services
+  - Testing semplificato
+end note
+
+@enduml

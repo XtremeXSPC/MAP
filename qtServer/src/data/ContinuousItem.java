@@ -10,8 +10,8 @@ package data;
  *   di Hamming utilizzata per gli attributi discreti.
  * </p>
  *
- * <h3>Formula Distanza:</h3>
- * 
+ * <p><b>Formula Distanza:</b></p>
+ *
  * <pre>
  *   distance = |scaledValue1 - scaledValue2|
  *
@@ -20,8 +20,8 @@ package data;
  *     min, max = range dell'attributo
  * </pre>
  *
- * <h3>Esempio:</h3>
- * 
+ * <p><b>Esempio:</b></p>
+ *
  * <pre>
  *   ContinuousAttribute temp = new ContinuousAttribute("Temperature", 0, 10.0, 40.0);
  *   ContinuousItem item1 = new ContinuousItem(temp, 15.0);
@@ -68,14 +68,14 @@ public class ContinuousItem extends Item {
      *   discreti.
      * </p>
      *
-     * <h3>Algoritmo:</h3>
+     * <p><b>Algoritmo:</b></p>
      * <ol>
      *   <li>Normalizza il valore corrente: v1_scaled = (v1 - min) / (max - min)</li>
      *   <li>Normalizza il valore da confrontare: v2_scaled = (v2 - min) / (max - min)</li>
      *   <li>Calcola distanza: |v1_scaled - v2_scaled|</li>
      * </ol>
      *
-     * <h3>Proprietà:</h3>
+     * <p><b>Proprietà:</b></p>
      * <ul>
      *   <li>Range output: [0, 1] (normalizzato)</li>
      *   <li>Simmetrica: distance(a, b) = distance(b, a)</li>

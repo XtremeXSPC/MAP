@@ -1,0 +1,189 @@
+@startuml charts_dialogs_utils
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package gui.charts {
+  class ClusterScatterChart {
+    - xAxis: NumberAxis
+    - yAxis: NumberAxis
+    --
+    + ClusterScatterChart(data: Data, clusters: ClusterSet)
+    + updateData(data: Data, clusters: ClusterSet): void
+    - applyPCA(data: Data): double[][]
+    - getClusterColor(index: int): Color
+    - createSeries(cluster: Cluster, index: int): Series
+  }
+
+  class ChartViewer {
+    - chart: ClusterScatterChart
+    - zoomEnabled: boolean
+    --
+    + ChartViewer()
+    + setChart(chart: ClusterScatterChart): void
+    + enableZoom(): void
+    + exportToPNG(filePath: String): void
+  }
+}
+
+package gui.dialogs {
+  class AboutDialog {
+    - version: String
+    - author: String
+    --
+    + AboutDialog()
+    + showAndWait(): void
+  }
+
+  class DatasetPreviewDialog {
+    - tableView: TableView
+    - data: Data
+    --
+    + DatasetPreviewDialog(data: Data)
+    + showAndWait(): void
+    - populateTable(): void
+  }
+
+  class StatisticsDialog {
+    - tabPane: TabPane
+    - result: ClusteringResult
+    --
+    + StatisticsDialog(result: ClusteringResult)
+    + showAndWait(): void
+    - createGeneralStatsTab(): Tab
+    - createSizeDistributionTab(): Tab
+    - createDistanceDistributionTab(): Tab
+    - createSummaryTableTab(): Tab
+  }
+}
+
+package gui.utils {
+  class ApplicationContext << Singleton >> {
+    - {static} instance: ApplicationContext
+    - currentData: Data
+    - currentResult: ClusteringResult
+    - recentFiles: List<String>
+    --
+    - ApplicationContext()
+    + {static} getInstance(): ApplicationContext
+    + getCurrentData(): Data
+    + setCurrentData(data: Data): void
+    + getCurrentResult(): ClusteringResult
+    + setCurrentResult(result: ClusteringResult): void
+    + addRecentFile(filePath: String): void
+    + getRecentFiles(): List<String>
+  }
+
+  class ThemeManager << Singleton >> {
+    - {static} instance: ThemeManager
+    - currentTheme: Theme
+    - primaryScene: Scene
+    - preferences: Preferences
+    --
+    - ThemeManager()
+    + {static} getInstance(): ThemeManager
+    + setPrimaryScene(scene: Scene): void
+    + setTheme(theme: Theme): void
+    + toggleTheme(): void
+    + setFontSize(size: FontSize): void
+    + getCurrentTheme(): Theme
+    - applyTheme(theme: Theme): void
+    - savePreferences(): void
+  }
+
+  enum Theme {
+    LIGHT
+    DARK
+    --
+    + getStylesheetPath(): String
+  }
+
+  enum FontSize {
+    SMALL
+    MEDIUM
+    LARGE
+    --
+    + getSizePixels(): int
+  }
+
+  class ColorPalette {
+    + {static} PRIMARY: Color
+    + {static} SECONDARY: Color
+    + {static} SUCCESS: Color
+    + {static} ERROR: Color
+    --
+    + {static} getClusterColor(index: int): Color
+    + {static} getTextColor(theme: Theme): Color
+    + {static} getBackgroundColor(theme: Theme): Color
+  }
+}
+
+' ===== Relazioni =====
+ClusterScatterChart --|> "javafx.scene.chart.ScatterChart" : extends
+ChartViewer *-- "1" ClusterScatterChart : chart
+
+AboutDialog --|> "javafx.scene.control.Dialog" : extends
+DatasetPreviewDialog --|> "javafx.scene.control.Dialog" : extends
+StatisticsDialog --|> "javafx.scene.control.Dialog" : extends
+
+ThemeManager o-- "1" Theme : currentTheme
+ThemeManager ..> FontSize : <<uses>>
+ClusterScatterChart ..> ColorPalette : <<uses>>
+
+note right of ClusterScatterChart
+  Scatter chart JavaFX per cluster.
+
+  Funzionalità:
+  - Plot 2D punti cluster
+  - Colori distinti per cluster
+  - PCA per riduzione dimensionalità
+  - Tooltip informativi
+  - Legenda automatica
+
+  Se dataset > 2 attributi: PCA proietta a 2D
+end note
+
+note top of StatisticsDialog
+  Dashboard statistiche completa.
+
+  4 Tab:
+  1. Statistiche Generali (metriche globali)
+  2. Distribuzione Dimensioni (BarChart)
+  3. Distribuzione Distanze (Istogramma)
+  4. Tabella Riepilogativa (TableView)
+
+  JavaFX Charts per visualizzazioni
+end note
+
+note bottom of ApplicationContext
+  Singleton per stato globale app.
+
+  Pattern: Singleton
+
+  Condivide tra controller:
+  - Dataset corrente
+  - Risultati clustering
+  - File recenti
+  - Stato sessione
+
+  Thread-safe (single-threaded JavaFX)
+end note
+
+note left of ThemeManager
+  Singleton per gestione tema.
+
+  Pattern: Singleton + Strategy
+
+  Funzionalità:
+  - Dark/Light mode
+  - Font scaling
+  - Persistenza preferenze (Preferences API)
+  - Applicazione CSS dinamica
+
+  CSS caricato da:
+  - /styles/light.css
+  - /styles/dark.css
+end note
+
+@enduml

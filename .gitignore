@@ -45,6 +45,9 @@
 .dmp/
 build/
 bin/
+docs/javadoc/
+docs/uml/generated/
+dist/
 
 # CMake
 cmake-build-*/

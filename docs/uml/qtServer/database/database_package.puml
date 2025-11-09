@@ -1,0 +1,165 @@
+@startuml database_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package database {
+  ' ===== Classe Principale: DbAccess =====
+  class DbAccess {
+    - DRIVER_CLASS_NAME: String
+    - DBMS: String
+    - SERVER: String
+    - DATABASE: String
+    - PORT: String
+    - USER_ID: String
+    - PASSWORD: String
+    - conn: Connection
+    --
+    + DbAccess()
+    + DbAccess(jdbcUrl: String, user: String, password: String)
+    + initConnection(): void
+    + closeConnection(): void
+    + getConnection(): Connection
+  }
+
+  ' ===== Classe TableSchema =====
+  class TableSchema {
+    - db: DbAccess
+    - tableSchema: List<Column>
+    --
+    + TableSchema(db: DbAccess, tableName: String)
+    + getNumberOfAttributes(): int
+    + getColumnName(index: int): String
+    + isNumber(index: int): boolean
+    + getColumn(index: int): Column
+    + iterator(): Iterator<Column>
+  }
+
+  ' ===== Inner Class Column =====
+  class Column {
+    - name: String
+    - type: String
+    --
+    + Column(name: String, type: String)
+    + getColumnName(): String
+    + isNumber(): boolean
+    + toString(): String
+  }
+
+  ' ===== Classe TableData =====
+  class TableData {
+    - db: DbAccess
+    --
+    + TableData(db: DbAccess)
+    + getDistinctTransazioni(table: String): List<Example>
+    + getDistinctColumnValues(table: String, column: Column): Set<Object>
+    + getAggregateColumnValue(table: String, column: Column, aggregate: QUERY_TYPE): Object
+  }
+
+  ' ===== Classe Example =====
+  class Example {
+    - example: List<Object>
+    --
+    + Example()
+    + add(o: Object): void
+    + get(i: int): Object
+    + set(i: int, o: Object): void
+    + size(): int
+    + toString(): String
+  }
+
+  ' ===== Enum QUERY_TYPE =====
+  enum QUERY_TYPE {
+    MIN
+    MAX
+    --
+    + toString(): String
+  }
+
+  ' ===== Eccezioni =====
+  class DatabaseConnectionException << (E,orchid) exception >> {
+    + DatabaseConnectionException(message: String)
+  }
+
+  class EmptySetException << (E,orchid) exception >> {
+    + EmptySetException(message: String)
+  }
+
+  class NoValueException << (E,orchid) exception >> {
+    + NoValueException(message: String)
+  }
+
+  ' ===== Relazioni Composizione/Aggregazione =====
+  TableSchema *-- "n" Column : tableSchema
+  TableData ..> Example : <<creates>>
+  Example *-- "n" Object : example
+
+  ' ===== Relazioni Dipendenza =====
+  TableSchema --> DbAccess : uses
+  TableData --> DbAccess : uses
+  TableData ..> QUERY_TYPE : <<uses>>
+
+  DbAccess ..> DatabaseConnectionException : <<throws>>
+  TableData ..> EmptySetException : <<throws>>
+  TableData ..> NoValueException : <<throws>>
+
+  ' ===== Relazioni JDBC =====
+  DbAccess ..> "java.sql.Connection" : <<uses>>
+  TableSchema ..> "java.sql.ResultSet" : <<uses>>
+  TableData ..> "java.sql.ResultSet" : <<uses>>
+}
+
+' ===== Note Esplicative =====
+note right of DbAccess
+  Gestisce connessione MySQL tramite JDBC.
+
+  Configurazione default:
+  - Server: localhost:3306
+  - Database: MapDB
+  - User: MapUser / Password: map
+
+  Driver: com.mysql.cj.jdbc.Driver
+end note
+
+note top of TableSchema
+  Rappresenta metadata schema di una tabella.
+
+  Estrae informazioni su colonne:
+  - Nome colonna
+  - Tipo colonna (numerico o stringa)
+
+  Usato da Data per inferire tipi attributi.
+end note
+
+note bottom of TableData
+  Legge dati effettivi da tabella database.
+
+  Supporta query:
+  - SELECT DISTINCT * FROM table
+  - SELECT DISTINCT column FROM table
+  - SELECT MIN/MAX(column) FROM table
+
+  Risultati mappati in oggetti Example.
+end note
+
+note left of QUERY_TYPE
+  Enum per tipo aggregazione:
+  - MIN: Valore minimo
+  - MAX: Valore massimo
+
+  Usato per query aggregate su attributi continui.
+end note
+
+note as N1
+  Pattern utilizzato: Data Access Object (DAO)
+
+  DbAccess → Connessione database
+  TableSchema → Schema tabella (metadata)
+  TableData → Dati tabella (rows)
+  Example → Singola riga
+
+  Separazione responsabilità per flessibilità.
+end note
+
+@enduml

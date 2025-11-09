@@ -1,0 +1,165 @@
+@startuml keyboardinput_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package keyboardinput {
+  ' ===== Classe Keyboard =====
+  class Keyboard {
+    ' ===== Error Handling =====
+    - {static} printErrors: boolean
+    - {static} errorCount: int
+    --
+    + {static} getErrorCount(): int
+    + {static} resetErrorCount(): void
+    + {static} getPrintErrors(): boolean
+    + {static} setPrintErrors(flag: boolean): void
+    - {static} error(str: String): void
+
+    ' ===== Tokenized Input Stream =====
+    - {static} current_token: String
+    - {static} reader: StringTokenizer
+    - {static} in: BufferedReader
+    --
+    - {static} getNextToken(): String
+    - {static} getNextToken(skip: boolean): String
+
+    ' ===== Reading Methods =====
+    + {static} readString(): String
+    + {static} readWord(): String
+    + {static} readBoolean(): boolean
+    + {static} readChar(): char
+    + {static} readInt(): int
+    + {static} readLong(): long
+    + {static} readFloat(): float
+    + {static} readDouble(): double
+  }
+
+  ' ===== Dipendenze Java I/O =====
+  Keyboard ..> "java.io.BufferedReader" : <<uses>>
+  Keyboard ..> "java.io.InputStreamReader" : <<uses>>
+  Keyboard ..> "java.util.StringTokenizer" : <<uses>>
+}
+
+' ===== Note Esplicative =====
+note right of Keyboard
+  Facade per input utente robusto.
+
+  Autori: Lewis & Loftus
+  Fonte: "Java Software Solutions"
+
+  Funzionamento:
+  - Tokenizzazione input con StringTokenizer
+  - Parsing automatico con validazione
+  - Gestione eccezioni trasparente
+  - Retry automatico su input invalido
+
+  Vantaggi vs Scanner:
+  - No crash su input malformato
+  - Contatore errori per debugging
+  - Logging configurabile (printErrors)
+  - Gestione EOF robusta
+end note
+
+note top of Keyboard
+  Metodi di lettura supportati:
+
+  Primitivi:
+  - readInt() → int
+  - readLong() → long
+  - readFloat() → float
+  - readDouble() → double
+  - readChar() → char
+  - readBoolean() → boolean
+
+  Stringhe:
+  - readString() → String (intera riga)
+  - readWord() → String (singola parola)
+
+  Tutti i metodi:
+  - Validazione automatica tipo
+  - Retry su formato errato
+  - Incremento errorCount se errore
+end note
+
+note bottom of Keyboard
+  Gestione Errori
+
+  Comportamento su input invalido:
+  1. Cattura NumberFormatException, IOException, etc.
+  2. Incrementa errorCount
+  3. Se printErrors=true → stampa messaggio
+  4. Richiede nuovo input
+
+  Esempio:
+  int n = Keyboard.readInt();
+  // Input: "abc" → Errore, richiede re-input
+  // Input: "42" → OK, restituisce 42
+
+  Reset contatore:
+  Keyboard.resetErrorCount();
+
+  Disabilita logging:
+  Keyboard.setPrintErrors(false);
+end note
+
+note as N1
+  Pattern Utilizzato: Facade
+
+  Astrae complessità di:
+  - BufferedReader (gestione stream)
+  - StringTokenizer (parsing token)
+  - Exception handling (try-catch)
+  - Type conversion (String → primitivi)
+
+  API semplificata:
+  int x = Keyboard.readInt();
+  invece di:
+  BufferedReader br = new BufferedReader(...);
+  String line = br.readLine();
+  int x = Integer.parseInt(line); // può crashare!
+end note
+
+note as N2
+  Utilizzo Tipico in qtClient
+
+  // Menu con validazione
+  int choice;
+  do {
+      System.out.print("Scelta (1/2): ");
+      choice = Keyboard.readInt();
+  } while (choice < 1 || choice > 2);
+
+  // Radius con validazione range
+  double radius;
+  do {
+      System.out.print("Radius (> 0): ");
+      radius = Keyboard.readDouble();
+  } while (radius <= 0);
+
+  // Nome tabella
+  System.out.print("Table name: ");
+  String table = Keyboard.readString();
+
+  Nessun crash possibile!
+end note
+
+note as N3
+  Design: Utility Class Pattern
+
+  Caratteristiche:
+  - Tutti metodi static
+  - Nessun costruttore pubblico
+  - Stato static condiviso (errorCount)
+
+  Thread Safety:
+  ATTENZIONE: Non thread-safe
+  (errorCount e reader condivisi)
+
+  Uso appropriato:
+  - Single-threaded CLI application
+  - Input sequenziale da System.in
+end note
+
+@enduml

@@ -1,0 +1,128 @@
+@startuml tests_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package tests {
+  class TestQTAlgorithm {
+    + {static} main(args: String[]): void
+    - testBasicClustering(): void
+    - testRadiusVariations(): void
+    - testDeterminism(): void
+    - testCompleteness(): void
+  }
+
+  class TestClusterOperations {
+    + {static} main(args: String[]): void
+    - testAddData(): void
+    - testContain(): void
+    - testRemoveTuple(): void
+    - testIterator(): void
+    - testClusterSize(): void
+  }
+
+  class TestDataOperations {
+    + {static} main(args: String[]): void
+    - testLoadCSV(): void
+    - testLoadDatabase(): void
+    - testGetItemSet(): void
+    - testInferAttributeTypes(): void
+    - testEmptyDataset(): void
+  }
+
+  class TestDistanceCalculations {
+    + {static} main(args: String[]): void
+    - testHammingDistance(): void
+    - testEuclideanDistance(): void
+    - testTupleDistance(): void
+    - testNormalizedDistance(): void
+  }
+
+  class TestContinuousAttributes {
+    + {static} main(args: String[]): void
+    - testNormalization(): void
+    - testScaledValue(): void
+    - testContinuousItemDistance(): void
+    - testMixedDataset(): void
+  }
+
+  class TestIteratorsComparators {
+    + {static} main(args: String[]): void
+    - testClusterIterator(): void
+    - testClusterSetIterator(): void
+    - testSizeComparator(): void
+    - testDistanceComparator(): void
+  }
+
+  ' ===== Relazioni con qtServer =====
+  TestQTAlgorithm ..> "mining.QTMiner" : <<tests>>
+  TestClusterOperations ..> "mining.Cluster" : <<tests>>
+  TestDataOperations ..> "data.Data" : <<tests>>
+  TestDistanceCalculations ..> "data.Item" : <<tests>>
+  TestDistanceCalculations ..> "data.Tuple" : <<tests>>
+  TestContinuousAttributes ..> "data.ContinuousAttribute" : <<tests>>
+  TestIteratorsComparators ..> "mining.ClusterSet" : <<tests>>
+}
+
+note right of TestQTAlgorithm
+  Test algoritmo QT completo.
+
+  Test cases:
+  - Clustering base (PlayTennis)
+  - Variazioni radius (0, 0.5, 1.0)
+  - Determinismo (stesso input → stesso output)
+  - Completezza (tutte tuple clusterizzate)
+
+  Asserzioni su:
+  - Numero cluster atteso
+  - Vincolo radius rispettato
+  - Nessuna tupla duplicata
+end note
+
+note top of TestDataOperations
+  Test operazioni dati.
+
+  Test cases:
+  - Caricamento CSV valido
+  - Caricamento da database
+  - Inferenza tipi attributi
+  - Gestione errori (file vuoto, formato invalido)
+
+  Verifica:
+  - Parsing corretto
+  - Numero tuple/attributi
+  - Tipi attributi inferiti
+end note
+
+note bottom of TestDistanceCalculations
+  Test metriche distanza.
+
+  Test cases:
+  - Hamming (discreti): 0 o 1
+  - Euclidea (continui): [0, 1]
+  - Distanza tuple (media)
+  - Normalizzazione
+
+  Verifica:
+  - Simmetria: d(a,b) = d(b,a)
+  - Range corretto: [0, 1]
+  - Calcoli accurati
+end note
+
+note as N1
+  Approccio Testing
+
+  Test unitari:
+  - main() con asserzioni
+  - Output testuale risultati
+  - Exit code 0 se pass
+
+  Esecuzione:
+  java -ea -cp ../../qtServer/bin:. TestName
+
+  NO framework (JUnit) per semplicità
+  Asserzioni Java native (assert)
+end note
+
+@enduml
