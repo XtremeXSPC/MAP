@@ -3,21 +3,27 @@ package gui.controllers;
 import data.Data;
 import data.Tuple;
 import gui.charts.ChartViewer;
+import gui.dialogs.StatisticsDialog;
 import gui.models.ClusteringResult;
+import gui.services.ClusteringService;
+import gui.services.ExportService;
 import gui.utils.ApplicationContext;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.stage.FileChooser;
 import mining.Cluster;
 import mining.ClusterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller per la vista Results.
@@ -46,6 +52,7 @@ public class ResultsController {
 
     // Pulsanti
     @FXML private Button btnVisualize;
+    @FXML private Button btnStatistics;
     @FXML private Button btnExport;
     @FXML private Button btnSave;
     @FXML private Button btnNewAnalysis;
@@ -97,6 +104,9 @@ public class ResultsController {
      */
     private void setupButtons() {
         btnVisualize.setOnAction(e -> handleVisualize());
+        if (btnStatistics != null) {
+            btnStatistics.setOnAction(e -> handleStatistics());
+        }
         btnExport.setOnAction(e -> handleExport());
         btnSave.setOnAction(e -> handleSave());
         btnNewAnalysis.setOnAction(e -> handleNewAnalysis());
@@ -373,6 +383,32 @@ public class ResultsController {
     }
 
     /**
+     * Gestisce il clic del pulsante statistiche.
+     */
+    private void handleStatistics() {
+        logger.info("Statistiche cliccato");
+
+        if (clusteringResult == null) {
+            showError("Dati Non Disponibili",
+                "Nessun risultato di clustering disponibile per le statistiche.");
+            return;
+        }
+
+        try {
+            StatisticsDialog statsDialog = new StatisticsDialog(clusteringResult);
+            statsDialog.show();
+
+            statusLabel.setText("Finestra statistiche aperta");
+            logger.info("StatisticsDialog aperto con successo");
+
+        } catch (Exception e) {
+            logger.error("Errore durante apertura statistiche", e);
+            showError("Errore Statistiche",
+                "Si è verificato un errore durante l'apertura delle statistiche: " + e.getMessage());
+        }
+    }
+
+    /**
      * Gestisce il clic del pulsante visualizza.
      */
     private void handleVisualize() {
@@ -416,11 +452,104 @@ public class ResultsController {
     private void handleExport() {
         logger.info("Esporta cliccato");
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Esporta");
-        alert.setHeaderText("Esporta Risultati");
-        alert.setContentText("La funzionalità di esportazione (CSV, PDF, PNG) sarà implementata nello Sprint 4.");
-        alert.showAndWait();
+        if (clusteringResult == null) {
+            showError("Dati Non Disponibili",
+                "Nessun risultato di clustering disponibile per l'esportazione.");
+            return;
+        }
+
+        // Mostra dialog di scelta formato export
+        ChoiceDialog<String> dialog = new ChoiceDialog<>("CSV", "CSV", "TXT (Report)", "ZIP (Completo)");
+        dialog.setTitle("Esporta Risultati");
+        dialog.setHeaderText("Scegli il formato di esportazione");
+        dialog.setContentText("Formato:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(format -> {
+            try {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Salva Esportazione");
+                fileChooser.setInitialFileName(getDefaultExportFileName(format));
+
+                // Imposta estensione file
+                if (format.equals("CSV")) {
+                    fileChooser.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter("File CSV", "*.csv"));
+                } else if (format.equals("TXT (Report)")) {
+                    fileChooser.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter("File TXT", "*.txt"));
+                } else if (format.equals("ZIP (Completo)")) {
+                    fileChooser.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter("File ZIP", "*.zip"));
+                }
+
+                File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
+
+                if (file != null) {
+                    exportToFile(format, file);
+                }
+            } catch (Exception e) {
+                logger.error("Errore durante esportazione", e);
+                showError("Errore Esportazione",
+                    "Errore durante l'esportazione: " + e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Esporta i risultati nel formato e file specificati.
+     */
+    private void exportToFile(String format, File file) {
+        try {
+            ExportService exportService = ApplicationContext.getInstance().getExportService();
+
+            statusLabel.setText("Esportazione in corso...");
+
+            if (format.equals("CSV")) {
+                exportService.exportToCsv(file.getAbsolutePath(), clusteringResult);
+                statusLabel.setText("Esportazione CSV completata");
+                showInfo("Esportazione Completata",
+                    "Risultati esportati in formato CSV:\n" + file.getAbsolutePath());
+
+            } else if (format.equals("TXT (Report)")) {
+                exportService.exportToTextReport(file.getAbsolutePath(), clusteringResult);
+                statusLabel.setText("Esportazione report TXT completata");
+                showInfo("Esportazione Completata",
+                    "Report esportato in formato TXT:\n" + file.getAbsolutePath());
+
+            } else if (format.equals("ZIP (Completo)")) {
+                exportService.exportToZip(file.getAbsolutePath(), clusteringResult);
+                statusLabel.setText("Esportazione pacchetto ZIP completata");
+                showInfo("Esportazione Completata",
+                    "Pacchetto completo esportato:\n" + file.getAbsolutePath() +
+                    "\n\nContenuto: .dmp, .csv, report.txt, README.txt");
+            }
+
+            logger.info("Esportazione completata: {} in {}", format, file.getAbsolutePath());
+
+        } catch (Exception e) {
+            logger.error("Errore durante esportazione file", e);
+            statusLabel.setText("Errore durante esportazione");
+            showError("Errore", "Impossibile completare l'esportazione: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Genera il nome file predefinito per l'esportazione.
+     */
+    private String getDefaultExportFileName(String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+
+        if (format.equals("CSV")) {
+            return "clustering_" + timestamp + ".csv";
+        } else if (format.equals("TXT (Report)")) {
+            return "clustering_report_" + timestamp + ".txt";
+        } else if (format.equals("ZIP (Completo)")) {
+            return "clustering_export_" + timestamp + ".zip";
+        }
+
+        return "clustering_" + timestamp;
     }
 
     /**
@@ -429,11 +558,47 @@ public class ResultsController {
     private void handleSave() {
         logger.info("Salva cliccato");
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Salva");
-        alert.setHeaderText("Salva Clustering");
-        alert.setContentText("La funzionalità di salvataggio (file .dmp) sarà implementata nello Sprint 4.");
-        alert.showAndWait();
+        if (clusteringResult == null) {
+            showError("Dati Non Disponibili",
+                "Nessun risultato di clustering disponibile per il salvataggio.");
+            return;
+        }
+
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Salva Clustering");
+            fileChooser.setInitialFileName(getDefaultSaveFileName());
+            fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
+
+            File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
+
+            if (file != null) {
+                ClusteringService clusteringService = ApplicationContext.getInstance().getClusteringService();
+                clusteringService.saveClusteringResults(file.getAbsolutePath(), clusteringResult.getMiner());
+
+                statusLabel.setText("Clustering salvato in: " + file.getName());
+                showInfo("Salvataggio Completato",
+                    "Clustering salvato con successo in:\n" + file.getAbsolutePath() +
+                    "\n\nPuoi ricaricare questo file usando File > Apri");
+
+                logger.info("Clustering salvato in: {}", file.getAbsolutePath());
+            }
+
+        } catch (Exception e) {
+            logger.error("Errore durante salvataggio", e);
+            statusLabel.setText("Errore durante salvataggio");
+            showError("Errore", "Impossibile salvare il clustering: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Genera il nome file predefinito per il salvataggio.
+     */
+    private String getDefaultSaveFileName() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        return "clustering_" + timestamp + ".dmp";
     }
 
     /**
@@ -508,6 +673,20 @@ public class ResultsController {
      */
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * Mostra un dialogo informativo.
+     *
+     * @param title   titolo del dialogo
+     * @param message messaggio informativo
+     */
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
