@@ -1,0 +1,162 @@
+@startuml controllers_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package gui.controllers {
+  ' ===== Main Controller =====
+  class MainController {
+    - menuNew: MenuItem
+    - menuOpen: MenuItem
+    - menuSave: MenuItem
+    - menuExit: MenuItem
+    - menuSettings: MenuItem
+    - menuHelp: MenuItem
+    - menuAbout: MenuItem
+    - toolbar: ToolBar
+    - statusBar: HBox
+    - contentArea: StackPane
+    --
+    + initialize(): void
+    + showHome(): void
+    + showClustering(): void
+    + showResults(): void
+    + showSettings(): void
+    + showAboutDialog(): void
+    - setupKeyboardShortcuts(): void
+    - loadView(viewName: String): Parent
+  }
+
+  ' ===== Home Controller =====
+  class HomeController {
+    - btnLoadCSV: Button
+    - btnLoadDB: Button
+    - btnLoadFile: Button
+    - dataPreview: TableView
+    - lblDatasetInfo: Label
+    --
+    + initialize(): void
+    + handleLoadCSV(): void
+    + handleLoadDB(): void
+    + handleLoadFile(): void
+    + updateDataPreview(data: Data): void
+    - showDatasetPreviewDialog(data: Data): void
+  }
+
+  ' ===== Clustering Controller =====
+  class ClusteringController {
+    - sliderRadius: Slider
+    - txtRadius: TextField
+    - btnRun: Button
+    - progressBar: ProgressBar
+    - lblStatus: Label
+    - lblClusters: Label
+    --
+    + initialize(): void
+    + handleRunClustering(): void
+    + updateProgress(progress: double): void
+    + updateStatus(message: String): void
+    - validateRadius(): boolean
+    - runClusteringTask(): Task<ClusterSet>
+  }
+
+  ' ===== Results Controller =====
+  class ResultsController {
+    - scatterChart: ClusterScatterChart
+    - tableResults: TableView
+    - btnExport: Button
+    - btnStatistics: Button
+    - lblSummary: Label
+    --
+    + initialize(): void
+    + displayResults(result: ClusteringResult): void
+    + handleExport(): void
+    + handleShowStatistics(): void
+    + updateScatterChart(data: Data, clusters: ClusterSet): void
+    - populateResultsTable(): void
+  }
+
+  ' ===== Settings Controller =====
+  class SettingsController {
+    - tabGeneral: Tab
+    - tabDatabase: Tab
+    - tabAppearance: Tab
+    - toggleDarkMode: ToggleButton
+    - comboFontSize: ComboBox
+    - txtDBServer: TextField
+    - txtDBPort: TextField
+    - btnTestConnection: Button
+    --
+    + initialize(): void
+    + handleThemeChange(): void
+    + handleFontSizeChange(): void
+    + handleTestConnection(): void
+    + saveSettings(): void
+    - loadSettings(): void
+  }
+
+  ' ===== Relazioni =====
+  MainController ..> HomeController : <<loads>>
+  MainController ..> ClusteringController : <<loads>>
+  MainController ..> ResultsController : <<loads>>
+  MainController ..> SettingsController : <<loads>>
+
+  HomeController ..> "gui.services.DataImportService" : <<uses>>
+  ClusteringController ..> "gui.services.ClusteringService" : <<uses>>
+  ResultsController ..> "gui.services.ExportService" : <<uses>>
+
+  HomeController ..> "gui.utils.ApplicationContext" : <<uses>>
+  ClusteringController ..> "gui.utils.ApplicationContext" : <<uses>>
+  ResultsController ..> "gui.utils.ApplicationContext" : <<uses>>
+  SettingsController ..> "gui.utils.ThemeManager" : <<uses>>
+
+  ' ===== JavaFX =====
+  MainController ..> "javafx.fxml.FXMLLoader" : <<uses>>
+}
+
+note right of MainController
+  Controller principale finestra.
+
+  Responsabilità:
+  - Gestione menu e toolbar
+  - Navigazione tra viste
+  - Keyboard shortcuts globali
+  - Status bar updates
+
+  Pattern: Mediator per navigazione
+end note
+
+note top of ClusteringController
+  Controller esecuzione clustering.
+
+  Pattern: Task async per operazioni lunghe
+  - Crea JavaFX Task
+  - Binding progress bar
+  - Update UI su completion
+end note
+
+note bottom of ResultsController
+  Controller visualizzazione risultati.
+
+  Componenti:
+  - ClusterScatterChart (2D visualization)
+  - TableView dettagli cluster
+  - Export e Statistics buttons
+end note
+
+note as N1
+  Pattern MVC:
+
+  View (FXML) ← Controller (Java) → Model (Services)
+
+  Controller:
+  - Gestisce eventi UI
+  - Coordina Services
+  - Aggiorna View
+
+  NO business logic nei controller
+  (delegata a Services)
+end note
+
+@enduml

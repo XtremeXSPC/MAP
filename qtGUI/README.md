@@ -1,330 +1,419 @@
-# qtGUI - Interfaccia Grafica per Quality Threshold Clustering
-
-Interfaccia grafica JavaFX per l'algoritmo Quality Threshold Clustering.
-
-## Panoramica
-
-qtGUI è un'applicazione desktop moderna e user-friendly che fornisce un'interfaccia grafica per eseguire e visualizzare operazioni di clustering Quality Threshold. Costruita con JavaFX 21, offre un flusso di lavoro intuitivo dalla selezione del dataset alla visualizzazione dei risultati.
-
-## Funzionalità
-
-### Implementate (Sprint 0 e 1)
-
-- Interfaccia utente moderna basata su JavaFX
-- Sistema di navigazione multi-vista (Home, Clustering, Risultati, Impostazioni)
-- Selezione dataset (Hardcoded, CSV, Database)
-- Configurazione parametri di clustering con validazione
-- Feedback di progresso in tempo reale durante il clustering
-- Visualizzazione risultati con vista ad albero dei cluster
-- Impostazioni applicazione configurabili
-- UI responsiva e rifinita con stile CSS personalizzato
-
-### Pianificate (Sprint Futuri)
-
-- Integrazione backend con qtServer (Sprint 2)
-- Visualizzazione scatter plot 2D (Sprint 3)
-- Funzionalità di esportazione (CSV, PDF, PNG) (Sprint 4)
-- Salvataggio/Caricamento risultati clustering (file .dmp) (Sprint 4)
-- Dashboard statistiche (Sprint 4)
-- Visualizzazione 3D (Sprint 4 - opzionale)
-
-## Requisiti
-
-- Java 21 o superiore
-- Maven 3.9+
-- JavaFX 21+
-- Connessione internet (per scaricare le dipendenze Maven)
-
-## Struttura del Progetto
-
-```
-qtGUI/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   ├── gui/
-│   │   │   │   ├── MainApp.java              # Punto di ingresso applicazione
-│   │   │   │   ├── controllers/
-│   │   │   │   │   ├── MainController.java   # Controller finestra principale
-│   │   │   │   │   ├── HomeController.java   # Selezione dataset
-│   │   │   │   │   ├── ClusteringController.java  # Feedback progresso
-│   │   │   │   │   ├── ResultsController.java     # Visualizzazione risultati
-│   │   │   │   │   └── SettingsController.java    # Configurazione
-│   │   │   │   ├── models/                   # Modelli dati (futuro)
-│   │   │   │   ├── services/                 # Logica business (futuro)
-│   │   │   │   ├── charts/                   # Visualizzazione (futuro)
-│   │   │   │   └── utils/                    # Utilità (futuro)
-│   │   │   └── module-info.java              # Descrittore modulo Java
-│   │   └── resources/
-│   │       ├── views/
-│   │       │   ├── main.fxml                 # Layout principale
-│   │       │   ├── home.fxml                 # Vista home
-│   │       │   ├── clustering.fxml           # Vista clustering
-│   │       │   ├── results.fxml              # Vista risultati
-│   │       │   └── settings.fxml             # Vista impostazioni
-│   │       ├── styles/
-│   │       │   └── application.css           # Foglio di stile applicazione
-│   │       └── icons/                        # Icone (futuro)
-│   └── test/
-│       └── java/                             # Test unitari (futuro)
-├── pom.xml                                   # Configurazione Maven
-└── README.md                                 # Questo file
-```
-
-## Compilazione ed Esecuzione
-
-### Prerequisiti
-
-Assicurarsi che Maven e Java 21 siano installati:
-
-```bash
-java --version
-# Dovrebbe mostrare Java 21 o superiore
-
-mvn --version
-# Dovrebbe mostrare Maven 3.9+
-```
-
-### Compilare il Progetto
-
-```bash
-cd qtGUI
-mvn clean compile
-```
-
-### Eseguire l'Applicazione
-
-```bash
-mvn javafx:run
-```
-
-### Pacchettizzare come JAR
-
-```bash
-mvn clean package
-```
-
-Questo crea un JAR eseguibile in `target/qtGUI-1.0.0.jar`.
-
-### Eseguire il JAR
-
-```bash
-java -jar target/qtGUI-1.0.0.jar
-```
-
-## Utilizzo
-
-### 1. Vista Home - Selezione Dataset
-
-- Selezionare sorgente dati: Hardcoded (PlayTennis), File CSV o Database
-- Configurare raggio di clustering (es. 0.5)
-- Abilitare/disabilitare caching distanze
-- Cliccare "Avvia Clustering" per iniziare
-
-### 2. Vista Clustering - Monitoraggio Progresso
-
-- Barra di progresso in tempo reale
-- Informazioni sul passo corrente
-- Contatore cluster trovati
-- Contatore tuple clusterizzate
-- Tracciamento tempo trascorso
-- Log attività con progresso dettagliato
-
-### 3. Vista Risultati - Analisi Cluster
-
-- Vista ad albero con tutti i cluster
-- Dettagli cluster (centroide, dimensione, distanza media)
-- Elenco tuple per ogni cluster
-- Statistiche per ogni cluster
-- Opzioni esportazione e salvataggio (futuro)
-
-### 4. Vista Impostazioni - Configurazione
-
-- Aspetto (tema, dimensione font)
-- Prestazioni (caching, thread, memoria)
-- Impostazioni predefinite clustering (raggio, sorgente dati)
-- Impostazioni esportazione (formato, directory)
-- Configurazione database
-
-## Navigazione
-
-- **Menu File**:
-  - Nuova Analisi: Avvia una nuova sessione di clustering
-  - Apri: Carica clustering salvato (futuro)
-  - Salva / Salva con Nome: Salva risultati clustering (futuro)
-  - Esci: Chiudi applicazione
-
-- **Menu Modifica**:
-  - Impostazioni: Configura preferenze applicazione
-
-- **Menu Visualizza**:
-  - Mostra/Nascondi Barra degli Strumenti
-  - Mostra/Nascondi Barra di Stato
-
-- **Menu Aiuto**:
-  - Documentazione
-  - Informazioni
-
-## Scorciatoie da Tastiera
-
-- `Ctrl+N`: Nuova Analisi
-- `Ctrl+O`: Apri
-- `Ctrl+S`: Salva
-- `Ctrl+E`: Esporta (futuro)
-- `F5`: Aggiorna (futuro)
-
-## Configurazione
-
-Le impostazioni sono salvate in `qtgui.properties` nella directory dell'applicazione.
-
-Valori predefiniti:
-
-- Tema: Chiaro
-- Dimensione Font: Media (14px)
-- Raggio: 0.5
-- Caching: Abilitato
-- Dimensione Pool Thread: 4
-- Limite Memoria: 512 MB
-
-## Dipendenze
-
-- JavaFX 21.0.1 (Controls, FXML)
-- XChart 3.8.5 (Grafici - uso futuro)
-- ControlsFX 11.2.0 (Miglioramenti UI)
-- SLF4J 2.0.9 + Logback 1.4.14 (Logging)
-- JUnit 5.10.1 + TestFX 4.0.18 (Testing - futuro)
-
-## Stato di Sviluppo
-
-### Completato
-
-- [x] Sprint 0: Setup e configurazione
-  - [x] Struttura progetto Maven
-  - [x] Dipendenze JavaFX
-  - [x] Configurazione modulo (module-info.java)
-  - [x] Struttura directory
-
-- [x] Sprint 1: Base UI e Navigazione
-  - [x] Layout finestra principale (MenuBar, ToolBar, StatusBar)
-  - [x] Vista home con selezione dataset
-  - [x] Vista clustering con feedback progresso
-  - [x] Vista risultati con albero cluster
-  - [x] Vista impostazioni con configurazione
-  - [x] Sistema di navigazione
-  - [x] Stile CSS
-
-### In Corso / Pianificato
-
-- [ ] Sprint 2: Integrazione Backend
-  - [ ] Wrapper ClusteringService per QTMiner
-  - [ ] DataImportService (CSV, Database)
-  - [ ] JavaFX Task per clustering asincrono
-  - [ ] Gestione errori e logging
-
-- [ ] Sprint 3: Visualizzazione 2D
-  - [ ] Implementazione scatter plot
-  - [ ] PCA per riduzione dimensionalità
-  - [ ] Grafico interattivo (zoom, pan, tooltip)
-  - [ ] Esportazione grafico (PNG, SVG)
-
-- [ ] Sprint 4: Funzionalità Avanzate
-  - [ ] Salva/Carica clustering (file .dmp)
-  - [ ] Esporta risultati (CSV, PDF)
-  - [ ] Dashboard statistiche
-  - [ ] Confronto cluster
-  - [ ] Visualizzazione 3D (opzionale)
-  - [ ] Tema modalità scura
-
-- [ ] Sprint 5: Testing e Deployment
-  - [ ] Test unitari
-  - [ ] Test di integrazione
-  - [ ] Testing cross-platform
-  - [ ] Installer nativi (jpackage)
-
-## Problemi Noti
-
-- La compilazione Maven richiede connessione internet per scaricare le dipendenze
-- La funzionalità di clustering è attualmente simulata (Sprint 1)
-- Integrazione backend con qtServer in sospeso (Sprint 2)
-- Visualizzazione grafico in sospeso (Sprint 3)
-
-## Risoluzione Problemi
-
-### Maven Non Può Scaricare le Dipendenze
-
-Se vedi errori di rete durante `mvn compile`:
-
-- Assicurati di avere connettività internet
-- Controlla le impostazioni firewall/proxy
-- Verifica l'accesso al repository Maven: <https://repo.maven.apache.org/maven2>
-
-### Errore Runtime JavaFX
-
-Se vedi "Error: JavaFX runtime components are missing":
-
-- Assicurati che le dipendenze JavaFX siano configurate correttamente in pom.xml
-- Esegui tramite `mvn javafx:run` invece del comando `java` diretto
-- Verifica che sia utilizzato Java 21+
-
-### Caricamento FXML Fallito
-
-Se le viste non si caricano:
-
-- Controlla che i file FXML siano in `src/main/resources/views/`
-- Verifica che i nomi delle classi controller negli FXML corrispondano alle classi effettive
-- Controlla le istruzioni exports e opens in module-info.java
-
-## Contributi
-
-Questo è un progetto accademico per il corso MAP (Metodi Avanzati di Programmazione).
-
-### Stile del Codice
-
-- Seguire le convenzioni di nomenclatura Java
-- Usare Javadoc per i metodi pubblici
-- Mantenere i controller focalizzati sulla logica UI
-- Separare la logica business nei servizi
-
-### Messaggi di Commit
-
-- Usare messaggi di commit chiari e descrittivi
-- Riferire numeri di sprint e task
-- Esempio: "Sprint 1.3: Aggiungi vista home con selezione dataset"
-
-## Licenza
-
-Progetto accademico per il corso MAP.
-
-## Autori
-
-- Sviluppato con l'assistenza di Claude (AI Assistant)
-- Corso: Metodi Avanzati di Programmazione (MAP)
-- Anno: 2025
-
-## Cronologia Versioni
-
-- **v1.0.0** (2025-11-08): Sprint 0 e 1 completati
-  - Setup iniziale JavaFX
-  - Base UI completa con tutte le viste
-  - Sistema di navigazione implementato
-
-## Supporto
-
-Per problemi relativi a:
-
-- Integrazione qtServer: Vedere `../qtServer/README.md`
-- Setup generale progetto: Vedere `../README.md`
-- Roadmap e pianificazione: Vedere `../QTGUI_ROADMAP.md`
-
-## Prossimi Passi
-
-1. Completare Sprint 2: Integrare con backend qtServer
-2. Implementare ClusteringService per eseguire effettivamente QTMiner
-3. Aggiungere DataImportService per caricamento CSV e Database
-4. Testare workflow di clustering end-to-end
+# qtGUI - Quality Threshold Clustering GUI
+
+> **Modulo**: Interfaccia Grafica JavaFX
+> **Versione**: 1.0
+> **Autore**: Progetto MAP - Metodi Avanzati di Programmazione
 
 ---
 
-**Ultimo Aggiornamento**: 2025-11-08
-**Sprint Corrente**: 1 (Completato)
-**Prossimo Sprint**: 2 (Integrazione Backend)
+## Indice
+
+1. [Descrizione Generale](#descrizione-generale)
+2. [Architettura Interna](#architettura-interna)
+3. [Package](#package)
+4. [Dipendenze](#dipendenze)
+5. [Interfacce Pubbliche](#interfacce-pubbliche)
+6. [Interazioni con Altri Moduli](#interazioni-con-altri-moduli)
+7. [Build e Compilazione](#build-e-compilazione)
+8. [Utilizzo](#utilizzo)
+9. [Configurazione](#configurazione)
+10. [Note di Manutenzione](#note-di-manutenzione)
+
+---
+
+## Descrizione Generale
+
+### Scopo del Modulo
+
+Il modulo **qtGUI** fornisce un'interfaccia grafica moderna e user-friendly per il sistema Quality Threshold Clustering. Implementa:
+
+- **GUI JavaFX** con architettura MVC (Model-View-Controller)
+- **Visualizzazione interattiva** cluster con scatter chart 2D
+- **Dark/Light theme** con transizioni fluide
+- **Import dati** da CSV, database MySQL, file serializzati
+- **Export multipli formati** (CSV, TXT, ZIP) per risultati
+- **Statistics dashboard** con grafici e metriche dettagliate
+- **Keyboard shortcuts** per operazioni comuni
+
+### Funzionalità Principali
+
+| Funzionalità | Descrizione | Package |
+|--------------|-------------|---------|
+| **Import Dati** | Caricamento da CSV, DB, file | `services.DataImportService` |
+| **Clustering** | Esecuzione QT con progress tracking | `services.ClusteringService` |
+| **Visualizzazione** | Scatter chart interattivo 2D | `charts` |
+| **Export** | CSV, TXT, ZIP dei risultati | `services.ExportService` |
+| **Theming** | Dark/Light mode con persistenza | `utils.ThemeManager` |
+| **Navigazione** | Multi-view con state management | `controllers` |
+
+### Posizione nell'Architettura Generale
+
+```
+┌─────────────┐
+│    qtGUI    │
+│  (JavaFX)   │
+└──────┬──────┘
+       │
+       │ Direct Call (no Socket)
+       │
+       ▼
+┌─────────────┐
+│  qtServer   │
+│  Packages:  │
+│  - data     │
+│  - mining   │
+│  - database │
+└─────────────┘
+```
+
+**Caratteristiche**:
+- **Thick client**: Logica business integrata localmente
+- **Stateful**: Persistenza configurazioni e preferenze
+- **Reattivo**: Pattern Observer per aggiornamenti UI
+
+---
+
+## Architettura Interna
+
+### Struttura Package
+
+Il modulo è organizzato in **7 package** seguendo pattern MVC:
+
+```
+qtGUI/src/main/java/gui/
+├── MainApp.java          # Entry point JavaFX
+├── Launcher.java         # Launcher wrapper
+│
+├── charts/               # Visualizzazioni grafiche
+├── controllers/          # MVC Controllers
+├── dialogs/              # Dialoghi modali
+├── models/               # Modelli dati
+├── services/             # Business logic
+└── utils/                # Utilità (theme, context)
+```
+
+### Pattern di Design Utilizzati
+
+#### 1. Model-View-Controller (MVC)
+
+**Separazione responsabilità**:
+
+```
+┌──────────┐         ┌──────────────┐         ┌──────────┐
+│   View   │<───────>│  Controller  │<───────>│  Model   │
+│  (FXML)  │         │    (Java)    │         │  (Data)  │
+└──────────┘         └──────────────┘         └──────────┘
+```
+
+**Package mapping**:
+- **View**: File FXML in `resources/views/`
+- **Controller**: Classi in `controllers/`
+- **Model**: Classi in `models/` + `services/`
+
+#### 2. Singleton Pattern
+
+**Classi**: `ThemeManager`, `ApplicationContext`
+
+```java
+// ThemeManager - Gestione globale tema
+ThemeManager themeManager = ThemeManager.getInstance();
+themeManager.setTheme(Theme.DARK);
+
+// ApplicationContext - Stato applicazione
+ApplicationContext context = ApplicationContext.getInstance();
+context.setCurrentResult(result);
+```
+
+#### 3. Service Layer Pattern
+
+Astrae business logic da controller:
+
+```java
+ClusteringService service = new ClusteringService();
+ClusterSet clusters = service.runClustering(data, radius);
+```
+
+#### 4. Observer Pattern
+
+**JavaFX Properties**: Binding reattivo per aggiornamenti UI.
+
+```java
+progressBar.progressProperty().bind(task.progressProperty());
+```
+
+### Diagramma Organizzazione
+
+Riferimenti ai diagrammi UML:
+
+- [`docs/uml/qtGUI/controllers/controllers_package.puml`](../docs/uml/qtGUI/controllers/controllers_package.puml)
+- [`docs/uml/qtGUI/services/services_package.puml`](../docs/uml/qtGUI/services/services_package.puml)
+- [`docs/uml/qtGUI/models/models_package.puml`](../docs/uml/qtGUI/models/models_package.puml)
+- [`docs/uml/qtGUI/views/charts_dialogs_utils.puml`](../docs/uml/qtGUI/views/charts_dialogs_utils.puml)
+
+---
+
+## Package
+
+### Package `controllers` - MVC Controllers
+
+**Scopo**: Coordinamento tra vista e modello, gestione eventi utente.
+
+**Classi principali**:
+
+| Controller | Responsabilità | Vista Associata |
+|------------|---------------|-----------------|
+| `MainController` | Finestra principale, menu, toolbar, navigazione | `main.fxml` |
+| `HomeController` | Schermata home, selezione dataset | `home.fxml` |
+| `ClusteringController` | Configurazione parametri, avvio clustering | `clustering.fxml` |
+| `ResultsController` | Visualizzazione risultati, scatter chart | `results.fxml` |
+| `SettingsController` | Impostazioni applicazione, tema, database | `settings.fxml` |
+
+**Pattern di navigazione**:
+
+```java
+public void showView(String viewName) {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/" + viewName + ".fxml"));
+    Parent view = loader.load();
+    contentArea.getChildren().setAll(view);
+}
+```
+
+**Diagramma UML**: `docs/uml/qtGUI/controllers/controllers_package.puml`
+
+---
+
+### Package `services` - Business Logic
+
+**Classi principali**:
+
+| Service | Responsabilità |
+|---------|----------------|
+| `ClusteringService` | Esecuzione clustering QT, salvataggio/caricamento |
+| `DataImportService` | Import dati da CSV, database, file |
+| `ExportService` | Export risultati in CSV, TXT, ZIP |
+
+**API**:
+
+```java
+// ClusteringService
+public ClusterSet runClustering(Data data, double radius)
+public void saveClustering(String fileName, ClusteringResult result)
+
+// ExportService
+public void exportToCsv(String filePath, ClusteringResult result)
+public void exportToTextReport(String filePath, ClusteringResult result)
+public void exportToZip(String zipFilePath, ClusteringResult result)
+```
+
+**Formato export**:
+- **CSV**: Formato tabulare (ClusterID, TupleID, Distance, Attributi)
+- **TXT**: Report con statistiche
+- **ZIP**: Pacchetto completo (.dmp + CSV + TXT + README)
+
+**Diagramma UML**: `docs/uml/qtGUI/services/services_package.puml`
+
+---
+
+### Package `models` - Data Models
+
+**Classi**:
+
+| Model | Responsabilità |
+|-------|----------------|
+| `ClusteringResult` | Wrapper risultato clustering + metadata |
+| `ClusteringConfiguration` | Configurazione parametri clustering |
+
+**Diagramma UML**: `docs/uml/qtGUI/models/models_package.puml`
+
+---
+
+### Package `charts` - Visualizzazioni
+
+**Classi**:
+- `ClusterScatterChart`: Scatter plot 2D JavaFX
+- `ChartViewer`: Container visualizzazione
+
+**Funzionalità**:
+- Scatter plot con colori per cluster
+- PCA per riduzione dimensionalità (> 2 attributi)
+- Tooltip informativi
+- Legenda cluster
+
+**Diagramma UML**: `docs/uml/qtGUI/views/charts_dialogs_utils.puml`
+
+---
+
+### Package `dialogs` - Dialoghi Modali
+
+**Classi**:
+- `AboutDialog`: Info applicazione
+- `DatasetPreviewDialog`: Anteprima dataset
+- `StatisticsDialog`: Dashboard statistiche con 4 tab
+
+**Diagramma UML**: `docs/uml/qtGUI/views/charts_dialogs_utils.puml`
+
+---
+
+### Package `utils` - Utilità
+
+**Classi**:
+
+| Utility | Pattern | Scopo |
+|---------|---------|-------|
+| `ApplicationContext` | Singleton | Stato globale applicazione |
+| `ThemeManager` | Singleton | Gestione Dark/Light theme |
+| `ColorPalette` | Utility | Palette colori coerente |
+
+**Diagramma UML**: `docs/uml/qtGUI/views/charts_dialogs_utils.puml`
+
+---
+
+## Dipendenze
+
+### Dipendenze Interne
+
+```
+qtGUI ──depends on──> qtServer
+  │                     │
+  ├─ services       ──> mining (QTMiner)
+  ├─ services       ──> data (Data)
+  └─ services       ──> database (DbAccess)
+```
+
+### Dipendenze Esterne
+
+| Libreria | Versione | Scopo | Obbligatoria |
+|----------|----------|-------|--------------|
+| **JDK** | 11+ | Runtime Java | SI |
+| **JavaFX** | 17+ | Framework GUI | SI |
+| **SLF4J** | 1.7+ | Logging | SI |
+| **Logback** | 1.2+ | Logging impl | SI |
+
+---
+
+## Interfacce Pubbliche
+
+### Entry Point
+
+```bash
+# Esecuzione
+java --module-path $JAVAFX_PATH --add-modules javafx.controls,javafx.fxml \
+     -cp qtGUI/bin:qtServer/bin \
+     gui.Launcher
+```
+
+---
+
+## Interazioni con Altri Moduli
+
+### qtGUI → qtServer
+
+**Tipo**: Chiamata diretta (no Socket)
+
+**Vantaggi**:
+- Nessun overhead rete
+- Performance massime
+- Debug semplificato
+
+---
+
+## Build e Compilazione
+
+### Compilazione Manuale
+
+```bash
+export JAVAFX_PATH="/path/to/javafx-sdk-17/lib"
+
+# Compila qtServer (dipendenza)
+cd qtServer && javac -d bin src/**/*.java
+
+# Compila qtGUI
+cd ../qtGUI
+javac --module-path $JAVAFX_PATH --add-modules javafx.controls,javafx.fxml \
+      -cp ../qtServer/bin -d bin src/main/java/**/*.java
+```
+
+### Makefile
+
+```bash
+make gui      # Compila qtGUI
+make all      # Compila tutto
+```
+
+---
+
+## Utilizzo
+
+### Workflow Tipico
+
+1. **Avvia**: `java -jar qtGUI.jar`
+2. **Load Dataset**: Home → Load from CSV
+3. **Configure**: Clustering → Set radius → Run
+4. **View Results**: Results → Scatter chart + Statistics
+5. **Export**: Export → Choose format
+
+### Keyboard Shortcuts
+
+| Shortcut | Azione |
+|----------|--------|
+| `Ctrl+N` | Nuovo clustering |
+| `Ctrl+O` | Apri file |
+| `Ctrl+S` | Salva risultati |
+| `Ctrl+T` | Toggle Dark/Light theme |
+| `F1` | Help |
+
+---
+
+## Configurazione
+
+### Database
+
+Settings → Database tab:
+- Server: `localhost`
+- Port: `3306`
+- Database: `MapDB`
+- User/Password: `MapUser/map`
+
+### Persistenza Preferenze
+
+- Tema (Dark/Light)
+- Font size
+- Config database
+- File recenti
+
+---
+
+## Note di Manutenzione
+
+### Aggiunta Nuova Vista
+
+1. Crea `newview.fxml` in `resources/views/`
+2. Crea `NewViewController.java`
+3. Registra in `MainController.showView()`
+
+### Performance Tips
+
+- Task background per clustering lungo
+- Lazy loading viste FXML
+- Caching risultati
+
+---
+
+## Riferimenti
+
+### Documentazione Sprint
+
+- [`docs/gui_sprints/`](../docs/gui_sprints/) - Sprint GUI completi
+
+### Diagrammi UML
+
+- `docs/uml/qtGUI/controllers/controllers_package.puml`
+- `docs/uml/qtGUI/services/services_package.puml`
+- `docs/uml/qtGUI/models/models_package.puml`
+- `docs/uml/qtGUI/views/charts_dialogs_utils.puml`
+
+---
+
+**Versione**: 1.0
+**Data**: 2025-11-09
+**Autore**: Progetto MAP

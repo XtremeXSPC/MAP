@@ -1,0 +1,119 @@
+@startuml models_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package gui.models {
+  ' ===== Clustering Result =====
+  class ClusteringResult {
+    - clusterSet: ClusterSet
+    - data: Data
+    - radius: double
+    - executionTimeMs: long
+    - timestamp: LocalDateTime
+    --
+    + ClusteringResult(clusterSet, data, radius, executionTimeMs)
+    + getClusterSet(): ClusterSet
+    + getData(): Data
+    + getRadius(): double
+    + getExecutionTimeMs(): long
+    + getTimestamp(): LocalDateTime
+    + getNumberOfClusters(): int
+    + getAverageClusterSize(): double
+    + getMinClusterSize(): int
+    + getMaxClusterSize(): int
+    + getAverageDistance(): double
+    + toString(): String
+  }
+
+  ' ===== Clustering Configuration =====
+  class ClusteringConfiguration {
+    - radius: double
+    - enableOptimizations: boolean
+    - dataSource: DataSource
+    - dataSourcePath: String
+    --
+    + ClusteringConfiguration()
+    + getRadius(): double
+    + setRadius(radius: double): void
+    + isEnableOptimizations(): boolean
+    + setEnableOptimizations(enable: boolean): void
+    + getDataSource(): DataSource
+    + setDataSource(source: DataSource): void
+    + validate(): boolean
+    + toProperties(): Properties
+    + fromProperties(props: Properties): void
+  }
+
+  ' ===== Enum Data Source =====
+  enum DataSource {
+    CSV
+    DATABASE
+    SERIALIZED_FILE
+    --
+    + toString(): String
+  }
+
+  ' ===== Relazioni =====
+  ClusteringResult *-- "1" ClusterSet : clusterSet
+  ClusteringResult *-- "1" Data : data
+  ClusteringConfiguration o-- "1" DataSource : dataSource
+
+  ' ===== Relazioni con qtServer =====
+  ClusteringResult ..> "mining.ClusterSet" : <<uses>>
+  ClusteringResult ..> "data.Data" : <<uses>>
+}
+
+note right of ClusteringResult
+  Wrapper risultato clustering.
+
+  Componenti:
+  - ClusterSet: Cluster scoperti
+  - Data: Dataset originale
+  - radius: Parametro usato
+  - executionTimeMs: Tempo impiegato
+  - timestamp: Quando generato
+
+  Metodi derivati:
+  - Statistiche aggregate (avg size, etc.)
+  - Formattazione per UI
+end note
+
+note bottom of ClusteringConfiguration
+  Configurazione parametri clustering.
+
+  Usato per:
+  - Validazione input utente
+  - Persistenza configurazioni
+  - Serializzazione Properties
+
+  Pattern: Builder (opzionale)
+end note
+
+note left of DataSource
+  Enum sorgenti dati supportate.
+
+  Valori:
+  - CSV: File CSV
+  - DATABASE: MySQL via JDBC
+  - SERIALIZED_FILE: File .dmp
+
+  Mapping UI → Backend
+end note
+
+note as N1
+  Pattern: Data Transfer Object (DTO)
+
+  Model ← Controller → View
+
+  Models:
+  - Immutabili (preferibile)
+  - Serializzabili (per persistenza)
+  - Validazione interna
+  - NO business logic
+
+  Business logic delegata a Services
+end note
+
+@enduml
