@@ -387,7 +387,7 @@ Ogni README seguirà questa struttura:
 
 | # | File | Package | Ubicazione | Classi Incluse |
 |---|------|---------|------------|----------------|
-| 1 | `data_package.puml` | qtServer/data | `docs/uml/qtServer/data/` | **ESISTE GIÀ** ✓ |
+| 1 | `data_package.puml` | qtServer/data | `docs/uml/qtServer/data/` | **ESISTE GIA'** |
 | 2 | `database_package.puml` | qtServer/database | `docs/uml/qtServer/database/` | DbAccess, TableSchema, TableData, Example, eccezioni |
 | 3 | `mining_package.puml` | qtServer/mining | `docs/uml/qtServer/mining/` | QTMiner, Cluster, ClusterSet, DistanceCache, eccezioni |
 | 4 | `server_package.puml` | qtServer/server | `docs/uml/qtServer/server/` | MultiServer, ServerOneClient |
