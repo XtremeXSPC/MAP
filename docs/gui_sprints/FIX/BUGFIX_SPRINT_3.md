@@ -21,6 +21,7 @@ Dopo il completamento iniziale dello Sprint 3, l'utente ha identificato tre bug 
 ### Problema
 
 **Sintomi:**
+
 - Prima generazione cluster da database: funziona correttamente
 - Utente modifica campo "Table Name" per seconda generazione
 - Pulsante "Start Clustering" rimane disabilitato
@@ -30,6 +31,7 @@ Dopo il completamento iniziale dello Sprint 3, l'utente ha identificato tre bug 
 Nel `HomeController.java`, solo il campo `radiusField` aveva un listener che richiamava `validateForm()` quando il testo cambiava. I campi database (tableNameField, dbNameField, etc.) non avevano listener.
 
 **Codice problematico** (HomeController.java:117-122):
+
 ```java
 private void setupRadiusValidation() {
     radiusField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -67,6 +69,7 @@ private void setupRadiusValidation() {
 ```
 
 **Benefici:**
+
 - Form ora si rivalida in tempo reale ad ogni modifica
 - UX migliorata: pulsante "Start Clustering" si abilita/disabilita dinamicamente
 - Funziona per qualsiasi campo database, non solo tableNameField
@@ -79,11 +82,13 @@ private void setupRadiusValidation() {
 ### Problema
 
 **Sintomi:**
+
 - Pulsante "Preview Dataset..." presente ma non funzionante
 - Clic mostrava dialog: "La funzionalità di anteprima dataset sarà implementata nello Sprint 2."
 - Impossibile verificare dati prima di avviare clustering
 
 **Codice problematico** (HomeController.java:240-249):
+
 ```java
 private void handlePreviewDataset() {
     logger.info("Anteprima dataset cliccato");
@@ -106,6 +111,7 @@ private void handlePreviewDataset() {
 Classe dedicata per visualizzare anteprima dataset in TableView JavaFX:
 
 **Caratteristiche:**
+
 - Mostra prime 20 righe dataset (costante `MAX_PREVIEW_ROWS`)
 - TableView con colonne dinamiche da attributi dataset
 - Header informativo: "Dataset: N righe × M colonne | Visualizzate: prime X righe"
@@ -114,6 +120,7 @@ Classe dedicata per visualizzare anteprima dataset in TableView JavaFX:
 - Modal dialog (blocca finestra principale)
 
 **Implementazione chiave:**
+
 ```java
 public class DatasetPreviewDialog {
     private static final int MAX_PREVIEW_ROWS = 20;
@@ -147,11 +154,13 @@ public class DatasetPreviewDialog {
 Sostituito TODO con implementazione completa:
 
 **Supporto sorgenti dati:**
+
 - ✅ **Hardcoded (PlayTennis)**: `new Data()`
 - ✅ **Database**: `new Data(db, tableName)` con connessione GUI
 - ⚠️ **CSV**: Messaggio "sarà implementata in futuro" (parsing CSV non ancora supportato)
 
 **Gestione Database:**
+
 ```java
 // Costruisce connessione con parametri GUI
 String dbUrl = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName
@@ -171,6 +180,7 @@ finally {
 ```
 
 **Validazione:**
+
 - Verifica sorgente dati selezionata
 - Valida nome tabella per database
 - Usa valori default se campi vuoti
@@ -201,11 +211,13 @@ opens gui.dialogs to javafx.fxml;  // Opens per reflection JavaFX
 ### Problema
 
 **Sintomi:**
+
 - Pulsante "Test Connessione" in Settings presente ma non funzionante
 - Clic mostrava dialog: "Il test di connessione al database sarà implementato nello Sprint 2."
 - Impossibile verificare credenziali database prima di usarle
 
 **Codice problematico** (SettingsController.java:217-241):
+
 ```java
 private void handleTestConnection() {
     logger.info("Test connessione database...");
@@ -307,6 +319,7 @@ testThread.start();
 #### 3. Feedback Utente Dettagliato
 
 **Success Dialog:**
+
 ```
 Titolo: "Test Connessione"
 Header: "Connessione Riuscita"
@@ -321,6 +334,7 @@ Contenuto:
 ```
 
 **Failure Dialog:**
+
 ```
 Titolo: "Test Connessione"
 Header: "Connessione Fallita"
@@ -338,6 +352,7 @@ Contenuto:
 ```
 
 **Status Footer:**
+
 - Messaggio temporaneo (3 secondi) in footer: "Connessione database riuscita" (verde) o "Connessione database fallita" (arancione)
 
 #### 4. Import Aggiunti
@@ -368,6 +383,7 @@ import java.sql.SQLException;
 ### Scenario 1: Campo Tabella - Seconda Generazione Cluster
 
 **Passi:**
+
 1. Avvia applicazione
 2. Seleziona sorgente dati "Database (MySQL)"
 3. Inserisci parametri database e tabella "playtennis"
@@ -385,6 +401,7 @@ import java.sql.SQLException;
 ### Scenario 2: Preview Dataset Hardcoded
 
 **Passi:**
+
 1. Avvia applicazione
 2. Seleziona "Hardcoded (PlayTennis)"
 3. Clic "Preview Dataset..."
@@ -400,6 +417,7 @@ import java.sql.SQLException;
 ### Scenario 3: Preview Dataset Database
 
 **Passi:**
+
 1. Avvia applicazione
 2. Seleziona "Database (MySQL)"
 3. Inserisci parametri database validi
@@ -417,6 +435,7 @@ import java.sql.SQLException;
 ### Scenario 4: Test Database - Connessione Riuscita
 
 **Passi:**
+
 1. Avvia applicazione
 2. Naviga a Settings (Menu > Settings)
 3. Sezione "Database"
@@ -439,6 +458,7 @@ import java.sql.SQLException;
 ### Scenario 5: Test Database - Connessione Fallita
 
 **Passi:**
+
 1. Avvia applicazione
 2. Naviga a Settings
 3. Inserisci parametri database ERRATI:
@@ -536,6 +556,7 @@ import java.sql.SQLException;
 ## Commit
 
 **Messaggio:**
+
 ```
 Fix: Implementate funzionalità mancanti Sprint 3
 

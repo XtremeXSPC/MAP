@@ -23,6 +23,7 @@ Line 50:   at qtGUI@1.0.0/database.TableData.getDistinctTransazioni(TableData.ja
 **Errore superficiale**: SQLException in `TableData.getDistinctTransazioni:57`
 
 Guardando `TableData.java:56-57`:
+
 ```java
 if (tSchema.getNumberOfAttributes() == 0)
     throw new SQLException();  // <-- Ecco l'errore!
@@ -115,6 +116,7 @@ public Data(DbAccess db, String tableName)
 ```
 
 **Caratteristiche chiave**:
+
 - Accetta `DbAccess` esistente invece di crearne uno nuovo
 - NON chiude la connessione (responsabilita del chiamante)
 - Validazione parametri null/empty
@@ -154,6 +156,7 @@ public Data(String tableName, boolean fromDatabase)
 ```
 
 **Benefici**:
+
 - Elimina duplicazione codice (DRY principle)
 - Mantiene backward compatibility
 - Logica centralizzata nel nuovo costruttore
@@ -165,6 +168,7 @@ public Data(String tableName, boolean fromDatabase)
 **File**: `qtGUI/src/main/java/gui/services/DataImportService.java:143-158`
 
 **Prima** (BUG):
+
 ```java
 db = new DbAccess(dbUrl, dbUser, dbPassword);
 logger.info("Connessione database stabilita");
@@ -180,6 +184,7 @@ return data;
 ```
 
 **Dopo** (FIX):
+
 ```java
 db = new DbAccess(dbUrl, dbUser, dbPassword);
 logger.info("Connessione database stabilita");
@@ -196,6 +201,7 @@ return data;
 ```
 
 **Modifiche**:
+
 - Rimosso caricamento inutile di TableSchema e TableData (ora nel costruttore Data)
 - Usa nuovo costruttore `Data(db, tableName)`
 - La connessione viene chiusa correttamente nel finally block
@@ -247,10 +253,10 @@ DataImportService: db = new DbAccess(dbUrl, user, pass)  // Connessione GUI
 
 ## File Modificati
 
-| File | Linee Modificate | Tipo Modifica |
-|------|------------------|---------------|
-| `qtServer/src/data/Data.java` | 80-173 | Nuovo costruttore + refactoring |
-| `qtGUI/src/main/java/gui/services/DataImportService.java` | 143-158 | Usa nuovo costruttore Data |
+| File                                                      | Linee Modificate | Tipo Modifica                   |
+| --------------------------------------------------------- | ---------------- | ------------------------------- |
+| `qtServer/src/data/Data.java`                             | 80-173           | Nuovo costruttore + refactoring |
+| `qtGUI/src/main/java/gui/services/DataImportService.java` | 143-158          | Usa nuovo costruttore Data      |
 
 **Totale linee modificate**: ~70
 **Nuove linee aggiunte**: ~50
@@ -262,6 +268,7 @@ DataImportService: db = new DbAccess(dbUrl, user, pass)  // Connessione GUI
 ### Test 1: Parametri Custom
 
 **Input GUI**:
+
 - Host: 192.168.1.100
 - Port: 3307
 - Database: CustomDB
@@ -270,11 +277,13 @@ DataImportService: db = new DbAccess(dbUrl, user, pass)  // Connessione GUI
 - Table: customers
 
 **Expected**:
+
 - Connessione a: `jdbc:mysql://192.168.1.100:3307/CustomDB`
 - Autenticazione con: admin/secret123
 - Query su tabella: customers
 
 **Verifica Log**:
+
 ```
 INFO - Caricamento dataset da database: 192.168.1.100:3307/CustomDB - tabella: customers
 INFO - Connessione database stabilita
@@ -286,6 +295,7 @@ INFO - Dataset caricato dal database: X tuple, Y attributi
 ### Test 2: Parametri Predefiniti
 
 **Input GUI** (valori default):
+
 - Host: localhost
 - Port: 3306
 - Database: MapDB
@@ -294,6 +304,7 @@ INFO - Dataset caricato dal database: X tuple, Y attributi
 - Table: playtennis
 
 **Expected**:
+
 - Connessione a: `jdbc:mysql://localhost:3306/MapDB`
 - Autenticazione con: MapUser/map
 - Query su tabella: playtennis
@@ -303,9 +314,11 @@ INFO - Dataset caricato dal database: X tuple, Y attributi
 ### Test 3: Errore Tabella Non Esistente
 
 **Input**:
+
 - Table: TabellaInesistente
 
 **Expected**:
+
 - SQLException con messaggio chiaro
 - Nessun crash applicazione
 - Dialog errore in GUI
@@ -315,11 +328,13 @@ INFO - Dataset caricato dal database: X tuple, Y attributi
 ### Test 4: Backward Compatibility
 
 **Codice esistente**:
+
 ```java
 Data data = new Data("playtennis", true);
 ```
 
 **Expected**:
+
 - Funziona come prima
 - Si connette a database hardcoded (localhost:3306/MapDB)
 - Mantiene comportamento originale
@@ -329,12 +344,14 @@ Data data = new Data("playtennis", true);
 ## Impatto
 
 ### Prima del Fix
+
 - Parametri GUI **ignorati completamente**
 - Connessione sempre a database hardcoded
 - Impossibile usare database diversi
 - Bug silenzioso (nessun warning)
 
 ### Dopo il Fix
+
 - Parametri GUI **rispettati**
 - Connessione a qualsiasi database MySQL
 - Flessibilita completa
@@ -347,16 +364,19 @@ Data data = new Data("playtennis", true);
 ### Gestione Connessioni
 
 **Nuovo costruttore** `Data(DbAccess, String)`:
+
 - NON chiude la connessione
 - Responsabilita del chiamante
 - Permette riuso connessione per query multiple
 
 **Costruttore legacy** `Data(String, boolean)`:
+
 - Chiude connessione nel finally
 - Gestione automatica
 - Nessun leak di connessioni
 
 **DataImportService**:
+
 - Chiude connessione nel finally (linea 176-180)
 - Garanzia cleanup anche in caso di eccezioni
 - Pattern try-finally corretto
@@ -394,15 +414,18 @@ db.closeConnection();
 ### Pattern di Design
 
 **Dependency Injection**:
+
 - Vecchio: Data crea dipendenze internamente (tight coupling)
 - Nuovo: Data riceve dipendenze esterne (loose coupling)
 
 **Separation of Concerns**:
+
 - DataImportService: gestisce connessione
 - Data: gestisce caricamento dati
 - Responsabilita chiare e separate
 
 **DRY Principle**:
+
 - Logica caricamento database in un solo punto
 - Costruttore legacy delega a nuovo costruttore
 - Manutenibilita migliorata
@@ -422,6 +445,7 @@ java.sql.SQLException: null
 **Causa**: Tabella "MapDB" non esiste (confusa con database name)
 
 **Soluzione**:
+
 1. Ora l'utente puo specificare table name corretto
 2. Errore piu chiaro se tabella non esiste
 3. Validazione parametri nel costruttore
@@ -443,6 +467,7 @@ java.sql.SQLException: null
 ## Conclusioni
 
 Fix critico completato con successo. Il sistema ora:
+
 - Rispetta parametri database inseriti da GUI
 - Mantiene backward compatibility
 - Ha architettura piu pulita (dependency injection)

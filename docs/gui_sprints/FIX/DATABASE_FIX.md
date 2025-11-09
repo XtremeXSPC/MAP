@@ -18,6 +18,7 @@ L'applicazione GUI non permetteva all'utente di inserire le credenziali del data
    - Password (dbPassword)
 
 2. **Valori hardcoded**: In `HomeController.java:332-334` i valori erano fissati:
+
    ```java
    config.setDbName("MapDB");
    config.setDbUser("MapUser");
@@ -33,6 +34,7 @@ L'applicazione GUI non permetteva all'utente di inserire le credenziali del data
 ### File Coinvolti
 
 **1. home.fxml (linee 62-76)**
+
 ```xml
 <!-- Database Configuration (visible when Database is selected) -->
 <VBox fx:id="databaseSection" spacing="10" visible="false" managed="false">
@@ -55,6 +57,7 @@ L'applicazione GUI non permetteva all'utente di inserire le credenziali del data
 **Problema**: Solo 3 campi su 6 necessari per la connessione database.
 
 **2. HomeController.java (linee 32-39)**
+
 ```java
 // Dichiarazioni FXML
 @FXML private VBox databaseSection;
@@ -67,6 +70,7 @@ L'applicazione GUI non permetteva all'utente di inserire le credenziali del data
 **Problema**: Mancano dichiarazioni @FXML per i campi.
 
 **3. HomeController.java (linee 318-335)**
+
 ```java
 // Imposta parametri Database
 if (dataSource == DataSource.DATABASE) {
@@ -85,6 +89,7 @@ if (dataSource == DataSource.DATABASE) {
 **Problema**: Valori hardcoded invece di lettura da GUI.
 
 **4. HomeController.java (linee 170-179)**
+
 ```java
 } else if (dataSource.contains("Database")) {
     if (tableNameField.getText() == null || tableNameField.getText().trim().isEmpty()) {
@@ -143,6 +148,7 @@ if (dataSource == DataSource.DATABASE) {
 ```
 
 **Modifiche**:
+
 - Aggiunto `dbNameField` (TextField)
 - Aggiunto `dbUserField` (TextField)
 - Aggiunto `dbPasswordField` (PasswordField per sicurezza)
@@ -165,6 +171,7 @@ if (dataSource == DataSource.DATABASE) {
 ```
 
 **Modifiche**:
+
 - Aggiunto `@FXML private TextField dbNameField;`
 - Aggiunto `@FXML private TextField dbUserField;`
 - Aggiunto `@FXML private PasswordField dbPasswordField;`
@@ -204,6 +211,7 @@ if (dataSource == DataSource.DATABASE) {
 ```
 
 **Modifiche**:
+
 - Rimossi valori hardcoded
 - Aggiunta lettura da campi GUI con fallback a valori predefiniti
 - Gestione casi null/empty per robustezza
@@ -244,6 +252,7 @@ if (dataSource == DataSource.DATABASE) {
 ```
 
 **Modifiche**:
+
 - Aggiunta validazione per dbName (obbligatorio)
 - Aggiunta validazione per dbUser (obbligatorio)
 - Aggiunta validazione per dbPassword (obbligatorio)
@@ -281,6 +290,7 @@ private void handleCancel() {
 ```
 
 **Modifiche**:
+
 - Aggiunto reset campi database ai valori predefiniti
 - Garantisce stato consistente dopo "Cancel"
 
@@ -289,11 +299,14 @@ private void handleCancel() {
 ## Testing
 
 ### Test Case 1: Valori Predefiniti
+
 **Input**:
+
 - Selezionare "Database" come sorgente
 - Non modificare alcun campo
 
 **Expected**:
+
 - dbHost: "localhost"
 - dbPort: 3306
 - dbName: "MapDB"
@@ -306,7 +319,9 @@ private void handleCancel() {
 ---
 
 ### Test Case 2: Credenziali Custom
+
 **Input**:
+
 - dbHost: "192.168.1.100"
 - dbPort: 3307
 - dbName: "MyDatabase"
@@ -315,6 +330,7 @@ private void handleCancel() {
 - tableNameField: "customers"
 
 **Expected**:
+
 - Configurazione usa tutti i valori custom
 - Connessione tentata con nuove credenziali
 - Validazione passa con tutti campi compilati
@@ -322,10 +338,13 @@ private void handleCancel() {
 ---
 
 ### Test Case 3: Campi Vuoti
+
 **Input**:
+
 - Svuotare campo dbName
 
 **Expected**:
+
 - Validazione fallisce
 - Messaggio errore: "Inserire il nome del database."
 - Pulsante "Start Clustering" disabilitato
@@ -333,11 +352,14 @@ private void handleCancel() {
 ---
 
 ### Test Case 4: Reset con Cancel
+
 **Input**:
+
 - Modificare tutti i campi database
 - Cliccare "Cancel"
 
 **Expected**:
+
 - Tutti i campi database tornano ai valori predefiniti
 - tableNameField svuotato
 
@@ -345,13 +367,13 @@ private void handleCancel() {
 
 ## File Modificati
 
-| File | Linee Modificate | Tipo Modifica |
-|------|------------------|---------------|
-| `qtGUI/src/main/resources/views/home.fxml` | 62-88 | Aggiunta campi GUI |
-| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 33-39 | Dichiarazioni FXML |
-| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 177-195 | Validazione |
-| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 254-275 | Reset campi |
-| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 320-341 | Lettura GUI |
+| File                                                      | Linee Modificate | Tipo Modifica      |
+| --------------------------------------------------------- | ---------------- | ------------------ |
+| `qtGUI/src/main/resources/views/home.fxml`                | 62-88            | Aggiunta campi GUI |
+| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 33-39            | Dichiarazioni FXML |
+| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 177-195          | Validazione        |
+| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 254-275          | Reset campi        |
+| `qtGUI/src/main/java/gui/controllers/HomeController.java` | 320-341          | Lettura GUI        |
 
 **Totale linee modificate/aggiunte**: ~50
 
@@ -360,11 +382,13 @@ private void handleCancel() {
 ## Impatto
 
 ### Prima del Fix
+
 - Impossibile connettersi a database con credenziali diverse da MapDB/MapUser/map
 - Nessuna flessibilita nella configurazione database
 - TODO presente da Sprint 2 (linea 330-331)
 
 ### Dopo il Fix
+
 - Utente puo inserire qualsiasi configurazione database
 - Validazione garantisce campi obbligatori compilati
 - Password field nasconde caratteri per sicurezza
@@ -378,11 +402,13 @@ private void handleCancel() {
 ### PasswordField vs TextField
 
 **Motivazione uso PasswordField**:
+
 - Caratteri nascosti durante digitazione
 - Protezione da shoulder surfing
 - Standard UI per credenziali sensibili
 
 **Nota**: La password è comunque memorizzata in plain text in `ClusteringConfiguration`. Per produzione considerare:
+
 - Encryption at rest
 - Uso di credential manager
 - Prompt runtime invece di storage
@@ -392,6 +418,7 @@ private void handleCancel() {
 ## Backward Compatibility
 
 Il fix mantiene backward compatibility:
+
 - Valori predefiniti corrispondono ai vecchi hardcoded
 - Database esistente (MapDB) funziona senza modifiche
 - Codice backend (DbAccess, DataImportService) inalterato
@@ -401,6 +428,7 @@ Il fix mantiene backward compatibility:
 ## Prossimi Passi
 
 ### Sprint 4+
+
 1. **Test Connessione Button**: Aggiungere pulsante "Test Connection" per verificare credenziali prima del clustering
 2. **Credential Manager**: Salvare credenziali database in modo sicuro (keystore)
 3. **Connection Pooling**: Riutilizzare connessioni database per performance
