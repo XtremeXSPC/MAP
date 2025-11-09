@@ -1,5 +1,8 @@
 package gui.controllers;
 
+import data.Data;
+import database.DbAccess;
+import gui.dialogs.DatasetPreviewDialog;
 import gui.models.ClusteringConfiguration;
 import gui.services.DataImportService.DataSource;
 import gui.utils.ApplicationContext;
@@ -119,6 +122,14 @@ public class HomeController {
             validateRadius(newValue);
             validateForm();
         });
+
+        // Aggiungi listener per campi database per rivalidare quando cambiano
+        tableNameField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbNameField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbUserField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbPasswordField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbHostField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
+        dbPortField.textProperty().addListener((observable, oldValue, newValue) -> validateForm());
     }
 
     /**
@@ -238,14 +249,82 @@ public class HomeController {
      * Gestisce il clic del pulsante anteprima dataset.
      */
     private void handlePreviewDataset() {
-        logger.info("Anteprima dataset cliccato");
+        logger.info("Anteprima dataset richiesta");
 
-        // TODO: Implementare dialogo anteprima dataset
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Anteprima Dataset");
-        alert.setHeaderText("Anteprima Dataset");
-        alert.setContentText("La funzionalità di anteprima dataset sarà implementata nello Sprint 2.");
-        alert.showAndWait();
+        String dataSourceStr = dataSourceComboBox.getValue();
+        if (dataSourceStr == null) {
+            showError("Sorgente Dati Non Selezionata", "Seleziona una sorgente dati prima di visualizzare l'anteprima.");
+            return;
+        }
+
+        Data data = null;
+        DbAccess db = null;
+
+        try {
+            if (dataSourceStr.contains("Hardcoded")) {
+                // Dataset hardcoded PlayTennis
+                data = new Data();
+                logger.info("Caricato dataset hardcoded per preview");
+
+            } else if (dataSourceStr.contains("CSV")) {
+                // CSV non ancora supportato
+                showError("CSV Non Supportato", "La preview da file CSV sarà implementata in futuro.");
+                return;
+
+            } else if (dataSourceStr.contains("Database")) {
+                // Valida parametri database
+                String dbHost = dbHostField.getText() != null && !dbHostField.getText().trim().isEmpty()
+                        ? dbHostField.getText().trim() : "localhost";
+                int dbPort;
+                try {
+                    dbPort = Integer.parseInt(dbPortField.getText().trim());
+                } catch (NumberFormatException e) {
+                    dbPort = 3306;
+                }
+                String dbName = dbNameField.getText() != null && !dbNameField.getText().trim().isEmpty()
+                        ? dbNameField.getText().trim() : "MapDB";
+                String dbUser = dbUserField.getText() != null && !dbUserField.getText().trim().isEmpty()
+                        ? dbUserField.getText().trim() : "MapUser";
+                String dbPassword = dbPasswordField.getText() != null && !dbPasswordField.getText().isEmpty()
+                        ? dbPasswordField.getText() : "map";
+                String tableName = tableNameField.getText();
+
+                if (tableName == null || tableName.trim().isEmpty()) {
+                    showError("Nome Tabella Mancante", "Inserisci il nome della tabella database.");
+                    return;
+                }
+
+                // Connetti al database
+                String dbUrl = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName
+                        + "?serverTimezone=UTC";
+
+                db = new DbAccess(dbUrl, dbUser, dbPassword);
+                data = new Data(db, tableName.trim());
+
+                logger.info("Caricato dataset da database per preview: {}", tableName);
+            }
+
+            if (data != null) {
+                // Mostra dialog preview
+                DatasetPreviewDialog previewDialog = new DatasetPreviewDialog(data);
+                previewDialog.show();
+            }
+
+        } catch (Exception e) {
+            logger.error("Errore durante caricamento dataset per preview", e);
+            showError("Errore Caricamento Dataset",
+                    "Impossibile caricare il dataset per l'anteprima:\n" + e.getMessage());
+        } finally {
+            // Chiudi connessione database se aperta
+            if (db != null) {
+                try {
+                    db.closeConnection();
+                    logger.info("Connessione database chiusa dopo preview");
+                } catch (Exception e) {
+                    logger.warn("Errore durante chiusura connessione database", e);
+                }
+            }
+        }
     }
 
     /**

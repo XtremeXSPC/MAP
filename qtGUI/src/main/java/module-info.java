@@ -30,8 +30,10 @@ module qtGUI {
     exports gui.models;
     exports gui.utils;
     exports gui.charts;
+    exports gui.dialogs;
 
     // Open packages to JavaFX for FXML controller injection
     opens gui to javafx.fxml;
     opens gui.controllers to javafx.fxml;
+    opens gui.dialogs to javafx.fxml;
 }

@@ -1,5 +1,8 @@
 package gui.controllers;
 
+import database.DbAccess;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -11,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -215,29 +219,135 @@ public class SettingsController {
      * Gestisce il pulsante test connessione database.
      */
     private void handleTestConnection() {
-        logger.info("Test connessione database...");
+        logger.info("Test connessione database richiesto");
 
+        // Valida i campi
         String host = dbHostField.getText();
-        String port = dbPortField.getText();
+        String portStr = dbPortField.getText();
         String dbName = dbNameField.getText();
         String username = dbUsernameField.getText();
         String password = dbPasswordField.getText();
 
-        // TODO: Implementare test connessione database effettivo nello Sprint 2
-        // Per ora, mostra un risultato simulato
+        if (host == null || host.trim().isEmpty()) {
+            showError("Campo Obbligatorio", "Inserisci l'host del database.");
+            return;
+        }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Test Connessione Database");
-        alert.setHeaderText("Test Connessione");
-        alert.setContentText(
-            "Il test di connessione al database sarà implementato nello Sprint 2.\n\n" +
-            "Configurazione:\n" +
-            "Host: " + host + "\n" +
-            "Porta: " + port + "\n" +
-            "Database: " + dbName + "\n" +
-            "Username: " + username
-        );
-        alert.showAndWait();
+        if (dbName == null || dbName.trim().isEmpty()) {
+            showError("Campo Obbligatorio", "Inserisci il nome del database.");
+            return;
+        }
+
+        if (username == null || username.trim().isEmpty()) {
+            showError("Campo Obbligatorio", "Inserisci lo username del database.");
+            return;
+        }
+
+        int port;
+        try {
+            port = Integer.parseInt(portStr);
+            if (port < 1 || port > 65535) {
+                showError("Porta Non Valida", "La porta deve essere tra 1 e 65535.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showError("Porta Non Valida", "Inserisci un numero di porta valido.");
+            return;
+        }
+
+        // Disabilita il pulsante durante il test
+        btnTestConnection.setDisable(true);
+        btnTestConnection.setText("Test in corso...");
+
+        // Esegui test in background thread
+        Task<Boolean> testTask = new Task<Boolean>() {
+            private String errorMessage = "";
+
+            @Override
+            protected Boolean call() {
+                DbAccess db = null;
+                try {
+                    String dbUrl = "jdbc:mysql://" + host.trim() + ":" + port + "/" + dbName.trim()
+                            + "?serverTimezone=UTC";
+
+                    logger.info("Tentativo connessione a: {}", dbUrl);
+
+                    db = new DbAccess(dbUrl, username.trim(), password);
+
+                    // Se arriviamo qui, la connessione è riuscita
+                    logger.info("Connessione database riuscita!");
+                    return true;
+
+                } catch (SQLException e) {
+                    errorMessage = e.getMessage();
+                    logger.error("Errore connessione database", e);
+                    return false;
+                } finally {
+                    if (db != null) {
+                        try {
+                            db.closeConnection();
+                        } catch (SQLException e) {
+                            logger.warn("Errore chiusura connessione test", e);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            protected void succeeded() {
+                Platform.runLater(() -> {
+                    btnTestConnection.setDisable(false);
+                    btnTestConnection.setText("Test Connessione");
+
+                    if (getValue()) {
+                        // Connessione riuscita
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Test Connessione");
+                        alert.setHeaderText("Connessione Riuscita");
+                        alert.setContentText(
+                            "La connessione al database è stata stabilita con successo!\n\n" +
+                            "Configurazione:\n" +
+                            "Host: " + host + "\n" +
+                            "Porta: " + port + "\n" +
+                            "Database: " + dbName + "\n" +
+                            "Username: " + username
+                        );
+                        alert.showAndWait();
+                        showStatus("Connessione database riuscita", true);
+                    } else {
+                        // Connessione fallita
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Test Connessione");
+                        alert.setHeaderText("Connessione Fallita");
+                        alert.setContentText(
+                            "Impossibile connettersi al database.\n\n" +
+                            "Errore:\n" + errorMessage + "\n\n" +
+                            "Verifica i parametri di connessione e assicurati che:\n" +
+                            "- Il server MySQL sia in esecuzione\n" +
+                            "- Le credenziali siano corrette\n" +
+                            "- Il database esista\n" +
+                            "- Non ci siano firewall che bloccano la connessione"
+                        );
+                        alert.showAndWait();
+                        showStatus("Connessione database fallita", false);
+                    }
+                });
+            }
+
+            @Override
+            protected void failed() {
+                Platform.runLater(() -> {
+                    btnTestConnection.setDisable(false);
+                    btnTestConnection.setText("Test Connessione");
+                    showError("Errore Test", "Errore imprevisto durante test connessione:\n" + getException().getMessage());
+                });
+            }
+        };
+
+        // Avvia task in background
+        Thread testThread = new Thread(testTask);
+        testThread.setDaemon(true);
+        testThread.start();
     }
 
     /**
