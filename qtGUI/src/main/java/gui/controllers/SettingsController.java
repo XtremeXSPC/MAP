@@ -1,6 +1,7 @@
 package gui.controllers;
 
 import database.DbAccess;
+import gui.utils.ThemeManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -103,6 +104,7 @@ public class SettingsController {
         setupSpinners();
         setupButtons();
         loadSettings();
+        setupLiveListeners(); // Aggiungi listener per applicazione live delle modifiche
 
         logger.info("SettingsController inizializzato con successo");
     }
@@ -113,6 +115,31 @@ public class SettingsController {
     private void setupSpinners() {
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16, 4);
         threadPoolSpinner.setValueFactory(valueFactory);
+    }
+
+    /**
+     * Configura i listener per l'applicazione in tempo reale delle modifiche.
+     */
+    private void setupLiveListeners() {
+        // Listener per il cambio tema
+        if (themeComboBox != null) {
+            themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    ThemeManager.getInstance().setThemeByName(newValue);
+                    logger.info("Tema cambiato a: {}", newValue);
+                }
+            });
+        }
+
+        // Listener per il cambio dimensione font
+        if (fontSizeComboBox != null) {
+            fontSizeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    ThemeManager.getInstance().setFontSizeByName(newValue);
+                    logger.info("Dimensione font cambiata a: {}", newValue);
+                }
+            });
+        }
     }
 
     /**

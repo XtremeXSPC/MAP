@@ -1,5 +1,6 @@
 package gui;
 
+import gui.utils.ThemeManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,12 +36,16 @@ public class MainApp extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/main.fxml"));
             Parent root = loader.load();
 
-            // Crea la scena con il foglio di stile
+            // Crea la scena
             Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-            scene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
 
             // Configura keyboard shortcuts globali
             setupKeyboardShortcuts(scene);
+
+            // Configura ThemeManager con la scena primaria
+            // Questo applicherà automaticamente il tema e la dimensione del font salvati
+            ThemeManager themeManager = ThemeManager.getInstance();
+            themeManager.setPrimaryScene(scene);
 
             // Configura lo stage
             primaryStage.setTitle(APP_TITLE);

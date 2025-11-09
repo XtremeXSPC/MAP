@@ -16,6 +16,9 @@
   -fx-font-size: 32px;
   -fx-font-weight: bold;
   -fx-text-fill: #2c3e50;
+  -fx-padding: 10 15 10 15;
+  -fx-wrap-text: true;
+  -fx-alignment: center;
 }
 
 /* Status bar styling */
