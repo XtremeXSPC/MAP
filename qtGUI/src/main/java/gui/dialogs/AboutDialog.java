@@ -18,9 +18,8 @@ import org.slf4j.LoggerFactory;
  * Dialog "About" per visualizzare informazioni sull'applicazione.
  * Include informazioni sulla versione, autori, tecnologie utilizzate e crediti.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 4
  */
 public class AboutDialog {
 
@@ -28,7 +27,7 @@ public class AboutDialog {
 
     private static final String APP_NAME = "QT Clustering GUI";
     private static final String APP_VERSION = "1.0.0";
-    private static final String APP_BUILD = "Sprint 4 Final";
+    private static final String APP_BUILD = "Beta 1";
     private static final String JAVA_VERSION = System.getProperty("java.version");
     private static final String JAVAFX_VERSION = System.getProperty("javafx.version", "21+");
 
@@ -115,7 +114,7 @@ public class AboutDialog {
 
         Label courseLabel = new Label("  • Corso: Metodi Avanzati di Programmazione (MAP)");
         Label yearLabel = new Label("  • Anno Accademico: 2024/2025");
-        Label uniLabel = new Label("  • Università: Dipartimento di Informatica");
+        Label uniLabel = new Label("  • Università degli Studi di Bari: Dipartimento di Informatica");
 
         creditsBox.getChildren().addAll(creditsLabel, courseLabel, yearLabel, uniLabel);
         root.getChildren().add(creditsBox);

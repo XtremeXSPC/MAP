@@ -95,8 +95,8 @@
         <TreeView fx:id="clusterTreeView" VBox.vgrow="ALWAYS" />
 
         <HBox spacing="10" alignment="CENTER">
-            <Button fx:id="btnExpandAll" text="Espandi Tutto" prefWidth="100" />
-            <Button fx:id="btnCollapseAll" text="Comprimi Tutto" prefWidth="100" />
+            <Button fx:id="btnExpandAll" text="Espandi Tutto" prefWidth="140" />
+            <Button fx:id="btnCollapseAll" text="Comprimi Tutto" prefWidth="140" />
         </HBox>
       </VBox>
 
