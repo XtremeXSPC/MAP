@@ -40,6 +40,7 @@ public class StatisticsDialog {
 
     private final Stage stage;
     private final ClusteringResult result;
+    @SuppressWarnings("unused")
     private final ColorPalette colorPalette;
 
     /**

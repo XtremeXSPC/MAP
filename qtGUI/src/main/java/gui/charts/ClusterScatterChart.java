@@ -78,6 +78,7 @@ public class ClusterScatterChart {
      *
      * @return oggetto XYChart pronto per la visualizzazione
      */
+    @SuppressWarnings("exports")
     public XYChart createChart() {
         logger.info("Creazione scatter plot con attributi X={}, Y={}", xAttributeIndex, yAttributeIndex);
 
