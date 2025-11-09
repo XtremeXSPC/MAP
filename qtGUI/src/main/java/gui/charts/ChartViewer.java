@@ -24,9 +24,8 @@ import java.io.IOException;
  * Finestra di visualizzazione per scatter plot 2D dei cluster.
  * Mostra il grafico XChart integrato in una finestra JavaFX.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 3
  */
 public class ChartViewer {
 
@@ -115,11 +114,7 @@ public class ChartViewer {
         Button refreshButton = new Button("Aggiorna Grafico");
         refreshButton.setOnAction(e -> updateChart());
 
-        axisSelectionBox.getChildren().addAll(
-            xLabel, xAxisComboBox,
-            yLabel, yAxisComboBox,
-            refreshButton
-        );
+        axisSelectionBox.getChildren().addAll(xLabel, xAxisComboBox, yLabel, yAxisComboBox, refreshButton);
 
         panel.getChildren().addAll(titleLabel, axisSelectionBox);
         return panel;
@@ -144,22 +139,15 @@ public class ChartViewer {
         Button closeButton = new Button("Chiudi");
         closeButton.setOnAction(e -> stage.close());
 
-        Label infoLabel = new Label(String.format(
-            "Cluster: %d | Tuple: %d | Radius: %.3f",
-            result.getNumClusters(),
-            result.getNumTuples(),
-            result.getRadius()
-        ));
+        Label infoLabel = new Label(String.format("Cluster: %d | Tuple: %d | Radius: %.3f", result.getNumClusters(),
+                result.getNumTuples(), result.getRadius()));
         infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
 
         // Spacer per allineare info a sinistra e pulsanti a destra
         javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
 
-        panel.getChildren().addAll(
-            infoLabel, spacer,
-            exportButton, exportHDButton, closeButton
-        );
+        panel.getChildren().addAll(infoLabel, spacer, exportButton, exportHDButton, closeButton);
 
         return panel;
     }
@@ -194,8 +182,7 @@ public class ChartViewer {
 
         } catch (Exception e) {
             logger.error("Errore durante creazione grafico", e);
-            showError("Errore Visualizzazione",
-                "Impossibile creare il grafico: " + e.getMessage());
+            showError("Errore Visualizzazione", "Impossibile creare il grafico: " + e.getMessage());
         }
     }
 
@@ -223,9 +210,7 @@ public class ChartViewer {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Salva Grafico");
         fileChooser.setInitialFileName("cluster_chart.png");
-        fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Immagini PNG", "*.png")
-        );
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini PNG", "*.png"));
 
         File file = fileChooser.showSaveDialog(stage);
         if (file != null) {
@@ -242,8 +227,7 @@ public class ChartViewer {
 
             } catch (IOException e) {
                 logger.error("Errore durante esportazione grafico", e);
-                showError("Errore Esportazione",
-                    "Impossibile salvare il grafico: " + e.getMessage());
+                showError("Errore Esportazione", "Impossibile salvare il grafico: " + e.getMessage());
             }
         }
     }

@@ -7,8 +7,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Server multi-client per Quality Threshold clustering (QT08). Gestisce connessioni
- * multiple tramite thread dedicati.
+ * Server multi-client per Quality Threshold clustering (QT08). 
+ * Gestisce connessioni multiple tramite thread dedicati.
  *
  * @author Appice A.
  * @version 1.0

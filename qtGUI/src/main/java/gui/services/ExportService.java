@@ -28,9 +28,8 @@ import java.util.zip.ZipOutputStream;
  *   <li>ZIP: Archivio contenente .dmp + CSV + report TXT</li>
  * </ul>
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 4
  */
 public class ExportService {
 
@@ -58,8 +57,8 @@ public class ExportService {
         ClusterSet clusterSet = result.getClusterSet();
         Data data = result.getData();
 
-        try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+        try (BufferedWriter writer =
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
 
             // Scrivi intestazione CSV
             writer.write("ClusterID,TupleID,DistanceFromCentroid");
@@ -124,8 +123,8 @@ public class ExportService {
         ClusterSet clusterSet = result.getClusterSet();
         Data data = result.getData();
 
-        try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+        try (BufferedWriter writer =
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
 
             // Intestazione report
             writer.write("====================================================\n");
@@ -158,8 +157,10 @@ public class ExportService {
                 for (Cluster cluster : clusters) {
                     int size = cluster.getSize();
                     totalSize += size;
-                    if (size > maxSize) maxSize = size;
-                    if (size < minSize) minSize = size;
+                    if (size > maxSize)
+                        maxSize = size;
+                    if (size < minSize)
+                        minSize = size;
                 }
 
                 double avgSize = (double) totalSize / clusters.size();
@@ -193,8 +194,10 @@ public class ExportService {
 
                 for (int tupleId : tupleIds) {
                     double dist = centroid.getDistance(data.getItemSet(tupleId));
-                    if (dist < minDist) minDist = dist;
-                    if (dist > maxDist) maxDist = dist;
+                    if (dist < minDist)
+                        minDist = dist;
+                    if (dist > maxDist)
+                        maxDist = dist;
                     sumDist += dist;
                 }
 
@@ -213,8 +216,7 @@ public class ExportService {
                     Tuple tuple = data.getItemSet(tupleId);
                     double distance = centroid.getDistance(tuple);
 
-                    writer.write(String.format("  [%d] Tupla %d - distanza: %.6f\n",
-                        i + 1, tupleId, distance));
+                    writer.write(String.format("  [%d] Tupla %d - distanza: %.6f\n", i + 1, tupleId, distance));
                     writer.write("      " + tuple.toString() + "\n");
                 }
 
@@ -264,8 +266,7 @@ public class ExportService {
         String timestamp = LocalDateTime.now().format(formatter);
         String baseName = "clustering_" + timestamp;
 
-        try (ZipOutputStream zipOut = new ZipOutputStream(
-                new FileOutputStream(zipFilePath))) {
+        try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
 
             // 1. Aggiungi file .dmp
             String dmpFileName = baseName + ".dmp";
@@ -350,8 +351,7 @@ public class ExportService {
      * @param result risultato del clustering
      * @throws IOException se si verifica un errore
      */
-    private void addReadmeToZip(ZipOutputStream zipOut, String entryName, ClusteringResult result)
-            throws IOException {
+    private void addReadmeToZip(ZipOutputStream zipOut, String entryName, ClusteringResult result) throws IOException {
         ZipEntry zipEntry = new ZipEntry(entryName);
         zipOut.putNextEntry(zipEntry);
 

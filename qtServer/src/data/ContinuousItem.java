@@ -4,34 +4,34 @@ package data;
  * Classe che modella un item continuo (coppia attributo continuo-valore numerico).
  *
  * <p>
- * Questa classe estende {@link Item} per gestire attributi con valori numerici continui.
- * La distanza tra due valori continui è calcolata usando la distanza Euclidea
- * normalizzata, che produce un valore nell'intervallo [0, 1] compatibile con la distanza
- * di Hamming utilizzata per gli attributi discreti.
+ *   Questa classe estende {@link Item} per gestire attributi con valori numerici continui.
+ *   La distanza tra due valori continui è calcolata usando la distanza Euclidea
+ *   normalizzata, che produce un valore nell'intervallo [0, 1] compatibile con la distanza
+ *   di Hamming utilizzata per gli attributi discreti.
  * </p>
  *
  * <h3>Formula Distanza:</h3>
  * 
  * <pre>
- * distance = |scaledValue1 - scaledValue2|
+ *   distance = |scaledValue1 - scaledValue2|
  *
- * dove:
- *   scaledValue = (value - min) / (max - min)
- *   min, max = range dell'attributo
+ *   dove:
+ *     scaledValue = (value - min) / (max - min)
+ *     min, max = range dell'attributo
  * </pre>
  *
  * <h3>Esempio:</h3>
  * 
  * <pre>
- * ContinuousAttribute temp = new ContinuousAttribute("Temperature", 0, 10.0, 40.0);
- * ContinuousItem item1 = new ContinuousItem(temp, 15.0);
- * ContinuousItem item2 = new ContinuousItem(temp, 25.0);
+ *   ContinuousAttribute temp = new ContinuousAttribute("Temperature", 0, 10.0, 40.0);
+ *   ContinuousItem item1 = new ContinuousItem(temp, 15.0);
+ *   ContinuousItem item2 = new ContinuousItem(temp, 25.0);
  *
- * double dist = item1.distance(25.0);
- * // dist = |((15-10)/(40-10)) - ((25-10)/(40-10))|
- * // = |(5/30) - (15/30)|
- * // = |0.167 - 0.500|
- * // = 0.333
+ *   double dist = item1.distance(25.0);
+ *   // dist = |((15-10)/(40-10)) - ((25-10)/(40-10))|
+ *   // = |(5/30) - (15/30)|
+ *   // = |0.167 - 0.500|
+ *   // = 0.333
  * </pre>
  *
  * @see Item
@@ -44,9 +44,9 @@ public class ContinuousItem extends Item {
      * Costruttore della classe ContinuousItem.
      *
      * <p>
-     * Crea un item continuo con l'attributo e il valore specificati. Il valore deve essere un
-     * numero nell'intervallo [min, max] dell'attributo, altrimenti la normalizzazione
-     * potrebbe produrre risultati fuori range [0, 1].
+     *   Crea un item continuo con l'attributo e il valore specificati. Il valore deve essere un
+     *   numero nell'intervallo [min, max] dell'attributo, altrimenti la normalizzazione
+     *   potrebbe produrre risultati fuori range [0, 1].
      * </p>
      *
      * @param attribute attributo continuo associato all'item
@@ -62,25 +62,25 @@ public class ContinuousItem extends Item {
      * valore numerico.
      *
      * <p>
-     * La distanza è calcolata come il valore assoluto della differenza tra i due valori
-     * normalizzati nell'intervallo [0, 1] usando min-max scaling. Questo garantisce che la
-     * distanza sia compatibile con la distanza di Hamming (0 o 1) usata per gli attributi
-     * discreti.
+     *   La distanza è calcolata come il valore assoluto della differenza tra i due valori
+     *   normalizzati nell'intervallo [0, 1] usando min-max scaling. Questo garantisce che la
+     *   distanza sia compatibile con la distanza di Hamming (0 o 1) usata per gli attributi
+     *   discreti.
      * </p>
      *
      * <h3>Algoritmo:</h3>
      * <ol>
-     * <li>Normalizza il valore corrente: v1_scaled = (v1 - min) / (max - min)</li>
-     * <li>Normalizza il valore da confrontare: v2_scaled = (v2 - min) / (max - min)</li>
-     * <li>Calcola distanza: |v1_scaled - v2_scaled|</li>
+     *   <li>Normalizza il valore corrente: v1_scaled = (v1 - min) / (max - min)</li>
+     *   <li>Normalizza il valore da confrontare: v2_scaled = (v2 - min) / (max - min)</li>
+     *   <li>Calcola distanza: |v1_scaled - v2_scaled|</li>
      * </ol>
      *
      * <h3>Proprietà:</h3>
      * <ul>
-     * <li>Range output: [0, 1] (normalizzato)</li>
-     * <li>Simmetrica: distance(a, b) = distance(b, a)</li>
-     * <li>Identità: distance(a, a) = 0</li>
-     * <li>Non-negatività: distance(a, b) ≥ 0</li>
+     *   <li>Range output: [0, 1] (normalizzato)</li>
+     *   <li>Simmetrica: distance(a, b) = distance(b, a)</li>
+     *   <li>Identità: distance(a, a) = 0</li>
+     *   <li>Non-negatività: distance(a, b) ≥ 0</li>
      * </ul>
      *
      * @param a valore numerico con cui calcolare la distanza (deve essere Double)

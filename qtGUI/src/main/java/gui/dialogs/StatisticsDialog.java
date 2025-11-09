@@ -31,9 +31,8 @@ import java.util.Map;
  * - Istogramma distribuzione distanze intra-cluster
  * - Tabella riepilogativa cluster
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 4
  */
 public class StatisticsDialog {
 
@@ -151,8 +150,10 @@ public class StatisticsDialog {
         for (Cluster cluster : clusters) {
             int size = cluster.getSize();
             sumSize += size;
-            if (size > maxSize) maxSize = size;
-            if (size < minSize) minSize = size;
+            if (size > maxSize)
+                maxSize = size;
+            if (size < minSize)
+                minSize = size;
 
             // Calcola distanze
             Tuple centroid = cluster.getCentroid();
@@ -162,8 +163,10 @@ public class StatisticsDialog {
                 double dist = centroid.getDistance(data.getItemSet(tupleId));
                 globalSumDist += dist;
                 totalDistances++;
-                if (dist < globalMinDist) globalMinDist = dist;
-                if (dist > globalMaxDist) globalMaxDist = dist;
+                if (dist < globalMinDist)
+                    globalMinDist = dist;
+                if (dist > globalMaxDist)
+                    globalMaxDist = dist;
             }
         }
 
@@ -210,7 +213,8 @@ public class StatisticsDialog {
 
         StringBuilder attrNames = new StringBuilder();
         for (int i = 0; i < data.getNumberOfExplanatoryAttributes(); i++) {
-            if (i > 0) attrNames.append(", ");
+            if (i > 0)
+                attrNames.append(", ");
             attrNames.append(data.getExplanatoryAttribute(i).getName());
         }
         addStatsRow(grid, row++, "Attributi:", attrNames.toString());
@@ -294,7 +298,8 @@ public class StatisticsDialog {
         Map<Integer, Integer> histogram = new HashMap<>();
         for (double dist : distances) {
             int bin = (int) ((dist - minDist) / binWidth);
-            if (bin >= numBins) bin = numBins - 1;
+            if (bin >= numBins)
+                bin = numBins - 1;
             histogram.put(bin, histogram.getOrDefault(bin, 0) + 1);
         }
 
@@ -324,41 +329,36 @@ public class StatisticsDialog {
 
         // Colonna ID
         TableColumn<ClusterSummary, Integer> idCol = new TableColumn<>("Cluster ID");
-        idCol.setCellValueFactory(data ->
-            new javafx.beans.property.SimpleObjectProperty<>(data.getValue().id));
+        idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().id));
         idCol.setPrefWidth(100);
 
         // Colonna Dimensione
         TableColumn<ClusterSummary, Integer> sizeCol = new TableColumn<>("Dimensione");
-        sizeCol.setCellValueFactory(data ->
-            new javafx.beans.property.SimpleObjectProperty<>(data.getValue().size));
+        sizeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().size));
         sizeCol.setPrefWidth(100);
 
         // Colonna Distanza Media
         TableColumn<ClusterSummary, String> avgDistCol = new TableColumn<>("Dist. Media");
-        avgDistCol.setCellValueFactory(data ->
-            new javafx.beans.property.SimpleStringProperty(
+        avgDistCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 String.format("%.6f", data.getValue().avgDistance)));
         avgDistCol.setPrefWidth(120);
 
         // Colonna Distanza Min
         TableColumn<ClusterSummary, String> minDistCol = new TableColumn<>("Dist. Min");
-        minDistCol.setCellValueFactory(data ->
-            new javafx.beans.property.SimpleStringProperty(
+        minDistCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 String.format("%.6f", data.getValue().minDistance)));
         minDistCol.setPrefWidth(120);
 
         // Colonna Distanza Max
         TableColumn<ClusterSummary, String> maxDistCol = new TableColumn<>("Dist. Max");
-        maxDistCol.setCellValueFactory(data ->
-            new javafx.beans.property.SimpleStringProperty(
+        maxDistCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 String.format("%.6f", data.getValue().maxDistance)));
         maxDistCol.setPrefWidth(120);
 
         // Colonna Centroide (abbreviato)
         TableColumn<ClusterSummary, String> centroidCol = new TableColumn<>("Centroide");
-        centroidCol.setCellValueFactory(data ->
-            new javafx.beans.property.SimpleStringProperty(data.getValue().centroidPreview));
+        centroidCol.setCellValueFactory(
+                data -> new javafx.beans.property.SimpleStringProperty(data.getValue().centroidPreview));
         centroidCol.setPrefWidth(250);
 
         tableView.getColumns().addAll(idCol, sizeCol, avgDistCol, minDistCol, maxDistCol, centroidCol);
@@ -379,8 +379,10 @@ public class StatisticsDialog {
 
             for (int tupleId : tupleIds) {
                 double dist = centroid.getDistance(data.getItemSet(tupleId));
-                if (dist < minDist) minDist = dist;
-                if (dist > maxDist) maxDist = dist;
+                if (dist < minDist)
+                    minDist = dist;
+                if (dist > maxDist)
+                    maxDist = dist;
                 sumDist += dist;
             }
 
@@ -388,12 +390,10 @@ public class StatisticsDialog {
 
             // Crea preview centroide (primi 50 caratteri)
             String centroidStr = centroid.toString();
-            String centroidPreview = centroidStr.length() > 50 ?
-                centroidStr.substring(0, 47) + "..." : centroidStr;
+            String centroidPreview = centroidStr.length() > 50 ? centroidStr.substring(0, 47) + "..." : centroidStr;
 
-            ClusterSummary summary = new ClusterSummary(
-                clusterId, cluster.getSize(), avgDist, minDist, maxDist, centroidPreview
-            );
+            ClusterSummary summary =
+                    new ClusterSummary(clusterId, cluster.getSize(), avgDist, minDist, maxDist, centroidPreview);
 
             tableView.getItems().add(summary);
         }
@@ -441,8 +441,8 @@ public class StatisticsDialog {
         final double maxDistance;
         final String centroidPreview;
 
-        ClusterSummary(int id, int size, double avgDistance, double minDistance,
-                      double maxDistance, String centroidPreview) {
+        ClusterSummary(int id, int size, double avgDistance, double minDistance, double maxDistance,
+                String centroidPreview) {
             this.id = id;
             this.size = size;
             this.avgDistance = avgDistance;

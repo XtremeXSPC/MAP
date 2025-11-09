@@ -144,11 +144,67 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <!-- Filtri per escludere file problematici -->
+                            <filters>
+                                <!-- Esclude module-info.class da librerie non-JavaFX -->
+                                <filter>
+                                    <artifact>ch.qos.logback:*</artifact>
+                                    <excludes>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.slf4j:*</artifact>
+                                    <excludes>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.mysql:*</artifact>
+                                    <excludes>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                                <!-- Esclude file di firma digitale da tutti i JAR -->
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+
                             <transformers>
+                                <!-- Manifest principale con mainClass -->
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>gui.MainApp</mainClass>
+                                    <mainClass>gui.Launcher</mainClass>
+                                    <manifestEntries>
+                                        <!-- Aggiungi moduli JavaFX richiesti -->
+                                        <Add-Opens>javafx.graphics/javafx.css=ALL-UNNAMED</Add-Opens>
+                                        <Add-Opens>javafx.graphics/com.sun.javafx.css=ALL-UNNAMED</Add-Opens>
+                                        <Add-Opens>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</Add-Opens>
+                                        <Add-Exports>javafx.graphics/com.sun.javafx.css=ALL-UNNAMED</Add-Exports>
+                                        <Add-Exports>javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</Add-Exports>
+                                        <Multi-Release>true</Multi-Release>
+                                    </manifestEntries>
                                 </transformer>
+
+                                <!-- Gestisce file LICENSE duplicati (sopprime warning LICENSE.txt) -->
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
+
+                                <!-- Gestisce file NOTICE duplicati (sopprime warning Apache NOTICE) -->
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                                    <addHeader>false</addHeader>
+                                </transformer>
+
+                                <!-- Aggrega file services per SPI (es. ServiceLoader) -->
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
                         </configuration>
                     </execution>

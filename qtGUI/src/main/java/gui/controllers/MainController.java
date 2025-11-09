@@ -1,6 +1,6 @@
 package gui.controllers;
 
-import data.Data;
+// import data.Data;
 import gui.dialogs.AboutDialog;
 import gui.models.ClusteringResult;
 import gui.services.ClusteringService;
@@ -13,7 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
-import mining.ClusterSet;
 import mining.QTMiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Controller principale per la finestra dell'applicazione.
+ * Controller principale per la finestra dell'applicazione. 
  * Gestisce la navigazione tra le diverse viste e i componenti della finestra principale.
  */
 public class MainController {
@@ -30,34 +29,53 @@ public class MainController {
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     // Elementi MenuBar
-    @FXML private MenuItem menuNew;
-    @FXML private MenuItem menuOpen;
-    @FXML private MenuItem menuSave;
-    @FXML private MenuItem menuSaveAs;
-    @FXML private MenuItem menuExit;
-    @FXML private MenuItem menuSettings;
-    @FXML private CheckMenuItem menuShowToolbar;
-    @FXML private CheckMenuItem menuShowStatusBar;
-    @FXML private MenuItem menuHelp;
-    @FXML private MenuItem menuAbout;
+    @FXML
+    private MenuItem menuNew;
+    @FXML
+    private MenuItem menuOpen;
+    @FXML
+    private MenuItem menuSave;
+    @FXML
+    private MenuItem menuSaveAs;
+    @FXML
+    private MenuItem menuExit;
+    @FXML
+    private MenuItem menuSettings;
+    @FXML
+    private CheckMenuItem menuShowToolbar;
+    @FXML
+    private CheckMenuItem menuShowStatusBar;
+    @FXML
+    private MenuItem menuHelp;
+    @FXML
+    private MenuItem menuAbout;
 
     // ToolBar
-    @FXML private ToolBar toolbar;
-    @FXML private Button btnNew;
-    @FXML private Button btnOpen;
-    @FXML private Button btnSave;
-    @FXML private Button btnRun;
-    @FXML private Button btnExport;
+    @FXML
+    private ToolBar toolbar;
+    @FXML
+    private Button btnNew;
+    @FXML
+    private Button btnOpen;
+    @FXML
+    private Button btnSave;
+    @FXML
+    private Button btnRun;
+    @FXML
+    private Button btnExport;
 
     // Area contenuti e barra di stato
-    @FXML private StackPane contentArea;
-    @FXML private HBox statusBar;
-    @FXML private Label statusLabel;
-    @FXML private Label progressLabel;
+    @FXML
+    private StackPane contentArea;
+    @FXML
+    private HBox statusBar;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Label progressLabel;
 
     /**
-     * Inizializza il controller.
-     * Chiamato automaticamente dopo il caricamento FXML.
+     * Inizializza il controller. Chiamato automaticamente dopo il caricamento FXML.
      */
     @FXML
     public void initialize() {
@@ -164,8 +182,7 @@ public class MainController {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Apri Clustering");
-            fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
 
             File file = fileChooser.showOpenDialog(statusLabel.getScene().getWindow());
 
@@ -174,37 +191,52 @@ public class MainController {
 
                 ClusteringService clusteringService = ApplicationContext.getInstance().getClusteringService();
 
+                // Rimuovi estensione .dmp dal percorso (QTMiner la aggiunge automaticamente)
+                String filePath = file.getAbsolutePath();
+                if (filePath.endsWith(".dmp")) {
+                    filePath = filePath.substring(0, filePath.length() - 4);
+                }
+
                 // Carica il QTMiner dal file
-                QTMiner miner = clusteringService.loadClusteringResults(file.getAbsolutePath());
+                QTMiner miner = clusteringService.loadClusteringResults(filePath);
 
-                // Ottieni i dati dal miner
-                ClusterSet clusterSet = miner.getC();
-                double radius = miner.getRadius();
+                // Verifica se il file contiene dati completi
+                if (miner.getData() != null) {
+                    // File formato completo: crea ClusteringResult e mostra risultati
+                    // Tempo esecuzione non disponibile da file
+                    ClusteringResult result =
+                            new ClusteringResult(miner.getC(), miner.getData(), miner.getRadius(), 0, miner);
 
-                // Nota: Il file .dmp non contiene Data, quindi dobbiamo avvisare l'utente
-                // In una implementazione completa, dovremmo salvare anche Data insieme al clustering
-                Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
-                infoAlert.setTitle("Clustering Caricato");
-                infoAlert.setHeaderText("File caricato con successo");
-                infoAlert.setContentText("Clustering caricato: " + file.getName() +
-                    "\n\nATTENZIONE: Il file .dmp contiene solo i cluster.\n" +
-                    "Per visualizzare i dettagli completi, è necessario\n" +
-                    "ricaricare anche il dataset originale.");
-                infoAlert.showAndWait();
+                    // Salva in ApplicationContext per renderlo disponibile alle altre viste
+                    ApplicationContext.getInstance().setCurrentResult(result);
 
-                // Per ora, creiamo un ClusteringResult parziale
-                // In una implementazione completa, dovremmo gestire questo diversamente
-                logger.warn("Clustering caricato ma dataset non disponibile");
-                updateStatus("Clustering caricato (dataset non disponibile)");
+                    // Naviga alla vista risultati
+                    navigateTo("results.fxml");
+                    updateStatus("Clustering caricato: " + file.getName());
 
-                logger.info("File clustering caricato: {}", file.getAbsolutePath());
+                    logger.info("File clustering completo caricato: {} ({} cluster, radius={})", file.getAbsolutePath(),
+                            result.getNumClusters(), result.getRadius());
+
+                } else {
+                    // File formato legacy (solo ClusterSet): mostra avviso
+                    Alert warningAlert = new Alert(Alert.AlertType.WARNING);
+                    warningAlert.setTitle("Formato File Incompleto");
+                    warningAlert.setHeaderText("File in formato legacy");
+                    warningAlert.setContentText(
+                            "Il file " + file.getName() + " contiene solo i cluster (formato vecchio).\n\n"
+                                    + "Per visualizzare i risultati completi,\n"
+                                    + "salva nuovamente il clustering dopo averlo eseguito.");
+                    warningAlert.showAndWait();
+
+                    logger.warn("Clustering caricato ma dataset non disponibile (file legacy)");
+                    updateStatus("File caricato (formato incompleto)");
+                }
             }
 
         } catch (Exception e) {
             logger.error("Errore durante apertura file clustering", e);
             updateStatus("Errore durante caricamento file");
-            showError("Errore Caricamento",
-                "Impossibile caricare il file clustering: " + e.getMessage());
+            showError("Errore Caricamento", "Impossibile caricare il file clustering: " + e.getMessage());
         }
     }
 
@@ -213,9 +245,8 @@ public class MainController {
 
         ClusteringResult result = ApplicationContext.getInstance().getCurrentResult();
         if (result == null) {
-            showWarning("Nessun Risultato",
-                "Non ci sono risultati di clustering da salvare.\n" +
-                "Esegui prima un clustering dalla schermata Home.");
+            showWarning("Nessun Risultato", "Non ci sono risultati di clustering da salvare.\n"
+                    + "Esegui prima un clustering dalla schermata Home.");
             return;
         }
 
@@ -223,20 +254,24 @@ public class MainController {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salva Clustering");
             fileChooser.setInitialFileName("clustering.dmp");
-            fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
 
             File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
 
             if (file != null) {
                 updateStatus("Salvataggio in corso...");
 
+                // Rimuovi estensione .dmp dal percorso (QTMiner la aggiunge automaticamente)
+                String filePath = file.getAbsolutePath();
+                if (filePath.endsWith(".dmp")) {
+                    filePath = filePath.substring(0, filePath.length() - 4);
+                }
+
                 ClusteringService clusteringService = ApplicationContext.getInstance().getClusteringService();
-                clusteringService.saveClusteringResults(file.getAbsolutePath(), result.getMiner());
+                clusteringService.saveClusteringResults(filePath, result.getMiner());
 
                 updateStatus("Clustering salvato: " + file.getName());
-                showInfo("Salvataggio Completato",
-                    "Clustering salvato con successo in:\n" + file.getAbsolutePath());
+                showInfo("Salvataggio Completato", "Clustering salvato con successo in:\n" + file.getAbsolutePath());
 
                 logger.info("Clustering salvato: {}", file.getAbsolutePath());
             }
@@ -244,8 +279,7 @@ public class MainController {
         } catch (Exception e) {
             logger.error("Errore durante salvataggio", e);
             updateStatus("Errore durante salvataggio");
-            showError("Errore",
-                "Impossibile salvare il clustering: " + e.getMessage());
+            showError("Errore", "Impossibile salvare il clustering: " + e.getMessage());
         }
     }
 
@@ -284,8 +318,7 @@ public class MainController {
         ClusteringResult result = ApplicationContext.getInstance().getCurrentResult();
         if (result == null) {
             showWarning("Nessun Risultato",
-                "Non ci sono risultati da esportare.\n" +
-                "Esegui prima un clustering dalla schermata Home.");
+                    "Non ci sono risultati da esportare.\n" + "Esegui prima un clustering dalla schermata Home.");
             return;
         }
 
@@ -294,9 +327,8 @@ public class MainController {
         updateStatus("Usa il pulsante Esporta nella schermata Risultati");
 
         // Mostra hint
-        showInfo("Esportazione",
-            "Vai alla schermata Risultati e usa il pulsante 'Esporta'\n" +
-            "per scegliere il formato di esportazione (CSV, TXT, ZIP).");
+        showInfo("Esportazione", "Vai alla schermata Risultati e usa il pulsante 'Esporta'\n"
+                + "per scegliere il formato di esportazione (CSV, TXT, ZIP).");
     }
 
     private void handleHelp() {
@@ -315,10 +347,8 @@ public class MainController {
             logger.error("Errore durante apertura About dialog", e);
             // Fallback al dialog semplice
             showInfo("Informazioni su QT Clustering",
-                    "QT Clustering GUI v1.0.0\n\n" +
-                    "Algoritmo Quality Threshold Clustering\n" +
-                    "Sviluppato per il corso MAP\n\n" +
-                    "Applicazione GUI JavaFX");
+                    "QT Clustering GUI v1.0.0\n\n" + "Algoritmo Quality Threshold Clustering\n"
+                            + "Sviluppato per il corso MAP\n\n" + "Applicazione GUI JavaFX");
         }
     }
 

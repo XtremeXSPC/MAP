@@ -10,9 +10,8 @@ import gui.services.ExportService;
  * Singleton che mantiene il contesto dell'applicazione condiviso tra i controller.
  * Permette il passaggio di dati tra le diverse view.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 2
  */
 public class ApplicationContext {
 

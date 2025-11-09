@@ -14,12 +14,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Controller per la vista Settings. Gestisce la configurazione dell'applicazione e le
- * preferenze.
+ * Controller per la vista Settings. 
+ * Gestisce la configurazione dell'applicazione e le preferenze.
  */
 public class SettingsController {
 
@@ -291,11 +290,10 @@ public class SettingsController {
             protected Boolean call() {
                 DbAccess db = null;
                 try {
-                    logger.info("Tentativo connessione a: {}:{}/{} con utente: {}",
-                               host.trim(), port, dbName.trim(), username.trim());
+                    logger.info("Tentativo connessione a: {}:{}/{} con utente: {}", host.trim(), port, dbName.trim(),
+                            username.trim());
 
-                    db = new DbAccess(host.trim(), String.valueOf(port), dbName.trim(),
-                                     username.trim(), password);
+                    db = new DbAccess(host.trim(), String.valueOf(port), dbName.trim(), username.trim(), password);
 
                     // Se arriviamo qui, la connessione è riuscita
                     logger.info("Connessione database riuscita!");

@@ -1,5 +1,6 @@
 package database;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,8 @@ import java.util.List;
  * @author Appice A.
  * @version 1.0
  */
-public class Example implements Comparable<Example> {
+public class Example implements Comparable<Example>, Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * Lista di valori che compongono la transazione
      */

@@ -18,9 +18,8 @@ import java.util.Objects;
  *   <li>Metadati (timestamp, tempo esecuzione)</li>
  * </ul>
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 2
  */
 public class ClusteringResult {
 
@@ -40,8 +39,7 @@ public class ClusteringResult {
      * @param executionTimeMs tempo di esecuzione in millisecondi
      * @param miner l'oggetto QTMiner (per salvataggio)
      */
-    public ClusteringResult(ClusterSet clusterSet, Data data, double radius,
-                           long executionTimeMs, QTMiner miner) {
+    public ClusteringResult(ClusterSet clusterSet, Data data, double radius, long executionTimeMs, QTMiner miner) {
         this.clusterSet = Objects.requireNonNull(clusterSet, "ClusterSet non può essere null");
         this.data = Objects.requireNonNull(data, "Data non può essere null");
         this.miner = Objects.requireNonNull(miner, "QTMiner non può essere null");
@@ -162,7 +160,7 @@ public class ClusteringResult {
 
     @Override
     public String toString() {
-        return String.format("ClusteringResult[clusters=%d, radius=%.3f, time=%s]",
-                getNumClusters(), radius, getFormattedExecutionTime());
+        return String.format("ClusteringResult[clusters=%d, radius=%.3f, time=%s]", getNumClusters(), radius,
+                getFormattedExecutionTime());
     }
 }

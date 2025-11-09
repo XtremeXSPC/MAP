@@ -24,9 +24,8 @@ import java.io.IOException;
  *   <li>Gestione eccezioni clustering</li>
  * </ul>
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 2
  */
 public class ClusteringService {
 
@@ -52,8 +51,7 @@ public class ClusteringService {
             throw new ClusteringRadiusException("Il radius deve essere non negativo: " + radius);
         }
 
-        logger.info("Inizio clustering con radius={} su dataset con {} tuple",
-                radius, data.getNumberOfExamples());
+        logger.info("Inizio clustering con radius={} su dataset con {} tuple", radius, data.getNumberOfExamples());
 
         long startTime = System.currentTimeMillis();
 
@@ -64,8 +62,7 @@ public class ClusteringService {
 
             long elapsedTime = System.currentTimeMillis() - startTime;
 
-            logger.info("Clustering completato: {} cluster trovati in {}ms",
-                    numClusters, elapsedTime);
+            logger.info("Clustering completato: {} cluster trovati in {}ms", numClusters, elapsedTime);
 
             return miner.getC();
 
@@ -76,11 +73,12 @@ public class ClusteringService {
     }
 
     /**
-     * Salva i risultati del clustering su file.
+     * Salva i risultati del clustering su file in formato completo (ClusterSet, Data, radius).
      *
      * @param filePath percorso del file .dmp dove salvare
      * @param miner l'oggetto QTMiner contenente i risultati
      * @throws IOException se si verifica un errore durante il salvataggio
+     * @throws IllegalStateException se il miner non contiene Data (compute() non eseguito)
      */
     public void saveClusteringResults(String filePath, QTMiner miner) throws IOException {
         if (filePath == null || filePath.trim().isEmpty()) {
@@ -91,11 +89,15 @@ public class ClusteringService {
             throw new IllegalArgumentException("QTMiner non può essere null");
         }
 
-        logger.info("Salvataggio risultati clustering in: {}", filePath);
+        logger.info("Salvataggio risultati clustering completi in: {}", filePath);
 
         try {
-            miner.save(filePath);
-            logger.info("Risultati salvati con successo");
+            // Usa saveComplete() per salvare ClusterSet + Data + radius
+            miner.saveComplete(filePath);
+            logger.info("Risultati salvati con successo (formato completo)");
+        } catch (IllegalStateException e) {
+            logger.error("Dataset non disponibile nel miner", e);
+            throw new IOException("Impossibile salvare: " + e.getMessage(), e);
         } catch (FileNotFoundException e) {
             logger.error("File non trovato: {}", filePath, e);
             throw new IOException("Impossibile creare il file: " + filePath, e);
@@ -114,8 +116,7 @@ public class ClusteringService {
      * @throws IOException se si verifica un errore durante il caricamento
      * @throws ClassNotFoundException se le classi serializzate non sono trovate
      */
-    public QTMiner loadClusteringResults(String filePath)
-            throws IOException, ClassNotFoundException {
+    public QTMiner loadClusteringResults(String filePath) throws IOException, ClassNotFoundException {
 
         if (filePath == null || filePath.trim().isEmpty()) {
             throw new IllegalArgumentException("Il percorso file non può essere vuoto");
@@ -169,8 +170,10 @@ public class ClusteringService {
 
         for (Cluster cluster : clusterSet) {
             int size = cluster.getSize();
-            if (size > maxSize) maxSize = size;
-            if (size < minSize) minSize = size;
+            if (size > maxSize)
+                maxSize = size;
+            if (size < minSize)
+                minSize = size;
         }
 
         StringBuilder stats = new StringBuilder();

@@ -3,8 +3,9 @@ package gui.controllers;
 import data.Data;
 import gui.models.ClusteringConfiguration;
 import gui.models.ClusteringResult;
-import gui.services.ClusteringService;
 import gui.services.DataImportService;
+// import gui.services.ClusteringService;
+
 import gui.utils.ApplicationContext;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -33,26 +34,38 @@ public class ClusteringController {
     private static final Logger logger = LoggerFactory.getLogger(ClusteringController.class);
 
     // Componenti di progresso
-    @FXML private ProgressBar progressBar;
-    @FXML private Label progressLabel;
-    @FXML private Label progressPercentLabel;
+    @FXML
+    private ProgressBar progressBar;
+    @FXML
+    private Label progressLabel;
+    @FXML
+    private Label progressPercentLabel;
 
     // Etichette di stato
-    @FXML private Label currentStepLabel;
-    @FXML private Label clustersFoundLabel;
-    @FXML private Label tuplesClusteredLabel;
-    @FXML private Label elapsedTimeLabel;
+    @FXML
+    private Label currentStepLabel;
+    @FXML
+    private Label clustersFoundLabel;
+    @FXML
+    private Label tuplesClusteredLabel;
+    @FXML
+    private Label elapsedTimeLabel;
 
     // Area log
-    @FXML private TextArea logTextArea;
+    @FXML
+    private TextArea logTextArea;
 
     // Pulsanti
-    @FXML private Button btnCancel;
-    @FXML private Button btnViewResults;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnViewResults;
 
     // Footer di stato
-    @FXML private HBox statusFooter;
-    @FXML private Label statusMessageLabel;
+    @FXML
+    private HBox statusFooter;
+    @FXML
+    private Label statusMessageLabel;
 
     private Task<Void> clusteringTask;
     private Instant startTime;
@@ -60,8 +73,7 @@ public class ClusteringController {
     private QTMiner miner; // Conserva il miner per creare ClusteringResult
 
     /**
-     * Inizializza il controller.
-     * Chiamato automaticamente dopo il caricamento FXML.
+     * Inizializza il controller. Chiamato automaticamente dopo il caricamento FXML.
      */
     @FXML
     public void initialize() {
@@ -121,8 +133,7 @@ public class ClusteringController {
             @Override
             protected Void call() throws Exception {
                 // Recupera configurazione da ApplicationContext
-                ClusteringConfiguration config =
-                        ApplicationContext.getInstance().getCurrentConfiguration();
+                ClusteringConfiguration config = ApplicationContext.getInstance().getCurrentConfiguration();
 
                 if (config == null) {
                     throw new IllegalStateException("Configurazione clustering non trovata");
@@ -143,8 +154,7 @@ public class ClusteringController {
                 updateMessage("Caricamento dataset...");
                 updateProgress(10, 100);
 
-                DataImportService dataService =
-                        ApplicationContext.getInstance().getDataImportService();
+                DataImportService dataService = ApplicationContext.getInstance().getDataImportService();
 
                 Data data;
                 try {
@@ -154,21 +164,15 @@ public class ClusteringController {
                             yield dataService.loadHardcodedData();
                         }
                         case CSV -> {
-                            Platform.runLater(() -> appendLog("Caricamento dataset da CSV: " +
-                                    config.getCsvFilePath()));
+                            Platform.runLater(
+                                    () -> appendLog("Caricamento dataset da CSV: " + config.getCsvFilePath()));
                             yield dataService.loadDataFromCSV(config.getCsvFilePath());
                         }
                         case DATABASE -> {
-                            Platform.runLater(() -> appendLog("Connessione a database: " +
-                                    config.getDbHost() + ":" + config.getDbPort()));
-                            yield dataService.loadDataFromDatabase(
-                                    config.getDbTableName(),
-                                    config.getDbHost(),
-                                    config.getDbPort(),
-                                    config.getDbName(),
-                                    config.getDbUser(),
-                                    config.getDbPassword()
-                            );
+                            Platform.runLater(() -> appendLog(
+                                    "Connessione a database: " + config.getDbHost() + ":" + config.getDbPort()));
+                            yield dataService.loadDataFromDatabase(config.getDbTableName(), config.getDbHost(),
+                                    config.getDbPort(), config.getDbName(), config.getDbUser(), config.getDbPassword());
                         }
                     };
 
@@ -201,8 +205,8 @@ public class ClusteringController {
                     currentStepLabel.setText("Costruzione cluster...");
                 });
 
-                ClusteringService clusteringService =
-                        ApplicationContext.getInstance().getClusteringService();
+                // ClusteringService clusteringService;
+                // clusteringService = ApplicationContext.getInstance().getClusteringService();
 
                 long startTimeMs = System.currentTimeMillis();
 
@@ -240,7 +244,8 @@ public class ClusteringController {
                         // Mostra dettagli cluster (primi 5)
                         int i = 0;
                         for (Cluster cluster : clusterSet) {
-                            if (i >= 5) break;
+                            if (i >= 5)
+                                break;
                             appendLog("Cluster " + (i + 1) + ": " + cluster.getSize() + " tuple");
                             i++;
                         }
@@ -250,13 +255,8 @@ public class ClusteringController {
                     });
 
                     // Crea ClusteringResult
-                    ClusteringResult result = new ClusteringResult(
-                            clusterSet,
-                            data,
-                            config.getRadius(),
-                            executionTimeMs,
-                            miner
-                    );
+                    ClusteringResult result =
+                            new ClusteringResult(clusterSet, data, config.getRadius(), executionTimeMs, miner);
 
                     // Salva nel contesto
                     ApplicationContext.getInstance().setCurrentResult(result);
@@ -367,7 +367,7 @@ public class ClusteringController {
         appendLog("Motivo: " + clusteringTask.getException().getMessage());
 
         showError("Clustering Fallito",
-                 "Si è verificato un errore durante il clustering:\n" + clusteringTask.getException().getMessage());
+                "Si è verificato un errore durante il clustering:\n" + clusteringTask.getException().getMessage());
     }
 
     /**
@@ -423,15 +423,14 @@ public class ClusteringController {
 
         } catch (IOException e) {
             logger.error("Errore durante navigazione a vista results", e);
-            showError("Errore Navigazione",
-                    "Impossibile caricare la vista risultati:\n" + e.getMessage());
+            showError("Errore Navigazione", "Impossibile caricare la vista risultati:\n" + e.getMessage());
         }
     }
 
     /**
      * Mostra un dialogo di errore.
      *
-     * @param title   titolo del dialogo
+     * @param title titolo del dialogo
      * @param message messaggio di errore
      */
     private void showError(String title, String message) {

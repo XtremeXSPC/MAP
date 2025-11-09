@@ -34,35 +34,56 @@ public class ResultsController {
     private static final Logger logger = LoggerFactory.getLogger(ResultsController.class);
 
     // Intestazione e riepilogo
-    @FXML private Label summaryLabel;
+    @FXML
+    private Label summaryLabel;
 
     // Etichette statistiche
-    @FXML private Label totalClustersLabel;
-    @FXML private Label totalTuplesLabel;
-    @FXML private Label radiusLabel;
-    @FXML private Label avgClusterSizeLabel;
-    @FXML private Label largestClusterLabel;
-    @FXML private Label smallestClusterLabel;
+    @FXML
+    private Label totalClustersLabel;
+    @FXML
+    private Label totalTuplesLabel;
+    @FXML
+    private Label radiusLabel;
+    @FXML
+    private Label avgClusterSizeLabel;
+    @FXML
+    private Label largestClusterLabel;
+    @FXML
+    private Label smallestClusterLabel;
 
     // TreeView e dettagli
-    @FXML private TreeView<String> clusterTreeView;
-    @FXML private TextArea summaryTextArea;
-    @FXML private TextArea tuplesTextArea;
-    @FXML private TextArea statisticsTextArea;
+    @FXML
+    private TreeView<String> clusterTreeView;
+    @FXML
+    private TextArea summaryTextArea;
+    @FXML
+    private TextArea tuplesTextArea;
+    @FXML
+    private TextArea statisticsTextArea;
 
     // Pulsanti
-    @FXML private Button btnVisualize;
-    @FXML private Button btnStatistics;
-    @FXML private Button btnExport;
-    @FXML private Button btnSave;
-    @FXML private Button btnNewAnalysis;
-    @FXML private Button btnExpandAll;
-    @FXML private Button btnCollapseAll;
-    @FXML private Button btnCopyDetails;
+    @FXML
+    private Button btnVisualize;
+    @FXML
+    private Button btnStatistics;
+    @FXML
+    private Button btnExport;
+    @FXML
+    private Button btnSave;
+    @FXML
+    private Button btnNewAnalysis;
+    @FXML
+    private Button btnExpandAll;
+    @FXML
+    private Button btnCollapseAll;
+    @FXML
+    private Button btnCopyDetails;
 
     // Footer
-    @FXML private Label statusLabel;
-    @FXML private Label timestampLabel;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Label timestampLabel;
 
     // Dati clustering
     private ClusteringResult clusteringResult;
@@ -90,13 +111,11 @@ public class ResultsController {
      * Configura la TreeView con listener di selezione.
      */
     private void setupTreeView() {
-        clusterTreeView.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> {
-                if (newValue != null) {
-                    handleClusterSelection(newValue);
-                }
+        clusterTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleClusterSelection(newValue);
             }
-        );
+        });
     }
 
     /**
@@ -124,8 +143,7 @@ public class ResultsController {
 
         if (clusteringResult == null) {
             logger.error("Nessun risultato clustering disponibile");
-            showError("Dati Non Disponibili",
-                    "Nessun risultato di clustering trovato. Eseguire prima un clustering.");
+            showError("Dati Non Disponibili", "Nessun risultato di clustering trovato. Eseguire prima un clustering.");
             return;
         }
 
@@ -149,8 +167,10 @@ public class ResultsController {
 
         for (Cluster cluster : clusterList) {
             int size = cluster.getSize();
-            if (size > maxSize) maxSize = size;
-            if (size < minSize) minSize = size;
+            if (size > maxSize)
+                maxSize = size;
+            if (size < minSize)
+                minSize = size;
         }
 
         // Aggiorna etichette statistiche
@@ -170,8 +190,7 @@ public class ResultsController {
 
         for (int i = 0; i < clusterList.size(); i++) {
             Cluster cluster = clusterList.get(i);
-            TreeItem<String> clusterItem = new TreeItem<>("Cluster " + (i + 1) +
-                    " (" + cluster.getSize() + " tuple)");
+            TreeItem<String> clusterItem = new TreeItem<>("Cluster " + (i + 1) + " (" + cluster.getSize() + " tuple)");
 
             // Aggiungi tuple del cluster
             int[] tupleIds = cluster.getTupleIDs();
@@ -215,58 +234,59 @@ public class ResultsController {
                 int clusterIndex = Integer.parseInt(clusterNumStr) - 1;
                 Cluster cluster = clusterList.get(clusterIndex);
 
-            // Ottieni centroide
-            Tuple centroid = cluster.getCentroid();
+                // Ottieni centroide
+                Tuple centroid = cluster.getCentroid();
 
-            // Aggiorna la scheda riepilogo
-            summaryTextArea.setText(cluster.toString(data));
+                // Aggiorna la scheda riepilogo
+                summaryTextArea.setText(cluster.toString(data));
 
-            // Aggiorna la scheda tuple
-            StringBuilder tuples = new StringBuilder();
-            tuples.append("Tuple nel Cluster ").append(clusterIndex + 1).append("\n");
-            tuples.append("=".repeat(50)).append("\n\n");
+                // Aggiorna la scheda tuple
+                StringBuilder tuples = new StringBuilder();
+                tuples.append("Tuple nel Cluster ").append(clusterIndex + 1).append("\n");
+                tuples.append("=".repeat(50)).append("\n\n");
 
-            int[] tupleIds = cluster.getTupleIDs();
-            for (int i = 0; i < tupleIds.length; i++) {
-                int tupleId = tupleIds[i];
-                Tuple tuple = data.getItemSet(tupleId);
-                double distance = centroid.getDistance(tuple);
+                int[] tupleIds = cluster.getTupleIDs();
+                for (int i = 0; i < tupleIds.length; i++) {
+                    int tupleId = tupleIds[i];
+                    Tuple tuple = data.getItemSet(tupleId);
+                    double distance = centroid.getDistance(tuple);
 
-                tuples.append(String.format("%d. Tupla %d - distanza: %.3f\n",
-                        i + 1, tupleId, distance));
-                tuples.append("   ").append(tuple.toString()).append("\n\n");
-            }
+                    tuples.append(String.format("%d. Tupla %d - distanza: %.3f\n", i + 1, tupleId, distance));
+                    tuples.append("   ").append(tuple.toString()).append("\n\n");
+                }
 
-            tuplesTextArea.setText(tuples.toString());
+                tuplesTextArea.setText(tuples.toString());
 
-            // Aggiorna la scheda statistiche
-            StringBuilder stats = new StringBuilder();
-            stats.append("Statistiche Cluster ").append(clusterIndex + 1).append("\n");
-            stats.append("=".repeat(50)).append("\n\n");
-            stats.append("Numero di tuple: ").append(cluster.getSize()).append("\n");
-            stats.append("Centroide:\n  ").append(centroid.toString()).append("\n\n");
+                // Aggiorna la scheda statistiche
+                StringBuilder stats = new StringBuilder();
+                stats.append("Statistiche Cluster ").append(clusterIndex + 1).append("\n");
+                stats.append("=".repeat(50)).append("\n\n");
+                stats.append("Numero di tuple: ").append(cluster.getSize()).append("\n");
+                stats.append("Centroide:\n  ").append(centroid.toString()).append("\n\n");
 
-            // Calcola distanze
-            double minDist = Double.MAX_VALUE;
-            double maxDist = 0;
-            double sumDist = 0;
+                // Calcola distanze
+                double minDist = Double.MAX_VALUE;
+                double maxDist = 0;
+                double sumDist = 0;
 
-            for (int tupleId : tupleIds) {
-                double dist = centroid.getDistance(data.getItemSet(tupleId));
-                if (dist < minDist) minDist = dist;
-                if (dist > maxDist) maxDist = dist;
-                sumDist += dist;
-            }
+                for (int tupleId : tupleIds) {
+                    double dist = centroid.getDistance(data.getItemSet(tupleId));
+                    if (dist < minDist)
+                        minDist = dist;
+                    if (dist > maxDist)
+                        maxDist = dist;
+                    sumDist += dist;
+                }
 
-            double avgDist = sumDist / tupleIds.length;
+                double avgDist = sumDist / tupleIds.length;
 
-            stats.append(String.format("Distanza minima: %.3f\n", minDist));
-            stats.append(String.format("Distanza massima: %.3f\n", maxDist));
-            stats.append(String.format("Distanza media: %.3f\n", avgDist));
+                stats.append(String.format("Distanza minima: %.3f\n", minDist));
+                stats.append(String.format("Distanza massima: %.3f\n", maxDist));
+                stats.append(String.format("Distanza media: %.3f\n", avgDist));
 
-            statisticsTextArea.setText(stats.toString());
+                statisticsTextArea.setText(stats.toString());
 
-            statusLabel.setText("Visualizzazione dettagli per Cluster " + (clusterIndex + 1));
+                statusLabel.setText("Visualizzazione dettagli per Cluster " + (clusterIndex + 1));
 
             } catch (NumberFormatException e) {
                 logger.error("Errore parsing numero cluster da: {}", value, e);
@@ -290,8 +310,8 @@ public class ResultsController {
                 details.append("Valori attributi:\n");
 
                 for (int i = 0; i < data.getNumberOfExplanatoryAttributes(); i++) {
-                    details.append("  - ").append(data.getExplanatoryAttribute(i).getName())
-                           .append(": ").append(tuple.get(i).getValue()).append("\n");
+                    details.append("  - ").append(data.getExplanatoryAttribute(i).getName()).append(": ")
+                            .append(tuple.get(i).getValue()).append("\n");
                 }
 
                 // Trova il cluster di appartenenza
@@ -389,8 +409,7 @@ public class ResultsController {
         logger.info("Statistiche cliccato");
 
         if (clusteringResult == null) {
-            showError("Dati Non Disponibili",
-                "Nessun risultato di clustering disponibile per le statistiche.");
+            showError("Dati Non Disponibili", "Nessun risultato di clustering disponibile per le statistiche.");
             return;
         }
 
@@ -404,7 +423,7 @@ public class ResultsController {
         } catch (Exception e) {
             logger.error("Errore durante apertura statistiche", e);
             showError("Errore Statistiche",
-                "Si è verificato un errore durante l'apertura delle statistiche: " + e.getMessage());
+                    "Si è verificato un errore durante l'apertura delle statistiche: " + e.getMessage());
         }
     }
 
@@ -415,8 +434,7 @@ public class ResultsController {
         logger.info("Visualizza cliccato");
 
         if (clusteringResult == null) {
-            showError("Dati Non Disponibili",
-                "Nessun risultato di clustering disponibile per la visualizzazione.");
+            showError("Dati Non Disponibili", "Nessun risultato di clustering disponibile per la visualizzazione.");
             return;
         }
 
@@ -426,8 +444,8 @@ public class ResultsController {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Visualizzazione Non Disponibile");
                 alert.setHeaderText("Dataset Insufficiente");
-                alert.setContentText("Sono necessari almeno 2 attributi per la visualizzazione 2D.\n" +
-                    "Il dataset corrente ha solo " + data.getNumberOfExplanatoryAttributes() + " attributo/i.");
+                alert.setContentText("Sono necessari almeno 2 attributi per la visualizzazione 2D.\n"
+                        + "Il dataset corrente ha solo " + data.getNumberOfExplanatoryAttributes() + " attributo/i.");
                 alert.showAndWait();
                 return;
             }
@@ -442,7 +460,7 @@ public class ResultsController {
         } catch (Exception e) {
             logger.error("Errore durante apertura visualizzazione", e);
             showError("Errore Visualizzazione",
-                "Si è verificato un errore durante l'apertura della visualizzazione: " + e.getMessage());
+                    "Si è verificato un errore durante l'apertura della visualizzazione: " + e.getMessage());
         }
     }
 
@@ -453,8 +471,7 @@ public class ResultsController {
         logger.info("Esporta cliccato");
 
         if (clusteringResult == null) {
-            showError("Dati Non Disponibili",
-                "Nessun risultato di clustering disponibile per l'esportazione.");
+            showError("Dati Non Disponibili", "Nessun risultato di clustering disponibile per l'esportazione.");
             return;
         }
 
@@ -473,14 +490,11 @@ public class ResultsController {
 
                 // Imposta estensione file
                 if (format.equals("CSV")) {
-                    fileChooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("File CSV", "*.csv"));
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File CSV", "*.csv"));
                 } else if (format.equals("TXT (Report)")) {
-                    fileChooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("File TXT", "*.txt"));
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File TXT", "*.txt"));
                 } else if (format.equals("ZIP (Completo)")) {
-                    fileChooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("File ZIP", "*.zip"));
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File ZIP", "*.zip"));
                 }
 
                 File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
@@ -490,8 +504,7 @@ public class ResultsController {
                 }
             } catch (Exception e) {
                 logger.error("Errore durante esportazione", e);
-                showError("Errore Esportazione",
-                    "Errore durante l'esportazione: " + e.getMessage());
+                showError("Errore Esportazione", "Errore durante l'esportazione: " + e.getMessage());
             }
         });
     }
@@ -508,21 +521,18 @@ public class ResultsController {
             if (format.equals("CSV")) {
                 exportService.exportToCsv(file.getAbsolutePath(), clusteringResult);
                 statusLabel.setText("Esportazione CSV completata");
-                showInfo("Esportazione Completata",
-                    "Risultati esportati in formato CSV:\n" + file.getAbsolutePath());
+                showInfo("Esportazione Completata", "Risultati esportati in formato CSV:\n" + file.getAbsolutePath());
 
             } else if (format.equals("TXT (Report)")) {
                 exportService.exportToTextReport(file.getAbsolutePath(), clusteringResult);
                 statusLabel.setText("Esportazione report TXT completata");
-                showInfo("Esportazione Completata",
-                    "Report esportato in formato TXT:\n" + file.getAbsolutePath());
+                showInfo("Esportazione Completata", "Report esportato in formato TXT:\n" + file.getAbsolutePath());
 
             } else if (format.equals("ZIP (Completo)")) {
                 exportService.exportToZip(file.getAbsolutePath(), clusteringResult);
                 statusLabel.setText("Esportazione pacchetto ZIP completata");
-                showInfo("Esportazione Completata",
-                    "Pacchetto completo esportato:\n" + file.getAbsolutePath() +
-                    "\n\nContenuto: .dmp, .csv, report.txt, README.txt");
+                showInfo("Esportazione Completata", "Pacchetto completo esportato:\n" + file.getAbsolutePath()
+                        + "\n\nContenuto: .dmp, .csv, report.txt, README.txt");
             }
 
             logger.info("Esportazione completata: {} in {}", format, file.getAbsolutePath());
@@ -559,8 +569,7 @@ public class ResultsController {
         logger.info("Salva cliccato");
 
         if (clusteringResult == null) {
-            showError("Dati Non Disponibili",
-                "Nessun risultato di clustering disponibile per il salvataggio.");
+            showError("Dati Non Disponibili", "Nessun risultato di clustering disponibile per il salvataggio.");
             return;
         }
 
@@ -568,19 +577,23 @@ public class ResultsController {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salva Clustering");
             fileChooser.setInitialFileName(getDefaultSaveFileName());
-            fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
 
             File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
 
             if (file != null) {
+                // Rimuovi estensione .dmp dal percorso (QTMiner la aggiunge automaticamente)
+                String filePath = file.getAbsolutePath();
+                if (filePath.endsWith(".dmp")) {
+                    filePath = filePath.substring(0, filePath.length() - 4);
+                }
+
                 ClusteringService clusteringService = ApplicationContext.getInstance().getClusteringService();
-                clusteringService.saveClusteringResults(file.getAbsolutePath(), clusteringResult.getMiner());
+                clusteringService.saveClusteringResults(filePath, clusteringResult.getMiner());
 
                 statusLabel.setText("Clustering salvato in: " + file.getName());
-                showInfo("Salvataggio Completato",
-                    "Clustering salvato con successo in:\n" + file.getAbsolutePath() +
-                    "\n\nPuoi ricaricare questo file usando File > Apri");
+                showInfo("Salvataggio Completato", "Clustering salvato con successo in:\n" + file.getAbsolutePath()
+                        + "\n\nPuoi ricaricare questo file usando File > Apri");
 
                 logger.info("Clustering salvato in: {}", file.getAbsolutePath());
             }
@@ -594,11 +607,12 @@ public class ResultsController {
 
     /**
      * Genera il nome file predefinito per il salvataggio.
+     * Nota: Non include l'estensione .dmp perché viene aggiunta automaticamente dal FileChooser.
      */
     private String getDefaultSaveFileName() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
         String timestamp = LocalDateTime.now().format(formatter);
-        return "clustering_" + timestamp + ".dmp";
+        return "clustering_" + timestamp;
     }
 
     /**
@@ -649,8 +663,7 @@ public class ResultsController {
     private void navigateToHome() {
         try {
             // Carica la vista home e rimpiazza la scena corrente
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    getClass().getResource("/views/main.fxml"));
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/main.fxml"));
             javafx.scene.Parent root = loader.load();
 
             javafx.scene.Scene currentScene = statusLabel.getScene();

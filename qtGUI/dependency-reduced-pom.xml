@@ -53,10 +53,51 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <filters>
+                <filter>
+                  <artifact>ch.qos.logback:*</artifact>
+                  <excludes>
+                    <exclude>module-info.class</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.slf4j:*</artifact>
+                  <excludes>
+                    <exclude>module-info.class</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.mysql:*</artifact>
+                  <excludes>
+                    <exclude>module-info.class</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <transformers>
                 <transformer>
-                  <mainClass>gui.MainApp</mainClass>
+                  <mainClass>gui.Launcher</mainClass>
+                  <manifestEntries>
+                    <Add-Opens>javafx.graphics/javafx.css=ALL-UNNAMED</Add-Opens>
+                    <Add-Opens>javafx.graphics/com.sun.javafx.css=ALL-UNNAMED</Add-Opens>
+                    <Add-Opens>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</Add-Opens>
+                    <Add-Exports>javafx.graphics/com.sun.javafx.css=ALL-UNNAMED</Add-Exports>
+                    <Add-Exports>javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</Add-Exports>
+                    <Multi-Release>true</Multi-Release>
+                  </manifestEntries>
                 </transformer>
+                <transformer />
+                <transformer>
+                  <addHeader>false</addHeader>
+                </transformer>
+                <transformer />
               </transformers>
             </configuration>
           </execution>

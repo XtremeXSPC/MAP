@@ -27,9 +27,8 @@ import java.sql.SQLException;
  *   <li>Database MySQL</li>
  * </ul>
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 2
  */
 public class DataImportService {
 
@@ -39,9 +38,7 @@ public class DataImportService {
      * Enum per i tipi di sorgente dati supportati.
      */
     public enum DataSource {
-        HARDCODED,
-        CSV,
-        DATABASE
+        HARDCODED, CSV, DATABASE
     }
 
     /**
@@ -55,8 +52,7 @@ public class DataImportService {
 
         try {
             Data data = new Data();
-            logger.info("Dataset hardcoded caricato: {} tuple, {} attributi",
-                    data.getNumberOfExamples(),
+            logger.info("Dataset hardcoded caricato: {} tuple, {} attributi", data.getNumberOfExamples(),
                     data.getNumberOfExplanatoryAttributes());
             return data;
 
@@ -100,9 +96,8 @@ public class DataImportService {
             // TODO: Implementare parsing CSV completo
             // Per ora lanciamo eccezione NotImplemented
             logger.warn("Import CSV non ancora completamente implementato");
-            throw new UnsupportedOperationException(
-                    "Import CSV sarà implementato in una versione futura. " +
-                    "Usa il dataset hardcoded o database per ora.");
+            throw new UnsupportedOperationException("Import CSV sarà implementato in una versione futura. "
+                    + "Usa il dataset hardcoded o database per ora.");
 
         } catch (FileNotFoundException e) {
             logger.error("File CSV non trovato: {}", filePath, e);
@@ -127,16 +122,14 @@ public class DataImportService {
      * @throws EmptyDatasetException se la tabella è vuota
      * @throws SQLException per errori SQL generici
      */
-    public Data loadDataFromDatabase(String tableName, String dbHost, int dbPort,
-                                     String dbName, String dbUser, String dbPassword)
-            throws DatabaseConnectionException, EmptyDatasetException, SQLException {
+    public Data loadDataFromDatabase(String tableName, String dbHost, int dbPort, String dbName, String dbUser,
+            String dbPassword) throws DatabaseConnectionException, EmptyDatasetException, SQLException {
 
         if (tableName == null || tableName.trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome tabella non può essere vuoto");
         }
 
-        logger.info("Caricamento dataset da database: {}:{}/{} - tabella: {}",
-                dbHost, dbPort, dbName, tableName);
+        logger.info("Caricamento dataset da database: {}:{}/{} - tabella: {}", dbHost, dbPort, dbName, tableName);
 
         DbAccess db = null;
 
@@ -150,8 +143,7 @@ public class DataImportService {
             // IMPORTANTE: Usa la connessione gia creata, non ne crea una nuova
             Data data = new Data(db, tableName);
 
-            logger.info("Dataset caricato dal database: {} tuple, {} attributi",
-                    data.getNumberOfExamples(),
+            logger.info("Dataset caricato dal database: {} tuple, {} attributi", data.getNumberOfExamples(),
                     data.getNumberOfExplanatoryAttributes());
 
             return data;
@@ -236,8 +228,7 @@ public class DataImportService {
      * @param dbPassword password
      * @return true se la connessione ha successo
      */
-    public boolean testDatabaseConnection(String dbHost, int dbPort, String dbName,
-                                         String dbUser, String dbPassword) {
+    public boolean testDatabaseConnection(String dbHost, int dbPort, String dbName, String dbUser, String dbPassword) {
         logger.info("Test connessione database: {}:{}/{}", dbHost, dbPort, dbName);
 
         DbAccess db = null;

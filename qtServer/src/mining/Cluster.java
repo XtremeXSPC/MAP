@@ -7,9 +7,9 @@ import java.util.Set;
 import data.*;
 
 /**
- * Classe che modella un cluster. Implementa Iterable per supportare enhanced for-loop e
- * Comparable per ordinamento automatico. Implementa Serializable per permettere la
- * serializzazione binaria.
+ * Classe che modella un cluster.
+ * Implementa Iterable per supportare enhanced for-loop e Comparable per ordinamento
+ * automatico. Implementa Serializable per permettere la serializzazione binaria.
  */
 public class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializable {
     private Tuple centroid;
@@ -107,16 +107,16 @@ public class Cluster implements Iterable<Integer>, Comparable<Cluster>, Serializ
     }
 
     /**
-     * Confronta questo cluster con un altro in base alla popolosità (dimensione). Implementa
-     * l'interfaccia Comparable per ordinamento automatico in TreeSet.
+     * Confronta questo cluster con un altro in base alla popolosità (dimensione). 
+     * Implementa l'interfaccia Comparable per ordinamento automatico in TreeSet.
      *
      * <p>
-     * Ordine crescente: cluster più piccoli prima dei più grandi.
+     *   Ordine crescente: cluster più piccoli prima dei più grandi.
      * </p>
      * <p>
-     * In caso di parità di dimensione, viene utilizzato il confronto tra hashCode per
-     * garantire la consistenza dell'ordinamento. Questo non implica che i cluster siano
-     * considerati uguali, ma solo che l'ordinamento è deterministico.
+     *   In caso di parità di dimensione, viene utilizzato il confronto tra hashCode per
+     *   garantire la consistenza dell'ordinamento. Questo non implica che i cluster siano
+     *   considerati uguali, ma solo che l'ordinamento è deterministico.
      * </p>
      *
      * @param other cluster da confrontare

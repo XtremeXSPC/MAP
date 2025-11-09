@@ -1,14 +1,15 @@
 /**
- * QT Clustering GUI Module.
- * JavaFX GUI for Quality Threshold Clustering Algorithm.
+ * Modulo GUI per QT Clustering. Interfaccia grafica JavaFX per l'algoritmo di Quality
+ * Threshold Clustering.
  */
 module qtGUI {
-    // JavaFX modules
+    // Moduli JavaFX
+    requires transitive javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;
-    requires javafx.swing;  // Per SwingNode integration
+    requires javafx.swing; // Per l'integrazione con SwingNode
 
-    // Charting library
+    // Libreria per grafici
     requires org.knowm.xchart;
 
     // Logging
@@ -16,14 +17,16 @@ module qtGUI {
     requires ch.qos.logback.classic;
     requires ch.qos.logback.core;
 
-    // UI enhancements
+    // Miglioramenti UI
     requires org.controlsfx.controls;
 
-    // Java base modules
+    // Moduli base Java
     requires java.sql;
-    requires java.desktop;  // Per Swing (JPanel, SwingUtilities, etc.)
+    requires transitive java.desktop; // Per Swing (JPanel, SwingUtilities, ecc.)
 
-    // Export packages for reflection (required by FXML)
+    // Esportazione pacchetti principali
+    exports data;
+    exports mining;
     exports gui;
     exports gui.controllers;
     exports gui.services;
@@ -32,7 +35,7 @@ module qtGUI {
     exports gui.charts;
     exports gui.dialogs;
 
-    // Open packages to JavaFX for FXML controller injection
+    // Apertura pacchetti a JavaFX per l'iniezione dei controller FXML
     opens gui to javafx.fxml;
     opens gui.controllers to javafx.fxml;
     opens gui.dialogs to javafx.fxml;

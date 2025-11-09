@@ -10,8 +10,8 @@ import data.Data;
 import database.*;
 
 /**
- * Thread dedicato alla gestione di un singolo client (QT08). Gestisce il protocollo di
- * comunicazione e le richieste QT.
+ * Thread dedicato alla gestione di un singolo client (QT08). 
+ * Gestisce il protocollo di comunicazione e le richieste QT.
  *
  * @author Appice A.
  * @version 1.0
@@ -215,7 +215,7 @@ public class ServerOneClient extends Thread {
             System.out.println("  → Salvataggio cluster in: " + fileName + ".dmp");
 
             // Serializza
-            qtMiner.save(fileName);
+            qtMiner.saveComplete(fileName);
 
             System.out.println("  ✓ Cluster salvati");
 
@@ -261,7 +261,7 @@ public class ServerOneClient extends Thread {
             // 3. Serializza
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String fileName = tableName + "_" + timestamp;
-            qtMiner.save(fileName);
+            qtMiner.saveComplete(fileName);
             System.out.println("    [3/3] Cluster salvati in: " + fileName + ".dmp");
 
             // Risposta

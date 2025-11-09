@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Applicazione JavaFX principale per la GUI QT Clustering.
+ * Applicazione JavaFX principale per la GUI QT Clustering. 
  * Punto di ingresso per l'interfaccia grafica utente.
  */
 public class MainApp extends Application {
