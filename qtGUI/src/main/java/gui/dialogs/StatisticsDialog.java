@@ -361,7 +361,12 @@ public class StatisticsDialog {
                 data -> new javafx.beans.property.SimpleStringProperty(data.getValue().centroidPreview));
         centroidCol.setPrefWidth(250);
 
-        tableView.getColumns().addAll(idCol, sizeCol, avgDistCol, minDistCol, maxDistCol, centroidCol);
+        tableView.getColumns().add(idCol);
+        tableView.getColumns().add(sizeCol);
+        tableView.getColumns().add(avgDistCol);
+        tableView.getColumns().add(minDistCol);
+        tableView.getColumns().add(maxDistCol);
+        tableView.getColumns().add(centroidCol);
 
         // Popola tabella
         Data data = result.getData();

@@ -21,11 +21,12 @@ module qtGUI {
     requires org.controlsfx.controls;
 
     // Moduli base Java
-    requires java.sql;
+    requires transitive java.sql;
     requires transitive java.desktop; // Per Swing (JPanel, SwingUtilities, ecc.)
 
     // Esportazione pacchetti principali
     exports data;
+    exports database;
     exports mining;
     exports gui;
     exports gui.controllers;
