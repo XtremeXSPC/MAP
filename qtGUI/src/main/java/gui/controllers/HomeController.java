@@ -29,34 +29,54 @@ public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     // Selezione dataset
-    @FXML private ComboBox<String> dataSourceComboBox;
-    @FXML private HBox csvFileSection;
-    @FXML private TextField csvFilePathField;
-    @FXML private Button btnBrowseFile;
-    @FXML private VBox databaseSection;
-    @FXML private TextField dbHostField;
-    @FXML private TextField dbPortField;
-    @FXML private TextField dbNameField;
-    @FXML private TextField dbUserField;
-    @FXML private PasswordField dbPasswordField;
-    @FXML private TextField tableNameField;
-    @FXML private Button btnPreviewDataset;
+    @FXML
+    private ComboBox<String> dataSourceComboBox;
+    @FXML
+    private HBox csvFileSection;
+    @FXML
+    private TextField csvFilePathField;
+    @FXML
+    private Button btnBrowseFile;
+    @FXML
+    private VBox databaseSection;
+    @FXML
+    private TextField dbHostField;
+    @FXML
+    private TextField dbPortField;
+    @FXML
+    private TextField dbNameField;
+    @FXML
+    private TextField dbUserField;
+    @FXML
+    private PasswordField dbPasswordField;
+    @FXML
+    private TextField tableNameField;
+    @FXML
+    private Button btnPreviewDataset;
 
     // Parametri clustering
-    @FXML private TextField radiusField;
-    @FXML private Label radiusValidationLabel;
+    @FXML
+    private TextField radiusField;
+    @FXML
+    private Label radiusValidationLabel;
 
     // Opzioni
-    @FXML private CheckBox enableCachingCheckBox;
-    @FXML private CheckBox verboseLoggingCheckBox;
+    @FXML
+    private CheckBox enableCachingCheckBox;
+    @FXML
+    private CheckBox verboseLoggingCheckBox;
 
     // Pulsanti azione
-    @FXML private Button btnCancel;
-    @FXML private Button btnStartClustering;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnStartClustering;
 
     // Validazione
-    @FXML private HBox validationSummary;
-    @FXML private Label validationMessageLabel;
+    @FXML
+    private HBox validationSummary;
+    @FXML
+    private Label validationMessageLabel;
 
     private File selectedCsvFile;
 
@@ -82,12 +102,10 @@ public class HomeController {
      * Configura il comportamento della combo box per la selezione della sorgente dati.
      */
     private void setupDataSourceSelection() {
-        dataSourceComboBox.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> {
-                handleDataSourceChange(newValue);
-                validateForm();
-            }
-        );
+        dataSourceComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            handleDataSourceChange(newValue);
+            validateForm();
+        });
     }
 
     /**
@@ -232,9 +250,7 @@ public class HomeController {
     private void handleBrowseFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleziona File CSV");
-        fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("File CSV", "*.csv")
-        );
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File CSV", "*.csv"));
 
         File file = fileChooser.showOpenDialog(btnBrowseFile.getScene().getWindow());
         if (file != null) {
@@ -253,7 +269,8 @@ public class HomeController {
 
         String dataSourceStr = dataSourceComboBox.getValue();
         if (dataSourceStr == null) {
-            showError("Sorgente Dati Non Selezionata", "Seleziona una sorgente dati prima di visualizzare l'anteprima.");
+            showError("Sorgente Dati Non Selezionata",
+                    "Seleziona una sorgente dati prima di visualizzare l'anteprima.");
             return;
         }
 
@@ -274,7 +291,8 @@ public class HomeController {
             } else if (dataSourceStr.contains("Database")) {
                 // Valida parametri database
                 String dbHost = dbHostField.getText() != null && !dbHostField.getText().trim().isEmpty()
-                        ? dbHostField.getText().trim() : "localhost";
+                        ? dbHostField.getText().trim()
+                        : "localhost";
                 int dbPort;
                 try {
                     dbPort = Integer.parseInt(dbPortField.getText().trim());
@@ -282,11 +300,14 @@ public class HomeController {
                     dbPort = 3306;
                 }
                 String dbName = dbNameField.getText() != null && !dbNameField.getText().trim().isEmpty()
-                        ? dbNameField.getText().trim() : "MapDB";
+                        ? dbNameField.getText().trim()
+                        : "MapDB";
                 String dbUser = dbUserField.getText() != null && !dbUserField.getText().trim().isEmpty()
-                        ? dbUserField.getText().trim() : "MapUser";
+                        ? dbUserField.getText().trim()
+                        : "MapUser";
                 String dbPassword = dbPasswordField.getText() != null && !dbPasswordField.getText().isEmpty()
-                        ? dbPasswordField.getText() : "map";
+                        ? dbPasswordField.getText()
+                        : "map";
                 String tableName = tableNameField.getText();
 
                 if (tableName == null || tableName.trim().isEmpty()) {
@@ -295,8 +316,8 @@ public class HomeController {
                 }
 
                 // Connetti al database
-                logger.info("Connessione database per preview: {}:{}/{} con utente: {}",
-                           dbHost, dbPort, dbName, dbUser);
+                logger.info("Connessione database per preview: {}:{}/{} con utente: {}", dbHost, dbPort, dbName,
+                        dbUser);
 
                 db = new DbAccess(dbHost, String.valueOf(dbPort), dbName, dbUser, dbPassword);
                 data = new Data(db, tableName.trim());
@@ -421,7 +442,8 @@ public class HomeController {
             // Imposta parametri Database
             if (dataSource == DataSource.DATABASE) {
                 config.setDbHost(dbHostField.getText() != null && !dbHostField.getText().trim().isEmpty()
-                        ? dbHostField.getText().trim() : "localhost");
+                        ? dbHostField.getText().trim()
+                        : "localhost");
 
                 try {
                     config.setDbPort(Integer.parseInt(dbPortField.getText().trim()));
@@ -430,13 +452,16 @@ public class HomeController {
                 }
 
                 config.setDbName(dbNameField.getText() != null && !dbNameField.getText().trim().isEmpty()
-                        ? dbNameField.getText().trim() : "MapDB");
+                        ? dbNameField.getText().trim()
+                        : "MapDB");
 
                 config.setDbUser(dbUserField.getText() != null && !dbUserField.getText().trim().isEmpty()
-                        ? dbUserField.getText().trim() : "MapUser");
+                        ? dbUserField.getText().trim()
+                        : "MapUser");
 
                 config.setDbPassword(dbPasswordField.getText() != null && !dbPasswordField.getText().isEmpty()
-                        ? dbPasswordField.getText() : "map");
+                        ? dbPasswordField.getText()
+                        : "map");
 
                 config.setDbTableName(tableNameField.getText().trim());
             }
@@ -468,8 +493,7 @@ public class HomeController {
 
         } catch (IOException e) {
             logger.error("Errore durante navigazione a vista clustering", e);
-            showError("Errore Navigazione",
-                    "Impossibile caricare la vista clustering:\n" + e.getMessage());
+            showError("Errore Navigazione", "Impossibile caricare la vista clustering:\n" + e.getMessage());
         }
     }
 

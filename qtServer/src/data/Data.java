@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Classe che modella l'insieme di transazioni (tuple). Supporta caricamento da: hardcoded
- * data, file CSV, database MySQL.
+ * Classe che modella l'insieme di transazioni (tuple). 
+ * Supporta caricamento da: hardcoded data, file CSV, database MySQL.
  */
-public class Data {
+public class Data implements Serializable {
+    private static final long serialVersionUID = 1L;
     private List<Example> data;
     private int numberOfExamples;
     private List<Attribute> explanatorySet;
@@ -87,8 +88,7 @@ public class Data {
      * @throws EmptySetException se la tabella e vuota
      * @throws NoValueException se valori aggregati non trovati
      */
-    public Data(DbAccess db, String tableName)
-            throws SQLException, EmptySetException, NoValueException {
+    public Data(DbAccess db, String tableName) throws SQLException, EmptySetException, NoValueException {
         if (db == null) {
             throw new IllegalArgumentException("DbAccess non puo essere null");
         }

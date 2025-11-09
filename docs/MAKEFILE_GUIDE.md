@@ -31,6 +31,7 @@ make clean
 | `make rebuild` | Pulisce tutto e ricompila da zero |
 
 **Esempio:**
+
 ```bash
 # Compila solo il server
 make server
@@ -48,11 +49,13 @@ make rebuild
 | `make server-jar` | Crea solo qtServer.jar       | `qtServer.jar`  |
 
 **I JAR includono:**
+
 - Tutte le classi compilate
 - Manifest con la main class corretta
 - Sono pronti per essere distribuiti ed eseguiti
 
 **Esempio:**
+
 ```bash
 # Crea entrambi i JAR
 make jar
@@ -90,6 +93,7 @@ make run-client-jar IP=localhost PORT=8080
 ```
 
 **Oppure direttamente con java:**
+
 ```bash
 # Server
 java -jar qtServer.jar 8080
@@ -108,6 +112,7 @@ java -jar qtClient.jar localhost 8080
 | `make clean-jar`    | Rimuove solo i file JAR              |
 
 **Esempio:**
+
 ```bash
 # Pulizia completa
 make clean
@@ -175,11 +180,13 @@ scp qtClient.jar user@client:/path/
 ### Scenario 4: Test su rete locale
 
 **Terminale 1 (Server):**
+
 ```bash
 make run-server PORT=9999
 ```
 
 **Terminale 2 (Client):**
+
 ```bash
 make run-client IP=192.168.1.10 PORT=9999
 ```
@@ -235,7 +242,7 @@ make run-client IP=10.0.0.5 PORT=8888
 
 ## 📂 Struttura Directory
 
-```
+```path
 MAP/
 ├── Makefile                 # Il Makefile principale
 ├── qtClient.jar             # JAR client (dopo make jar)
@@ -268,6 +275,7 @@ MAP/
 **Problema:** Java non installato o non nel PATH
 
 **Soluzione:**
+
 ```bash
 # Verifica installazione Java
 java -version
@@ -285,6 +293,7 @@ export PATH="/usr/local/opt/openjdk/bin:$PATH"
 **Problema:** File sorgente modificati con errori
 
 **Soluzione:**
+
 ```bash
 # Pulisci e ricompila
 make clean
@@ -313,6 +322,7 @@ cat META-INF/MANIFEST.MF
 **Problema:** Porta già in uso o firewall
 
 **Soluzione:**
+
 ```bash
 # Verifica porta libera
 lsof -i :8080
@@ -364,11 +374,13 @@ make jar && java -jar qtServer.jar --help
 ### 4. Output Colorato
 
 Il Makefile usa codici ANSI per colorare l'output:
+
 - 🔵 **Blu**: Operazioni in corso
 - 🟢 **Verde**: Successo
 - 🟡 **Giallo**: Warnings o info
 
 Per disabilitare i colori:
+
 ```bash
 make all 2>&1 | cat
 ```
@@ -404,9 +416,9 @@ make -n all
 
 ## 🔗 Link Utili
 
-- **Java Documentation:** https://docs.oracle.com/javase/8/docs/
-- **Make Manual:** https://www.gnu.org/software/make/manual/
-- **Java JAR Guide:** https://docs.oracle.com/javase/tutorial/deployment/jar/
+- **Java Documentation:** <https://docs.oracle.com/javase/8/docs/>
+- **Make Manual:** <https://www.gnu.org/software/make/manual/>
+- **Java JAR Guide:** <https://docs.oracle.com/javase/tutorial/deployment/jar/>
 
 ---
 
@@ -415,11 +427,13 @@ make -n all
 ### Best Practices
 
 1. **Sempre `make clean` prima di commit importanti**
+
    ```bash
    make clean && git add -A && git commit -m "..."
    ```
 
 2. **Testa i JAR prima della distribuzione**
+
    ```bash
    make jar
    java -jar qtServer.jar 8080 &
@@ -427,6 +441,7 @@ make -n all
    ```
 
 3. **Usa `make info` per verificare lo stato**
+
    ```bash
    make info
    ```

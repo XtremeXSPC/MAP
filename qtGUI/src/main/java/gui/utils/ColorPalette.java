@@ -6,9 +6,8 @@ import java.awt.Color;
  * Utility per generare palette di colori distinguibili per la visualizzazione dei cluster.
  * Fornisce colori predefiniti e generazione dinamica per numero arbitrario di cluster.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 3
  */
 public class ColorPalette {
 
@@ -16,19 +15,18 @@ public class ColorPalette {
      * Palette predefinita di 12 colori distinguibili.
      * Basata sulla palette ColorBrewer "Paired" per massima distinguibilità.
      */
-    private static final Color[] DEFAULT_PALETTE = {
-        new Color(31, 120, 180),   // Blu
-        new Color(255, 127, 0),    // Arancione
-        new Color(51, 160, 44),    // Verde
-        new Color(227, 26, 28),    // Rosso
-        new Color(166, 206, 227),  // Blu chiaro
-        new Color(253, 191, 111),  // Arancione chiaro
-        new Color(178, 223, 138),  // Verde chiaro
-        new Color(251, 154, 153),  // Rosa
-        new Color(106, 61, 154),   // Viola
-        new Color(202, 178, 214),  // Viola chiaro
-        new Color(255, 255, 153),  // Giallo
-        new Color(177, 89, 40)     // Marrone
+    private static final Color[] DEFAULT_PALETTE = { new Color(31, 120, 180), // Blu
+            new Color(255, 127, 0), // Arancione
+            new Color(51, 160, 44), // Verde
+            new Color(227, 26, 28), // Rosso
+            new Color(166, 206, 227), // Blu chiaro
+            new Color(253, 191, 111), // Arancione chiaro
+            new Color(178, 223, 138), // Verde chiaro
+            new Color(251, 154, 153), // Rosa
+            new Color(106, 61, 154), // Viola
+            new Color(202, 178, 214), // Viola chiaro
+            new Color(255, 255, 153), // Giallo
+            new Color(177, 89, 40) // Marrone
     };
 
     /**
@@ -94,8 +92,7 @@ public class ColorPalette {
      * @return stringa esadecimale
      */
     public static String toHexString(Color color) {
-        return String.format("#%02X%02X%02X",
-            color.getRed(), color.getGreen(), color.getBlue());
+        return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
     }
 
     /**
@@ -105,12 +102,8 @@ public class ColorPalette {
      * @return colore JavaFX
      */
     public static javafx.scene.paint.Color toJavaFX(Color awtColor) {
-        return javafx.scene.paint.Color.rgb(
-            awtColor.getRed(),
-            awtColor.getGreen(),
-            awtColor.getBlue(),
-            awtColor.getAlpha() / 255.0
-        );
+        return javafx.scene.paint.Color.rgb(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue(),
+                awtColor.getAlpha() / 255.0);
     }
 
     /**
@@ -135,11 +128,6 @@ public class ColorPalette {
         }
 
         Color baseColor = getColor(clusterIndex);
-        return new Color(
-            baseColor.getRed(),
-            baseColor.getGreen(),
-            baseColor.getBlue(),
-            alpha
-        );
+        return new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), alpha);
     }
 }

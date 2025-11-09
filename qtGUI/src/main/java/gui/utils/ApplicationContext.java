@@ -4,14 +4,14 @@ import gui.models.ClusteringConfiguration;
 import gui.models.ClusteringResult;
 import gui.services.ClusteringService;
 import gui.services.DataImportService;
+import gui.services.ExportService;
 
 /**
  * Singleton che mantiene il contesto dell'applicazione condiviso tra i controller.
  * Permette il passaggio di dati tra le diverse view.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 2
  */
 public class ApplicationContext {
 
@@ -19,6 +19,7 @@ public class ApplicationContext {
 
     private final ClusteringService clusteringService;
     private final DataImportService dataImportService;
+    private final ExportService exportService;
 
     private ClusteringConfiguration currentConfiguration;
     private ClusteringResult currentResult;
@@ -29,6 +30,7 @@ public class ApplicationContext {
     private ApplicationContext() {
         this.clusteringService = new ClusteringService();
         this.dataImportService = new DataImportService();
+        this.exportService = new ExportService();
     }
 
     /**
@@ -55,6 +57,13 @@ public class ApplicationContext {
      */
     public DataImportService getDataImportService() {
         return dataImportService;
+    }
+
+    /**
+     * @return il servizio di esportazione
+     */
+    public ExportService getExportService() {
+        return exportService;
     }
 
     /**

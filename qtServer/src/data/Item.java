@@ -3,10 +3,11 @@ package data;
 import java.io.Serializable;
 
 /**
- * Classe astratta che modella un item (coppia attributo-valore). Implementa Serializable
- * per permettere la serializzazione binaria.
+ * Classe astratta che modella un item (coppia attributo-valore).
+ * Implementa Serializable per permettere la serializzazione binaria.
  */
 public abstract class Item implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Attribute attribute;
     private Object value;
 

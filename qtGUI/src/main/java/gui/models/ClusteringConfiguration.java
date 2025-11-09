@@ -6,9 +6,8 @@ import gui.services.DataImportService.DataSource;
  * Modello che rappresenta la configurazione per un'esecuzione del clustering.
  * Incapsula tutti i parametri di input selezionati dall'utente.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 2
  */
 public class ClusteringConfiguration {
 
@@ -157,9 +156,8 @@ public class ClusteringConfiguration {
             case CSV:
                 return csvFilePath != null && !csvFilePath.trim().isEmpty();
             case DATABASE:
-                return dbName != null && !dbName.trim().isEmpty() &&
-                       dbUser != null && !dbUser.trim().isEmpty() &&
-                       dbTableName != null && !dbTableName.trim().isEmpty();
+                return dbName != null && !dbName.trim().isEmpty() && dbUser != null && !dbUser.trim().isEmpty()
+                        && dbTableName != null && !dbTableName.trim().isEmpty();
             case HARDCODED:
             default:
                 return true;
@@ -177,8 +175,7 @@ public class ClusteringConfiguration {
         if (dataSource == DataSource.CSV) {
             desc.append(String.format("File CSV: %s\n", csvFilePath));
         } else if (dataSource == DataSource.DATABASE) {
-            desc.append(String.format("Database: %s@%s:%d/%s\n",
-                    dbUser, dbHost, dbPort, dbName));
+            desc.append(String.format("Database: %s@%s:%d/%s\n", dbUser, dbHost, dbPort, dbName));
             desc.append(String.format("Tabella: %s\n", dbTableName));
         }
 
@@ -195,7 +192,6 @@ public class ClusteringConfiguration {
 
     @Override
     public String toString() {
-        return String.format("ClusteringConfiguration[source=%s, radius=%.3f]",
-                dataSource, radius);
+        return String.format("ClusteringConfiguration[source=%s, radius=%.3f]", dataSource, radius);
     }
 }

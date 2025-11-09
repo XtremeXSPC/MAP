@@ -83,10 +83,8 @@ public class DatasetPreviewDialog {
         int totalCols = data.getNumberOfExplanatoryAttributes();
         int displayedRows = Math.min(totalRows, MAX_PREVIEW_ROWS);
 
-        Label infoLabel = new Label(String.format(
-            "Dataset: %d righe × %d colonne | Visualizzate: prime %d righe",
-            totalRows, totalCols, displayedRows
-        ));
+        Label infoLabel = new Label(String.format("Dataset: %d righe × %d colonne | Visualizzate: prime %d righe",
+                totalRows, totalCols, displayedRows));
         infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
 
         header.getChildren().addAll(titleLabel, infoLabel);
@@ -98,7 +96,7 @@ public class DatasetPreviewDialog {
      */
     private TableView<ObservableList<String>> createTableView() {
         TableView<ObservableList<String>> tableView = new TableView<>();
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
 
         try {
             // Crea colonne da attributi

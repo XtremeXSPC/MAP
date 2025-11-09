@@ -4,20 +4,21 @@ import java.io.*;
 import data.*;
 
 /**
- * Classe che implementa l'algoritmo Quality Threshold per il clustering. Versione
- * ottimizzata con cache delle distanze. Supporta serializzazione e de-serializzazione dei
- * cluster (QT07).
+ * Classe che implementa l'algoritmo Quality Threshold per il clustering. 
+ * Versione ottimizzata con cache delle distanze. 
+ * Supporta serializzazione e de-serializzazione dei cluster (QT07).
  */
 public class QTMiner {
     private ClusterSet C;
     private double radius;
     private boolean enableOptimizations;
     private DistanceCache distanceCache;
+    private Data data; // Dataset utilizzato per il clustering
 
     /**
-     * Costruttore della classe QTMiner (backwards compatible). Disabilita caching di default
-     * (basato su risultati benchmark). Le ottimizzazioni strutturali (HashSet/ArrayList) sono
-     * sempre attive.
+     * Costruttore della classe QTMiner (backwards compatible). 
+     * Disabilita caching di default (basato su risultati benchmark). 
+     * Le ottimizzazioni strutturali (HashSet/ArrayList) sono sempre attive.
      *
      * @param radius raggio dei cluster
      */
@@ -38,8 +39,9 @@ public class QTMiner {
     }
 
     /**
-     * Costruttore che carica cluster da file serializzato (QT07). De-serializza l'oggetto
-     * ClusterSet da file binario.
+     * Costruttore che carica cluster da file serializzato. 
+     * Supporta sia il formato completo (SerializableClusteringData) 
+     * che il formato legacy (solo ClusterSet).
      *
      * @param fileName percorso + nome file (senza estensione .dmp)
      * @throws FileNotFoundException se il file non esiste
@@ -49,13 +51,30 @@ public class QTMiner {
     public QTMiner(String fileName) throws FileNotFoundException, IOException, ClassNotFoundException {
         FileInputStream fileIn = new FileInputStream(fileName + ".dmp");
         ObjectInputStream in = new ObjectInputStream(fileIn);
-        C = (ClusterSet) in.readObject();
+        Object obj = in.readObject();
         in.close();
         fileIn.close();
 
-        // Imposta valori di default per attributi non serializzati
-        this.radius = 0;
-        this.enableOptimizations = false;
+        // Prova a caricare il nuovo formato completo
+        if (obj instanceof SerializableClusteringData) {
+            SerializableClusteringData clusteringData = (SerializableClusteringData) obj;
+            this.C = clusteringData.getClusterSet();
+            this.data = clusteringData.getData();
+            this.radius = clusteringData.getRadius();
+            this.enableOptimizations = false;
+            System.out.println("Loaded complete clustering data from " + fileName + ".dmp");
+        }
+        // Altrimenti carica il vecchio formato (solo ClusterSet) per retrocompatibilità
+        else if (obj instanceof ClusterSet) {
+            this.C = (ClusterSet) obj;
+            this.data = null;
+            this.radius = 0;
+            this.enableOptimizations = false;
+            System.out.println(
+                    "Loaded legacy clustering data from " + fileName + ".dmp " + "(Data and radius not available)");
+        } else {
+            throw new IOException("Formato file non riconosciuto: " + obj.getClass().getName());
+        }
     }
 
     /**
@@ -68,6 +87,15 @@ public class QTMiner {
     }
 
     /**
+     * Restituisce il radius utilizzato per il clustering.
+     *
+     * @return radius dei cluster
+     */
+    public double getRadius() {
+        return radius;
+    }
+
+    /**
      * Restituisce il cache delle distanze (se abilitato).
      *
      * @return cache oppure null se disabilitato
@@ -77,12 +105,24 @@ public class QTMiner {
     }
 
     /**
+     * Restituisce il dataset utilizzato per il clustering.
+     *
+     * @return Data oppure null se non disponibile
+     */
+    public Data getData() {
+        return data;
+    }
+
+    /**
      * Esegue l'algoritmo QT per scoprire i cluster. Versione ottimizzata con cache distanze.
      *
      * @param data insieme di dati
      * @return numero di cluster scoperti
      */
     public int compute(Data data) {
+        // Salva riferimento al dataset per serializzazione successiva
+        this.data = data;
+
         // Inizializza cache se ottimizzazioni abilitate
         if (enableOptimizations) {
             // Cache distanze fino a 2×radius per efficienza memoria
@@ -115,13 +155,15 @@ public class QTMiner {
     }
 
     /**
-     * Salva i cluster in un file binario serializzato (QT07). Serializza l'oggetto ClusterSet
-     * in formato .dmp.
+     * Salva i cluster in un file binario serializzato (QT07).
+     * Serializza l'oggetto ClusterSet in formato .dmp.
      *
+     * @deprecated Utilizzare saveComplete() per salvare anche Data e radius
      * @param fileName percorso + nome file (senza estensione .dmp)
      * @throws FileNotFoundException se il percorso non è valido
      * @throws IOException se si verificano errori di I/O
      */
+    @Deprecated
     public void save(String fileName) throws FileNotFoundException, IOException {
         FileOutputStream fileOut = new FileOutputStream(fileName + ".dmp");
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -129,6 +171,31 @@ public class QTMiner {
         out.close();
         fileOut.close();
         System.out.println("Saving clusters in " + fileName + ".dmp");
+    }
+
+    /**
+     * Salva tutti i dati di clustering (ClusterSet, Data e radius) in un file binario.
+     * Questo metodo sostituisce save() permettendo il caricamento completo dei risultati.
+     *
+     * @param fileName percorso + nome file (senza estensione .dmp)
+     * @throws FileNotFoundException se il percorso non è valido
+     * @throws IOException se si verificano errori di I/O
+     * @throws IllegalStateException se data è null (chiamare compute() prima di salvare)
+     */
+    public void saveComplete(String fileName) throws FileNotFoundException, IOException {
+        if (data == null) {
+            throw new IllegalStateException(
+                    "Impossibile salvare: dataset non disponibile. " + "Eseguire compute() prima di salvare.");
+        }
+
+        SerializableClusteringData clusteringData = new SerializableClusteringData(C, data, radius);
+
+        FileOutputStream fileOut = new FileOutputStream(fileName + ".dmp");
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(clusteringData);
+        out.close();
+        fileOut.close();
+        System.out.println("Saving complete clustering data in " + fileName + ".dmp");
     }
 
     /**

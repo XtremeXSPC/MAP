@@ -7,6 +7,7 @@ import java.io.Serializable;
  * permettere la serializzazione binaria.
  */
 public abstract class Attribute implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String name;
     private int index;
 

@@ -26,9 +26,8 @@ import java.util.List;
  * Classe per la creazione e gestione di scatter plot 2D dei cluster.
  * Utilizza XChart per la visualizzazione grafica.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 3
  */
 public class ClusterScatterChart {
 
@@ -80,20 +79,15 @@ public class ClusterScatterChart {
      * @return oggetto XYChart pronto per la visualizzazione
      */
     public XYChart createChart() {
-        logger.info("Creazione scatter plot con attributi X={}, Y={}",
-            xAttributeIndex, yAttributeIndex);
+        logger.info("Creazione scatter plot con attributi X={}, Y={}", xAttributeIndex, yAttributeIndex);
 
         String xLabel = data.getExplanatoryAttribute(xAttributeIndex).getName();
         String yLabel = data.getExplanatoryAttribute(yAttributeIndex).getName();
 
         // Crea chart con configurazione base
-        XYChart chart = new XYChartBuilder()
-            .width(800)
-            .height(600)
-            .title("Visualizzazione Cluster (Radius: " + String.format("%.3f", result.getRadius()) + ")")
-            .xAxisTitle(xLabel)
-            .yAxisTitle(yLabel)
-            .build();
+        XYChart chart = new XYChartBuilder().width(800).height(600)
+                .title("Visualizzazione Cluster (Radius: " + String.format("%.3f", result.getRadius()) + ")")
+                .xAxisTitle(xLabel).yAxisTitle(yLabel).build();
 
         // Configura stile
         configureStyling(chart);
@@ -245,13 +239,9 @@ public class ClusterScatterChart {
         String yLabel = data.getExplanatoryAttribute(yAttributeIndex).getName();
 
         // Create chart with base configuration and specified dimensions
-        XYChart chart = new XYChartBuilder()
-            .width(width)
-            .height(height)
-            .title("Visualizzazione Cluster (Radius: " + String.format("%.3f", result.getRadius()) + ")")
-            .xAxisTitle(xLabel)
-            .yAxisTitle(yLabel)
-            .build();
+        XYChart chart = new XYChartBuilder().width(width).height(height)
+                .title("Visualizzazione Cluster (Radius: " + String.format("%.3f", result.getRadius()) + ")")
+                .xAxisTitle(xLabel).yAxisTitle(yLabel).build();
 
         // Configure styling
         configureStyling(chart);

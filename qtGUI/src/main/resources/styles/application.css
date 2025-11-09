@@ -5,201 +5,205 @@
 
 /* Root styling */
 .root {
-    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    -fx-font-size: 14px;
-    -fx-base: #f4f4f4;
-    -fx-background: #ffffff;
+  -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -fx-font-size: 14px;
+  -fx-base: #f4f4f4;
+  -fx-background: #ffffff;
 }
 
 /* Title label styling */
 .title-label {
-    -fx-font-size: 32px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
+  -fx-font-size: 32px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2c3e50;
+  -fx-padding: 15 20 15 20;
+  -fx-wrap-text: true;
+  -fx-alignment: center;
+  -fx-line-spacing: 5px;
 }
 
 /* Status bar styling */
 .status-bar {
-    -fx-background-color: #ecf0f1;
-    -fx-border-color: #bdc3c7;
-    -fx-border-width: 1 0 0 0;
+  -fx-background-color: #ecf0f1;
+  -fx-border-color: #bdc3c7;
+  -fx-border-width: 1 0 0 0;
 }
 
 /* Button styling */
 .button {
-    -fx-background-color: #3498db;
-    -fx-text-fill: white;
-    -fx-padding: 8 16 8 16;
-    -fx-cursor: hand;
-    -fx-background-radius: 4;
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
+  -fx-padding: 8 16 8 16;
+  -fx-cursor: hand;
+  -fx-background-radius: 4;
 }
 
 .button:hover {
-    -fx-background-color: #2980b9;
+  -fx-background-color: #2980b9;
 }
 
 .button:pressed {
-    -fx-background-color: #21618c;
+  -fx-background-color: #21618c;
 }
 
 .button:disabled {
-    -fx-opacity: 0.5;
-    -fx-cursor: default;
+  -fx-opacity: 0.5;
+  -fx-cursor: default;
 }
 
 /* Primary button (for important actions) */
 .button-primary {
-    -fx-background-color: #27ae60;
+  -fx-background-color: #27ae60;
 }
 
 .button-primary:hover {
-    -fx-background-color: #229954;
+  -fx-background-color: #229954;
 }
 
 /* Danger button (for destructive actions) */
 .button-danger {
-    -fx-background-color: #e74c3c;
+  -fx-background-color: #e74c3c;
 }
 
 .button-danger:hover {
-    -fx-background-color: #c0392b;
+  -fx-background-color: #c0392b;
 }
 
 /* TextField styling */
 .text-field {
-    -fx-background-color: white;
-    -fx-border-color: #bdc3c7;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-padding: 6 10 6 10;
+  -fx-background-color: white;
+  -fx-border-color: #bdc3c7;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
+  -fx-padding: 6 10 6 10;
 }
 
 .text-field:focused {
-    -fx-border-color: #3498db;
-    -fx-border-width: 2;
+  -fx-border-color: #3498db;
+  -fx-border-width: 2;
 }
 
 /* TextArea styling */
 .text-area {
-    -fx-background-color: white;
-    -fx-border-color: #bdc3c7;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
+  -fx-background-color: white;
+  -fx-border-color: #bdc3c7;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
 }
 
 .text-area:focused {
-    -fx-border-color: #3498db;
-    -fx-border-width: 2;
+  -fx-border-color: #3498db;
+  -fx-border-width: 2;
 }
 
 /* ComboBox styling */
 .combo-box {
-    -fx-background-color: white;
-    -fx-border-color: #bdc3c7;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
+  -fx-background-color: white;
+  -fx-border-color: #bdc3c7;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
 }
 
 /* ProgressBar styling */
 .progress-bar {
-    -fx-background-color: #ecf0f1;
+  -fx-background-color: #ecf0f1;
 }
 
 .progress-bar > .bar {
-    -fx-background-color: #3498db;
-    -fx-padding: 4;
+  -fx-background-color: #3498db;
+  -fx-padding: 4;
 }
 
 /* Label styling */
 .label {
-    -fx-text-fill: #2c3e50;
+  -fx-text-fill: #2c3e50;
 }
 
 .label-error {
-    -fx-text-fill: #e74c3c;
-    -fx-font-weight: bold;
+  -fx-text-fill: #e74c3c;
+  -fx-font-weight: bold;
 }
 
 .label-success {
-    -fx-text-fill: #27ae60;
-    -fx-font-weight: bold;
+  -fx-text-fill: #27ae60;
+  -fx-font-weight: bold;
 }
 
 .label-warning {
-    -fx-text-fill: #f39c12;
-    -fx-font-weight: bold;
+  -fx-text-fill: #f39c12;
+  -fx-font-weight: bold;
 }
 
 /* TreeView styling */
 .tree-view {
-    -fx-background-color: white;
-    -fx-border-color: #bdc3c7;
-    -fx-border-radius: 4;
+  -fx-background-color: white;
+  -fx-border-color: #bdc3c7;
+  -fx-border-radius: 4;
 }
 
 .tree-cell {
-    -fx-padding: 4 8 4 8;
+  -fx-padding: 4 8 4 8;
 }
 
 .tree-cell:selected {
-    -fx-background-color: #3498db;
-    -fx-text-fill: white;
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
 }
 
 /* SplitPane styling */
 .split-pane {
-    -fx-background-color: transparent;
+  -fx-background-color: transparent;
 }
 
 .split-pane-divider {
-    -fx-background-color: #bdc3c7;
-    -fx-padding: 0 1 0 1;
+  -fx-background-color: #bdc3c7;
+  -fx-padding: 0 1 0 1;
 }
 
 /* MenuBar styling */
 .menu-bar {
-    -fx-background-color: #ecf0f1;
+  -fx-background-color: #ecf0f1;
 }
 
 .menu-item:focused {
-    -fx-background-color: #3498db;
-    -fx-text-fill: white;
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
 }
 
 /* ToolBar styling */
 .tool-bar {
-    -fx-background-color: #ecf0f1;
-    -fx-border-color: #bdc3c7;
-    -fx-border-width: 0 0 1 0;
-    -fx-spacing: 5;
-    -fx-padding: 5;
+  -fx-background-color: #ecf0f1;
+  -fx-border-color: #bdc3c7;
+  -fx-border-width: 0 0 1 0;
+  -fx-spacing: 5;
+  -fx-padding: 5;
 }
 
 /* Form styling */
 .form-label {
-    -fx-font-weight: bold;
-    -fx-text-fill: #34495e;
+  -fx-font-weight: bold;
+  -fx-text-fill: #34495e;
 }
 
 .form-section {
-    -fx-padding: 20;
-    -fx-spacing: 15;
+  -fx-padding: 20;
+  -fx-spacing: 15;
 }
 
 /* Card/Panel styling */
 .card {
-    -fx-background-color: white;
-    -fx-border-color: #bdc3c7;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
-    -fx-padding: 20;
+  -fx-background-color: white;
+  -fx-border-color: #bdc3c7;
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
+  -fx-padding: 20;
 }
 
 /* Tooltip styling */
 .tooltip {
-    -fx-background-color: #34495e;
-    -fx-text-fill: white;
-    -fx-background-radius: 4;
-    -fx-padding: 5 10 5 10;
+  -fx-background-color: #34495e;
+  -fx-text-fill: white;
+  -fx-background-radius: 4;
+  -fx-padding: 5 10 5 10;
 }

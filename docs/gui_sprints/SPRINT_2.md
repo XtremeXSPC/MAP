@@ -274,6 +274,7 @@ public class ClusteringResult {
 ```
 
 **File:**
+
 - `qtGUI/src/main/java/gui/models/ClusteringConfiguration.java` (~160 righe)
 - `qtGUI/src/main/java/gui/models/ClusteringResult.java` (~130 righe)
 
@@ -396,6 +397,7 @@ Aggiornare i controller esistenti per utilizzare i servizi implementati.
 #### Criteri di Accettazione
 
 **HomeController:**
+
 - [x] Modificare `handleStartClustering()` per creare `ClusteringConfiguration`
 - [x] Usare `ApplicationContext.setCurrentConfiguration()`
 - [x] Navigare a vista clustering
@@ -403,6 +405,7 @@ Aggiornare i controller esistenti per utilizzare i servizi implementati.
 - [x] Aggiungere metodo `navigateToClusteringView()`
 
 **ClusteringController:**
+
 - [x] Recuperare configurazione da `ApplicationContext`
 - [x] Sostituire simulazione con chiamata reale a `ClusteringService.runClustering()`
 - [x] Creare `ClusteringResult` e salvarlo in `ApplicationContext`
@@ -411,6 +414,7 @@ Aggiornare i controller esistenti per utilizzare i servizi implementati.
 - [x] Aggiungere navigazione a vista results
 
 **ResultsController:**
+
 - [x] Recuperare `ClusteringResult` da `ApplicationContext`
 - [x] Popolare TreeView con dati reali da `ClusterSet`
 - [x] Mostrare dettagli cluster reali con centroidi e distanze
@@ -477,6 +481,7 @@ return new Task<Void>() {
 **Implementato:** L'integrazione completa nei controller è stata implementata con successo.
 
 **File modificati:**
+
 - `HomeController.java`: +~120 righe (buildConfiguration, navigateToClusteringView)
 - `ClusteringController.java`: +~180 righe (createClusteringTask reale, navigazione results)
 - `ResultsController.java`: +~150 righe (loadClusteringResults, dettagli reali)
@@ -535,6 +540,7 @@ return new Task<Void>() {
 **CSV Parsing Complexity**
 
 L'implementazione completa del parsing CSV richiede:
+
 - Gestione header dinamici
 - Inferenza tipi attributi (discreto vs continuo)
 - Validazione formato
@@ -556,22 +562,22 @@ Estrazione numero cluster da stringa formato "Cluster X (Y tuple)" richiede pars
 
 ### Metriche
 
-| Metrica                        | Valore       |
-| ------------------------------ | ------------ |
-| Classi create                  | 5            |
-| Controller modificati          | 3            |
-| Righe codice Java (servizi)    | ~800         |
-| Righe codice Java (controller) | ~450         |
-| **Righe totale aggiunte**      | **~1250**    |
-| Righe codice XML (logback)     | ~50          |
-| Metodi pubblici                | 32           |
-| Servizi implementati           | 2            |
-| Modelli implementati           | 2            |
-| Utility implementate           | 1            |
-| Test coverage                  | 0%*          |
-| Documentazione Javadoc         | 100%         |
-| Tempo effettivo                | **15 ore**   |
-| **Completamento Sprint**       | **100%**     |
+| Metrica                        | Valore     |
+| ------------------------------ | ---------- |
+| Classi create                  | 5          |
+| Controller modificati          | 3          |
+| Righe codice Java (servizi)    | ~800       |
+| Righe codice Java (controller) | ~450       |
+| **Righe totale aggiunte**      | **~1250**  |
+| Righe codice XML (logback)     | ~50        |
+| Metodi pubblici                | 32         |
+| Servizi implementati           | 2          |
+| Modelli implementati           | 2          |
+| Utility implementate           | 1          |
+| Test coverage                  | 0%*        |
+| Documentazione Javadoc         | 100%       |
+| Tempo effettivo                | **15 ore** |
+| **Completamento Sprint**       | **100%**   |
 
 *Test unitari pianificati per Sprint 5
 
@@ -624,6 +630,7 @@ Estrazione numero cluster da stringa formato "Cluster X (Y tuple)" richiede pars
 ### Sprint 3 - Visualizzazione 2D
 
 **Prerequisiti completati:**
+
 - Backend services forniscono ClusterSet e Data
 - ClusteringResult contiene tutti i dati necessari
 - ApplicationContext permette accesso ai risultati
@@ -648,11 +655,13 @@ Sprint 2 completato al **100%**: **backend completo + integrazione controller fu
 ### Risultati Chiave
 
 **Servizi Backend:**
+
 - `ClusteringService` e `DataImportService` production-ready
 - `ClusteringConfiguration` e `ClusteringResult` incapsulano perfettamente i dati
 - `ApplicationContext` fornisce pattern pulito per condivisione dati tra view
 
 **Integrazione Controller:**
+
 - HomeController crea configurazione e naviga a clustering
 - ClusteringController esegue QTMiner reale con progress updates
 - ResultsController mostra dati reali da ClusterSet con statistiche
@@ -663,6 +672,7 @@ Home (config) → Clustering (QTMiner execution) → Results (visualization) **F
 ### Pronto per Sprint 3
 
 L'architettura backend è solida e completa. Sprint 3 può procedere direttamente con:
+
 - Integrazione XChart per scatter plot 2D
 - Visualizzazione cluster con colori distinti
 - Export grafico PNG/SVG
