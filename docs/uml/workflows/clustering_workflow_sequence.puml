@@ -1,0 +1,208 @@
+@startuml clustering_workflow_sequence
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam maxMessageSize 200
+
+title Flusso Completo Clustering - Quality Threshold Algorithm
+
+actor Utente
+participant "ClusteringController\n(GUI)" as Controller
+participant "ClusteringService\n(Service Layer)" as Service
+participant "JavaFX Task\n(Background Thread)" as Task
+participant "Socket\nClient" as Client
+participant "ServerOneClient\n(Server Thread)" as Server
+participant "QTMiner\n(Algorithm)" as Miner
+participant "Data\n(Dataset)" as Data
+participant "ClusterSet\n(Result)" as ClusterSet
+
+== Configurazione Clustering ==
+
+Utente -> Controller: Imposta radius e avvia clustering
+activate Controller
+
+Controller -> Service: startClustering(config)
+activate Service
+
+Service -> Task: new Task<ClusteringResult>()
+activate Task
+
+note right of Task
+  Esecuzione in background
+  per non bloccare UI
+end note
+
+Service --> Controller: Task handle
+Controller -> Task: setOnSucceeded(handler)
+Controller -> Task: ExecutorService.submit(task)
+
+== Connessione Server ==
+
+Task -> Client: new Socket(host, port)
+activate Client
+
+Client -> Server: accept() + ObjectStreams
+activate Server
+
+note right of Server
+  Nuovo thread dedicato
+  per questo client
+end note
+
+== Scelta Sorgente Dati ==
+
+alt Clustering da Database
+
+    Task -> Client: writeObject(0) // Comando DB
+    Client -> Server: readObject() → comando=0
+
+    Task -> Client: writeObject(tableName)
+    Client -> Server: readObject() → tableName
+
+    Server -> Data: new Data(tableName)
+    activate Data
+    Data -> Data: loadFromDatabase()
+    Data --> Server: dataset caricato
+    deactivate Data
+
+    Server -> Client: writeObject("OK")
+    Client -> Task: readObject() → "OK"
+
+    Task -> Client: writeObject(1) // Comando clustering
+    Client -> Server: readObject() → comando=1
+
+    Task -> Client: writeObject(radius)
+    Client -> Server: readObject() → radius
+
+else Clustering da File
+
+    Task -> Client: writeObject(3) // Comando File
+    Client -> Server: readObject() → comando=3
+
+    Task -> Client: writeObject(radius)
+    Client -> Server: readObject() → radius
+
+    Task -> Client: writeObject(filePath)
+    Client -> Server: readObject() → filePath
+
+    Server -> Data: new Data(filePath)
+    activate Data
+    Data -> Data: loadFromCSV()
+    Data --> Server: dataset caricato
+    deactivate Data
+
+end
+
+== Esecuzione Algoritmo QT ==
+
+Server -> Miner: new QTMiner(radius)
+activate Miner
+
+Server -> Miner: compute(data)
+
+note right of Miner
+  Algoritmo Quality Threshold
+
+  Loop fino a tutte tuple clusterizzate:
+  1. buildCandidateCluster()
+  2. Trova cluster più grande
+  3. Rimuovi tuple clusterizzate
+
+  Complessità: O(k × n²)
+end note
+
+loop Per ogni iterazione clustering
+
+    Miner -> Miner: buildCandidateCluster()
+
+    loop Per ogni tupla non clusterizzata
+        Miner -> Data: getItemSet(i)
+        Data --> Miner: centroid candidate
+
+        loop Per ogni altra tupla
+            Miner -> Data: getItemSet(j)
+            Data --> Miner: tuple
+
+            Miner -> Miner: centroid.getDistance(tuple)
+
+            alt distance <= radius
+                Miner -> Miner: candidateCluster.addData(j)
+            end
+        end
+    end
+
+    Miner -> ClusterSet: add(bestCluster)
+    activate ClusterSet
+    ClusterSet --> Miner: cluster aggiunto
+    deactivate ClusterSet
+
+end
+
+Miner --> Server: numClusters
+deactivate Miner
+
+== Restituzione Risultati ==
+
+Server -> ClusterSet: serialize()
+activate ClusterSet
+ClusterSet --> Server: ClusterSet serializzato
+deactivate ClusterSet
+
+Server -> Client: writeObject("OK")
+Client -> Task: readObject() → "OK"
+
+Server -> Client: writeObject(clusterSet)
+Client -> Task: readObject() → clusterSet
+
+note left of Task
+  Deserializzazione
+  risultati clustering
+end note
+
+Task -> Task: processResults()
+
+== Aggiornamento UI ==
+
+Task -> Controller: onSucceeded()
+deactivate Task
+
+Controller -> Controller: updateResultsView()
+
+Controller -> Utente: Mostra risultati
+note right of Controller
+  - Numero cluster
+  - Scatter chart PCA
+  - Tabella dettagli
+  - Statistiche
+end note
+
+deactivate Controller
+
+== Chiusura Connessione ==
+
+Client -> Server: close()
+deactivate Server
+deactivate Client
+
+note bottom
+  Flusso Completo Clustering
+
+  Pattern utilizzati:
+  - MVC (Model-View-Controller)
+  - Service Layer
+  - Background Task (JavaFX)
+  - Socket Communication
+  - Thread-per-Client (server)
+
+  Gestione errori:
+  - IOException → Errore connessione
+  - DatabaseConnectionException → DB non disponibile
+  - FileNotFoundException → File inesistente
+  - Ogni errore propagato come "ERROR: <message>"
+
+  Timeout:
+  - Socket read: 30 secondi
+  - Task execution: configurabile
+end note
+
+@enduml

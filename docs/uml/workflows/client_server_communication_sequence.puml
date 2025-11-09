@@ -1,0 +1,306 @@
+@startuml client_server_communication_sequence
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Protocollo Comunicazione qtClient ↔ qtServer
+
+actor Utente
+participant "MainTest\n(qtClient)" as Client
+participant "Keyboard\n(Input)" as Keyboard
+participant "Socket" as Socket
+participant "ObjectStreams" as Streams
+participant "MultiServer" as MultiServer
+participant "ServerOneClient\n(Thread)" as ServerThread
+participant "QTMiner" as Miner
+database "Database" as DB
+collections "ClusterSet" as Result
+
+== Avvio Server ==
+
+MultiServer -> MultiServer: main(args)
+activate MultiServer
+
+MultiServer -> MultiServer: new ServerSocket(PORT)
+
+note right of MultiServer
+  Porta default: 8080
+  Accetta connessioni multiple
+end note
+
+loop Server in ascolto
+
+    MultiServer -> MultiServer: accept()
+    note right: Attende connessione client
+
+end
+
+== Connessione Client ==
+
+Utente -> Client: java qtClient.MainTest
+activate Client
+
+Client -> Socket: new Socket("localhost", 8080)
+activate Socket
+
+Socket --> MultiServer: Richiesta connessione
+
+MultiServer -> ServerThread: new ServerOneClient(socket)
+activate ServerThread
+
+note right of ServerThread
+  Nuovo thread per questo client
+  Pattern: Thread-per-Client
+end note
+
+ServerThread -> ServerThread: run()
+
+Client -> Streams: new ObjectOutputStream(socket)
+activate Streams
+Client -> Streams: new ObjectInputStream(socket)
+
+note left of Streams
+  IMPORTANTE: Ordine creazione
+  1. OutputStream (flush automatico)
+  2. InputStream (evita deadlock)
+end note
+
+== Menu Client ==
+
+Client -> Keyboard: Mostra menu
+Utente -> Keyboard: Scelta operazione
+
+alt Opzione 0: Carica dati da DB
+
+    == Comando 0: Load from Database ==
+
+    Client -> Streams: out.writeObject(0)
+    Streams -> ServerThread: in.readObject() → comando=0
+
+    Client -> Keyboard: "Inserisci nome tabella: "
+    Utente -> Keyboard: table = "playtennis"
+
+    Client -> Streams: out.writeObject("playtennis")
+    Streams -> ServerThread: in.readObject() → tableName
+
+    ServerThread -> DB: DbAccess.initConnection()
+    activate DB
+
+    alt Connessione riuscita
+
+        ServerThread -> DB: new TableData(tableName)
+        DB --> ServerThread: tableData
+
+        ServerThread -> ServerThread: data = new Data(tableName)
+
+        ServerThread -> Streams: out.writeObject("OK")
+        Streams -> Client: in.readObject() → "OK"
+
+        ServerThread -> Streams: out.writeObject(data.toString())
+        Streams -> Client: in.readObject() → dataString
+
+        Client -> Client: Stampa dataset
+        Client -> Utente: Mostra dati caricati
+
+        deactivate DB
+
+    else Errore connessione
+
+        ServerThread -> Streams: out.writeObject("ERROR: Database connection failed")
+        Streams -> Client: in.readObject() → errore
+
+        Client -> Utente: Mostra errore
+        Client -> Client: Termina
+
+    end
+
+else Opzione 1: Clustering da DB
+
+    == Comando 1: Learn from Database ==
+
+    note left of Client
+      Prerequisito: dati già caricati
+      con comando 0
+    end note
+
+    Client -> Keyboard: "Inserisci radius: "
+    Utente -> Keyboard: radius = 0.5
+
+    Client -> Streams: out.writeObject(1)
+    Streams -> ServerThread: in.readObject() → comando=1
+
+    Client -> Streams: out.writeObject(0.5)
+    Streams -> ServerThread: in.readObject() → radius
+
+    alt Dati presenti
+
+        ServerThread -> Miner: qt = new QTMiner(radius)
+        activate Miner
+
+        ServerThread -> Miner: qt.compute(data)
+
+        note right of Miner
+          Esecuzione algoritmo QT
+          Tempo: O(k × n²)
+        end note
+
+        Miner --> ServerThread: numClusters
+
+        ServerThread -> Streams: out.writeObject("OK")
+        Streams -> Client: in.readObject() → "OK"
+
+        ServerThread -> Miner: qt.getC().toString(data)
+        Miner --> ServerThread: clusterString
+
+        ServerThread -> Streams: out.writeObject(clusterString)
+        Streams -> Client: in.readObject() → risultati
+
+        Client -> Utente: Stampa cluster
+        deactivate Miner
+
+    else Dati non caricati
+
+        ServerThread -> Streams: out.writeObject("ERROR: No data loaded")
+        Streams -> Client: in.readObject() → errore
+
+        Client -> Utente: Mostra errore
+
+    end
+
+else Opzione 2: Salva risultati
+
+    == Comando 2: Save Clustering to File ==
+
+    note left of Client
+      Prerequisito: clustering eseguito
+      con comando 1
+    end note
+
+    Client -> Keyboard: "Inserisci nome file: "
+    Utente -> Keyboard: fileName = "results.dat"
+
+    Client -> Streams: out.writeObject(2)
+    Streams -> ServerThread: in.readObject() → comando=2
+
+    Client -> Streams: out.writeObject("results.dat")
+    Streams -> ServerThread: in.readObject() → fileName
+
+    alt Clustering disponibile
+
+        ServerThread -> ServerThread: serialize(fileName, qt.getC())
+
+        note right of ServerThread
+          Serializzazione Java:
+          - FileOutputStream
+          - ObjectOutputStream
+          - Salva ClusterSet completo
+        end note
+
+        ServerThread -> Streams: out.writeObject("OK")
+        Streams -> Client: in.readObject() → "OK"
+
+        Client -> Utente: "Clustering salvato in results.dat"
+
+    else Clustering non eseguito
+
+        ServerThread -> Streams: out.writeObject("ERROR: No clustering to save")
+        Streams -> Client: in.readObject() → errore
+
+        Client -> Utente: Mostra errore
+
+    end
+
+else Opzione 3: Load + Cluster da file
+
+    == Comando 3: Clustering from File ==
+
+    Client -> Keyboard: "Inserisci radius: "
+    Utente -> Keyboard: radius = 0.0
+
+    Client -> Streams: out.writeObject(3)
+    Streams -> ServerThread: in.readObject() → comando=3
+
+    Client -> Streams: out.writeObject(0.0)
+    Streams -> ServerThread: in.readObject() → radius
+
+    Client -> Keyboard: "Inserisci nome file: "
+    Utente -> Keyboard: filePath = "results.dat"
+
+    Client -> Streams: out.writeObject("results.dat")
+    Streams -> ServerThread: in.readObject() → filePath
+
+    alt File esiste
+
+        ServerThread -> ServerThread: deserialize(filePath)
+
+        note right of ServerThread
+          Caricamento ClusterSet salvato
+          FileInputStream + ObjectInputStream
+        end note
+
+        ServerThread -> Streams: out.writeObject("OK")
+        Streams -> Client: in.readObject() → "OK"
+
+        ServerThread -> Streams: out.writeObject(clusterSet.toString())
+        Streams -> Client: in.readObject() → risultati
+
+        Client -> Utente: Stampa cluster caricati
+
+    else File non trovato
+
+        ServerThread -> Streams: out.writeObject("ERROR: File not found")
+        Streams -> Client: in.readObject() → errore
+
+        Client -> Utente: Mostra errore
+
+    end
+
+end
+
+== Chiusura Connessione ==
+
+Client -> Socket: close()
+Socket -> ServerThread: Connection closed
+
+ServerThread -> ServerThread: Termina thread
+deactivate ServerThread
+
+deactivate Streams
+deactivate Socket
+deactivate Client
+
+MultiServer -> MultiServer: Continua accept()
+note right: Server resta in ascolto
+
+deactivate MultiServer
+
+note bottom
+  Protocollo Comunicazione qtClient ↔ qtServer
+
+  Comandi disponibili:
+  | Codice | Comando               | Parametri               | Risposta                |
+  |--------|-----------------------|-------------------------|-------------------------|
+  | 0      | Load from DB          | String tableName        | "OK" / "ERROR" + data   |
+  | 1      | Learn from DB         | double radius           | "OK" / "ERROR" + result |
+  | 2      | Save to file          | String fileName         | "OK" / "ERROR"          |
+  | 3      | Clustering from file  | double r, String path   | "OK" / "ERROR" + result |
+
+  Formato messaggi:
+  - Comando: Integer (0-3)
+  - Parametri: Object (String, Double)
+  - Risposta: String ("OK" o "ERROR: <message>")
+  - Dati: String (toString() di Data/ClusterSet)
+
+  Gestione errori:
+  - Ogni operazione può fallire
+  - Server invia "ERROR: <descrizione>"
+  - Client visualizza errore e continua
+  - Connessione resta aperta fino a chiusura esplicita
+
+  Thread safety:
+  - Ogni client ha thread dedicato
+  - Dati (data, qt) isolati per thread
+  - Nessuna condivisione stato tra client
+end note
+
+@enduml

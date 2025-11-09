@@ -1,0 +1,405 @@
+@startuml export_workflow_sequence
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Flusso Esportazione Risultati Clustering
+
+actor Utente
+participant "ResultsController\n(GUI)" as Controller
+participant "ExportService" as Service
+participant "JavaFX Task" as Task
+participant "ClusteringResult" as Result
+participant "FileWriter" as Writer
+participant "ClusterScatterChart" as Chart
+participant "WritableImage" as Image
+participant "ZipOutputStream" as Zip
+
+== Selezione Formato Export ==
+
+Utente -> Controller: Click "Export Results"
+activate Controller
+
+Controller -> Controller: Mostra dialog export
+
+note right of Controller
+  Formati disponibili:
+  - CSV (tabella cluster)
+  - TXT (report testuale)
+  - JSON (struttura dati)
+  - PNG (scatter chart)
+  - ZIP (tutto insieme)
+end note
+
+Utente -> Controller: Seleziona formato + destinazione
+
+alt Export: CSV
+
+    == Export CSV ==
+
+    Controller -> Service: exportToCSV(result, filePath)
+    activate Service
+
+    Service -> Task: new Task<Void>()
+    activate Task
+
+    Task -> Writer: new BufferedWriter(filePath)
+    activate Writer
+
+    note right of Writer
+      Formato CSV:
+      ClusterID,TupleIndex,Centroid,Distance
+    end note
+
+    Task -> Writer: writeHeader()
+    Writer -> Writer: write("ClusterID,TupleIndex,...")
+
+    Task -> Result: getClusters()
+    activate Result
+
+    loop Per ogni cluster
+
+        Result --> Task: Cluster
+
+        loop Per ogni tupla nel cluster
+
+            Task -> Result: getTuple(index)
+            Result --> Task: tuple
+
+            Task -> Result: getDistance(tuple, centroid)
+            Result --> Task: distance
+
+            Task -> Writer: writeLine()
+            Writer -> Writer: write("clusterID,tupleIdx,centroid,dist\n")
+
+        end
+
+    end
+
+    deactivate Result
+
+    Writer -> Writer: close()
+    deactivate Writer
+
+    Task -> Controller: onSucceeded()
+    Controller -> Utente: "Export CSV completato"
+
+    deactivate Task
+    deactivate Service
+
+else Export: TXT
+
+    == Export TXT (Report Testuale) ==
+
+    Controller -> Service: exportToTXT(result, filePath)
+    activate Service
+
+    Service -> Task: new Task<Void>()
+    activate Task
+
+    Task -> Writer: new PrintWriter(filePath)
+    activate Writer
+
+    note right of Writer
+      Formato report:
+      =============================
+      CLUSTERING RESULTS REPORT
+      =============================
+
+      Dataset: ...
+      Radius: ...
+      Num Clusters: ...
+      ...
+    end note
+
+    Task -> Writer: writeHeader()
+
+    Task -> Result: getMetadata()
+    activate Result
+
+    Result --> Task: numClusters, radius, dataset info
+
+    Task -> Writer: write("Dataset: " + name)
+    Task -> Writer: write("Radius: " + radius)
+    Task -> Writer: write("Num Clusters: " + numClusters)
+    Task -> Writer: write("\n")
+
+    loop Per ogni cluster
+
+        Task -> Writer: write("CLUSTER " + clusterID)
+        Task -> Writer: write("Size: " + size)
+        Task -> Writer: write("Centroid: " + centroid.toString())
+
+        Result --> Task: tupleList
+
+        loop Per ogni tupla
+
+            Task -> Writer: write("  Tuple " + index + ": " + tuple.toString())
+            Task -> Writer: write("    Distance: " + distance)
+
+        end
+
+        Task -> Writer: write("AvgDistance: " + avgDistance)
+        Task -> Writer: write("\n")
+
+    end
+
+    deactivate Result
+
+    Task -> Writer: writeFooter()
+    Writer -> Writer: close()
+    deactivate Writer
+
+    Task -> Controller: onSucceeded()
+    Controller -> Utente: "Export TXT completato"
+
+    deactivate Task
+    deactivate Service
+
+else Export: JSON
+
+    == Export JSON ==
+
+    Controller -> Service: exportToJSON(result, filePath)
+    activate Service
+
+    Service -> Task: new Task<Void>()
+    activate Task
+
+    Task -> Writer: new FileWriter(filePath)
+    activate Writer
+
+    note right of Writer
+      Struttura JSON:
+      {
+        "metadata": {...},
+        "clusters": [
+          {
+            "id": 0,
+            "centroid": {...},
+            "tuples": [...]
+          }
+        ]
+      }
+    end note
+
+    Task -> Result: toJSON()
+    activate Result
+
+    Result -> Result: buildJSONObject()
+
+    loop Per ogni cluster
+
+        Result -> Result: clusterToJSON()
+
+        loop Per ogni tupla
+
+            Result -> Result: tupleToJSON()
+
+        end
+
+    end
+
+    Result --> Task: jsonString
+    deactivate Result
+
+    Task -> Writer: write(jsonString)
+    Writer -> Writer: close()
+    deactivate Writer
+
+    Task -> Controller: onSucceeded()
+    Controller -> Utente: "Export JSON completato"
+
+    deactivate Task
+    deactivate Service
+
+else Export: PNG (Chart)
+
+    == Export PNG (Scatter Chart) ==
+
+    Controller -> Service: exportChartToPNG(chart, filePath)
+    activate Service
+
+    Service -> Task: new Task<Void>()
+    activate Task
+
+    Task -> Chart: snapshot()
+    activate Chart
+
+    note right of Chart
+      Snapshot JavaFX:
+      - Cattura rendering corrente
+      - WritableImage
+      - Trasparenza supportata
+    end note
+
+    Chart --> Task: WritableImage
+    deactivate Chart
+
+    Task -> Image: encode(PNG)
+    activate Image
+
+    Image -> Writer: ImageIO.write(file)
+    activate Writer
+
+    Writer -> Writer: Salva PNG su disco
+    deactivate Writer
+
+    Image --> Task: Success
+    deactivate Image
+
+    Task -> Controller: onSucceeded()
+    Controller -> Utente: "Scatter chart esportato"
+
+    deactivate Task
+    deactivate Service
+
+else Export: ZIP (Completo)
+
+    == Export ZIP (Bundle Completo) ==
+
+    note right of Controller
+      Include tutto:
+      - results.csv
+      - report.txt
+      - data.json
+      - chart.png
+      - config.properties
+    end note
+
+    Controller -> Service: exportToZIP(result, filePath)
+    activate Service
+
+    Service -> Task: new Task<Void>()
+    activate Task
+
+    Task -> Zip: new ZipOutputStream(filePath)
+    activate Zip
+
+    ' CSV
+    Task -> Task: createCSV()
+    Task -> Zip: putNextEntry("results.csv")
+    Task -> Zip: write(csvContent)
+    Task -> Zip: closeEntry()
+
+    ' TXT
+    Task -> Task: createTXT()
+    Task -> Zip: putNextEntry("report.txt")
+    Task -> Zip: write(txtContent)
+    Task -> Zip: closeEntry()
+
+    ' JSON
+    Task -> Result: toJSON()
+    activate Result
+    Result --> Task: jsonString
+    deactivate Result
+
+    Task -> Zip: putNextEntry("data.json")
+    Task -> Zip: write(jsonString)
+    Task -> Zip: closeEntry()
+
+    ' PNG
+    Task -> Chart: snapshot()
+    activate Chart
+    Chart --> Task: image
+    deactivate Chart
+
+    Task -> Task: imageToBytes()
+    Task -> Zip: putNextEntry("chart.png")
+    Task -> Zip: write(imageBytes)
+    Task -> Zip: closeEntry()
+
+    ' Config
+    Task -> Result: getConfiguration()
+    activate Result
+    Result --> Task: config
+    deactivate Result
+
+    Task -> Task: configToProperties()
+    Task -> Zip: putNextEntry("config.properties")
+    Task -> Zip: write(propertiesContent)
+    Task -> Zip: closeEntry()
+
+    Zip -> Zip: close()
+    deactivate Zip
+
+    Task -> Controller: onSucceeded()
+    Controller -> Utente: "Export ZIP completato (5 files)"
+
+    deactivate Task
+    deactivate Service
+
+end
+
+== Verifica File Creato ==
+
+Utente -> Controller: Click "Open Export Location"
+
+Controller -> Controller: Desktop.open(parentDirectory)
+
+Controller -> Utente: Apre file explorer
+
+note right of Utente
+  File pronti per:
+  - Analisi esterna (Excel, Python)
+  - Condivisione
+  - Backup
+  - Documentazione
+end note
+
+deactivate Controller
+
+note bottom
+  Flusso Esportazione Risultati
+
+  Formati supportati:
+
+  1. CSV (Comma-Separated Values)
+     - Tabellare, importabile in Excel/R/Python
+     - Una riga per tupla
+     - Colonne: ClusterID, TupleIndex, Centroid, Distance
+     - Header incluso
+
+  2. TXT (Report Testuale)
+     - Human-readable
+     - Struttura gerarchica
+     - Include tutte le metriche
+     - Formato console-friendly
+
+  3. JSON (Struttura Dati)
+     - Machine-readable
+     - Parsing facile (JavaScript, Python)
+     - Metadata + cluster array
+     - Interoperabilita' con altre app
+
+  4. PNG (Scatter Chart)
+     - Visualizzazione grafica
+     - PCA 2D projection
+     - Colori cluster distinti
+     - Alta risoluzione (1200x800)
+
+  5. ZIP (Bundle Completo)
+     - Contiene tutti i formati sopra
+     - Include file configurazione
+     - Archivio compresso
+     - Facilita condivisione
+
+  Caratteristiche:
+  - Export asincrono (non blocca UI)
+  - Progress indicator durante export
+  - Validazione path destinazione
+  - Overwrite warning se file esiste
+  - Compressione automatica per ZIP
+
+  Gestione errori:
+  - IOException → Disco pieno / Permessi
+  - FileAlreadyExistsException → Conferma overwrite
+  - Ogni errore con dialog esplicativo
+
+  Pattern:
+  - Service Layer per business logic
+  - JavaFX Task per operazioni I/O
+  - Strategy pattern per formati export
+end note
+
+@enduml
