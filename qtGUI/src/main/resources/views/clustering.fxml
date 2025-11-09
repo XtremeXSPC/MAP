@@ -18,12 +18,12 @@
 
     <!-- Header -->
     <VBox spacing="15" alignment="CENTER">
-        <Label text="Clustering in Progress" styleClass="title-label">
+        <Label text="Clustering in Corso" styleClass="title-label">
             <font>
                 <Font name="System Bold" size="28" />
             </font>
         </Label>
-        <Label text="Please wait while the Quality Threshold algorithm processes your data...">
+        <Label text="Attendere mentre l'algoritmo Quality Threshold elabora i dati...">
             <font>
                 <Font size="14" />
             </font>
@@ -35,7 +35,7 @@
 
         <!-- Progress Bar -->
         <VBox spacing="10">
-            <Label fx:id="progressLabel" text="Initializing..." styleClass="form-label" />
+            <Label fx:id="progressLabel" text="Inizializzazione..." styleClass="form-label" />
             <ProgressBar fx:id="progressBar" prefWidth="600" prefHeight="30" progress="0.0" />
             <Label fx:id="progressPercentLabel" text="0%" />
         </VBox>
@@ -45,22 +45,22 @@
         <!-- Status Information -->
         <VBox spacing="15" alignment="CENTER_LEFT">
             <HBox spacing="10">
-                <Label text="Current Step:" styleClass="form-label" minWidth="150" />
-                <Label fx:id="currentStepLabel" text="Starting..." />
+                <Label text="Fase Corrente:" styleClass="form-label" minWidth="150" />
+                <Label fx:id="currentStepLabel" text="Avvio..." />
             </HBox>
 
             <HBox spacing="10">
-                <Label text="Clusters Found:" styleClass="form-label" minWidth="150" />
+                <Label text="Cluster Trovati:" styleClass="form-label" minWidth="150" />
                 <Label fx:id="clustersFoundLabel" text="0" />
             </HBox>
 
             <HBox spacing="10">
-                <Label text="Tuples Clustered:" styleClass="form-label" minWidth="150" />
+                <Label text="Tuple Clusterizzate:" styleClass="form-label" minWidth="150" />
                 <Label fx:id="tuplesClusteredLabel" text="0 / 0" />
             </HBox>
 
             <HBox spacing="10">
-                <Label text="Elapsed Time:" styleClass="form-label" minWidth="150" />
+                <Label text="Tempo Trascorso:" styleClass="form-label" minWidth="150" />
                 <Label fx:id="elapsedTimeLabel" text="00:00:00" />
             </HBox>
         </VBox>
@@ -69,7 +69,7 @@
 
         <!-- Detailed Log -->
         <VBox spacing="10" VBox.vgrow="ALWAYS">
-            <Label text="Activity Log:" styleClass="form-label" />
+            <Label text="Log Attivita:" styleClass="form-label" />
             <TextArea fx:id="logTextArea"
                      editable="false"
                      wrapText="true"
@@ -82,8 +82,8 @@
 
     <!-- Control Buttons -->
     <HBox spacing="15" alignment="CENTER">
-        <Button fx:id="btnCancel" text="Cancel Clustering" prefWidth="150" styleClass="button-danger" />
-        <Button fx:id="btnViewResults" text="View Results" prefWidth="150" styleClass="button-primary"
+        <Button fx:id="btnCancel" text="Annulla Clustering" prefWidth="180" styleClass="button-danger" />
+        <Button fx:id="btnViewResults" text="Visualizza Risultati" prefWidth="180" styleClass="button-primary"
                 visible="false" managed="false" />
     </HBox>
 

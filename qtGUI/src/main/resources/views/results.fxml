@@ -6,156 +6,156 @@
 <?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.controllers.ResultsController"
-      spacing="15"
-      styleClass="form-section">
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="gui.controllers.ResultsController"
+    spacing="15"
+    styleClass="form-section">
 
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20" />
+      <Insets top="20" right="20" bottom="20" left="20" />
     </padding>
 
     <!-- Header -->
     <HBox spacing="20" alignment="CENTER_LEFT">
-        <VBox spacing="5" HBox.hgrow="ALWAYS">
-            <Label text="Clustering Results" styleClass="title-label">
-                <font>
-                    <Font name="System Bold" size="24" />
-                </font>
-            </Label>
-            <Label fx:id="summaryLabel" text="Summary will be displayed here">
-                <font>
-                    <Font size="12" />
-                </font>
-            </Label>
-        </VBox>
+      <VBox spacing="5" HBox.hgrow="ALWAYS">
+        <Label text="Risultati Clustering" styleClass="title-label">
+            <font>
+              <Font name="System Bold" size="24" />
+            </font>
+        </Label>
+        <Label fx:id="summaryLabel" text="Il riepilogo verrà visualizzato qui">
+            <font>
+              <Font size="12" />
+            </font>
+        </Label>
+      </VBox>
 
-        <!-- Action Buttons -->
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <Button fx:id="btnVisualize" text="Visualize" prefWidth="100" />
-            <Button fx:id="btnExport" text="Export" prefWidth="100" />
-            <Button fx:id="btnSave" text="Save" prefWidth="100" />
-            <Button fx:id="btnNewAnalysis" text="New Analysis" prefWidth="120" styleClass="button-primary" />
-        </HBox>
+      <!-- Action Buttons -->
+      <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="btnVisualize" text="Visualizza" prefWidth="100" />
+        <Button fx:id="btnExport" text="Esporta" prefWidth="100" />
+        <Button fx:id="btnSave" text="Salva" prefWidth="100" />
+        <Button fx:id="btnNewAnalysis" text="Nuova Analisi" prefWidth="120" styleClass="button-primary" />
+      </HBox>
     </HBox>
 
     <Separator />
 
     <!-- Statistics Panel -->
     <HBox spacing="15" styleClass="card">
-        <VBox spacing="8" HBox.hgrow="ALWAYS">
-            <Label text="Statistics" styleClass="form-label">
-                <font>
-                    <Font name="System Bold" size="14" />
-                </font>
-            </Label>
+      <VBox spacing="8" HBox.hgrow="ALWAYS">
+        <Label text="Statistiche" styleClass="form-label">
+            <font>
+              <Font name="System Bold" size="14" />
+            </font>
+        </Label>
 
-            <GridPane hgap="15" vgap="8">
-                <columnConstraints>
-                    <ColumnConstraints halignment="RIGHT" />
-                    <ColumnConstraints hgrow="ALWAYS" />
-                </columnConstraints>
+        <GridPane hgap="15" vgap="8">
+            <columnConstraints>
+              <ColumnConstraints halignment="RIGHT" />
+              <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
 
-                <Label text="Total Clusters:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label" />
-                <Label fx:id="totalClustersLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Label text="Cluster Totali:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label" />
+            <Label fx:id="totalClustersLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                <Label text="Total Tuples:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label" />
-                <Label fx:id="totalTuplesLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="Tuple Totali:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label" />
+            <Label fx:id="totalTuplesLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <Label text="Radius:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label" />
-                <Label fx:id="radiusLabel" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="Raggio:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label" />
+            <Label fx:id="radiusLabel" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                <Label text="Average Cluster Size:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" />
-                <Label fx:id="avgClusterSizeLabel" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="Dimensione Media Cluster:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" />
+            <Label fx:id="avgClusterSizeLabel" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                <Label text="Largest Cluster:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label" />
-                <Label fx:id="largestClusterLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label text="Cluster Più Grande:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label" />
+            <Label fx:id="largestClusterLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                <Label text="Smallest Cluster:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label" />
-                <Label fx:id="smallestClusterLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            </GridPane>
-        </VBox>
+            <Label text="Cluster Più Piccolo:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label" />
+            <Label fx:id="smallestClusterLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        </GridPane>
+      </VBox>
     </HBox>
 
     <!-- Main Content: SplitPane with TreeView and Details -->
     <SplitPane orientation="HORIZONTAL" VBox.vgrow="ALWAYS" dividerPositions="0.3">
 
-        <!-- Left: Cluster TreeView -->
-        <VBox spacing="10">
-            <padding>
-                <Insets top="5" right="5" bottom="5" left="5" />
-            </padding>
+      <!-- Left: Cluster TreeView -->
+      <VBox spacing="10">
+        <padding>
+            <Insets top="5" right="5" bottom="5" left="5" />
+        </padding>
 
-            <Label text="Clusters" styleClass="form-label">
-                <font>
-                    <Font name="System Bold" size="14" />
-                </font>
+        <Label text="Cluster" styleClass="form-label">
+            <font>
+              <Font name="System Bold" size="14" />
+            </font>
+        </Label>
+
+        <TreeView fx:id="clusterTreeView" VBox.vgrow="ALWAYS" />
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="btnExpandAll" text="Espandi Tutto" prefWidth="100" />
+            <Button fx:id="btnCollapseAll" text="Comprimi Tutto" prefWidth="100" />
+        </HBox>
+      </VBox>
+
+      <!-- Right: Cluster Details -->
+      <VBox spacing="10">
+        <padding>
+            <Insets top="5" right="5" bottom="5" left="5" />
+        </padding>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Dettagli Cluster" styleClass="form-label">
+              <font>
+                <Font name="System Bold" size="14" />
+              </font>
             </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnCopyDetails" text="Copia" prefWidth="80" />
+        </HBox>
 
-            <TreeView fx:id="clusterTreeView" VBox.vgrow="ALWAYS" />
+        <TabPane VBox.vgrow="ALWAYS">
+            <!-- Summary Tab -->
+            <Tab text="Riepilogo" closable="false">
+              <TextArea fx:id="summaryTextArea"
+                     editable="false"
+                     wrapText="true"
+                     promptText="Seleziona un cluster per visualizzare il riepilogo..."
+                     styleClass="details-area" />
+            </Tab>
 
-            <HBox spacing="10" alignment="CENTER">
-                <Button fx:id="btnExpandAll" text="Expand All" prefWidth="100" />
-                <Button fx:id="btnCollapseAll" text="Collapse All" prefWidth="100" />
-            </HBox>
-        </VBox>
+            <!-- Tuples Tab -->
+            <Tab text="Tuple" closable="false">
+              <TextArea fx:id="tuplesTextArea"
+                     editable="false"
+                     wrapText="true"
+                     promptText="Seleziona un cluster per visualizzare le tuple..."
+                     styleClass="details-area" />
+            </Tab>
 
-        <!-- Right: Cluster Details -->
-        <VBox spacing="10">
-            <padding>
-                <Insets top="5" right="5" bottom="5" left="5" />
-            </padding>
-
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Cluster Details" styleClass="form-label">
-                    <font>
-                        <Font name="System Bold" size="14" />
-                    </font>
-                </Label>
-                <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnCopyDetails" text="Copy" prefWidth="80" />
-            </HBox>
-
-            <TabPane VBox.vgrow="ALWAYS">
-                <!-- Summary Tab -->
-                <Tab text="Summary" closable="false">
-                    <TextArea fx:id="summaryTextArea"
-                             editable="false"
-                             wrapText="true"
-                             promptText="Select a cluster to view its summary..."
-                             styleClass="details-area" />
-                </Tab>
-
-                <!-- Tuples Tab -->
-                <Tab text="Tuples" closable="false">
-                    <TextArea fx:id="tuplesTextArea"
-                             editable="false"
-                             wrapText="true"
-                             promptText="Select a cluster to view its tuples..."
-                             styleClass="details-area" />
-                </Tab>
-
-                <!-- Statistics Tab -->
-                <Tab text="Statistics" closable="false">
-                    <TextArea fx:id="statisticsTextArea"
-                             editable="false"
-                             wrapText="true"
-                             promptText="Select a cluster to view its statistics..."
-                             styleClass="details-area" />
-                </Tab>
-            </TabPane>
-        </VBox>
+            <!-- Statistics Tab -->
+            <Tab text="Statistiche" closable="false">
+              <TextArea fx:id="statisticsTextArea"
+                     editable="false"
+                     wrapText="true"
+                     promptText="Seleziona un cluster per visualizzare le statistiche..."
+                     styleClass="details-area" />
+            </Tab>
+        </TabPane>
+      </VBox>
 
     </SplitPane>
 
     <!-- Footer with additional info -->
     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="status-bar">
-        <padding>
-            <Insets top="5" right="10" bottom="5" left="10" />
-        </padding>
-        <Label fx:id="statusLabel" text="Select a cluster to view details" />
-        <Region HBox.hgrow="ALWAYS" />
-        <Label fx:id="timestampLabel" text="" />
+      <padding>
+        <Insets top="5" right="10" bottom="5" left="10" />
+      </padding>
+      <Label fx:id="statusLabel" text="Seleziona un cluster per visualizzare i dettagli" />
+      <Region HBox.hgrow="ALWAYS" />
+      <Label fx:id="timestampLabel" text="" />
     </HBox>
 
 </VBox>

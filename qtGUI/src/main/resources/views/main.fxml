@@ -15,36 +15,36 @@
         <VBox>
             <MenuBar>
                 <Menu text="File">
-                    <MenuItem text="New Analysis" fx:id="menuNew" />
-                    <MenuItem text="Open..." fx:id="menuOpen" />
+                    <MenuItem text="Nuova Analisi" fx:id="menuNew" />
+                    <MenuItem text="Apri..." fx:id="menuOpen" />
                     <SeparatorMenuItem />
-                    <MenuItem text="Save" fx:id="menuSave" />
-                    <MenuItem text="Save As..." fx:id="menuSaveAs" />
+                    <MenuItem text="Salva" fx:id="menuSave" />
+                    <MenuItem text="Salva Come..." fx:id="menuSaveAs" />
                     <SeparatorMenuItem />
-                    <MenuItem text="Exit" fx:id="menuExit" />
+                    <MenuItem text="Esci" fx:id="menuExit" />
                 </Menu>
-                <Menu text="Edit">
-                    <MenuItem text="Settings" fx:id="menuSettings" />
+                <Menu text="Modifica">
+                    <MenuItem text="Impostazioni" fx:id="menuSettings" />
                 </Menu>
-                <Menu text="View">
-                    <CheckMenuItem text="Show Toolbar" fx:id="menuShowToolbar" selected="true" />
-                    <CheckMenuItem text="Show Status Bar" fx:id="menuShowStatusBar" selected="true" />
+                <Menu text="Visualizza">
+                    <CheckMenuItem text="Mostra Toolbar" fx:id="menuShowToolbar" selected="true" />
+                    <CheckMenuItem text="Mostra Barra di Stato" fx:id="menuShowStatusBar" selected="true" />
                 </Menu>
-                <Menu text="Help">
-                    <MenuItem text="Documentation" fx:id="menuHelp" />
-                    <MenuItem text="About" fx:id="menuAbout" />
+                <Menu text="Aiuto">
+                    <MenuItem text="Documentazione" fx:id="menuHelp" />
+                    <MenuItem text="Informazioni" fx:id="menuAbout" />
                 </Menu>
             </MenuBar>
 
             <!-- ToolBar -->
             <ToolBar fx:id="toolbar">
-                <Button text="New" fx:id="btnNew" />
-                <Button text="Open" fx:id="btnOpen" />
-                <Button text="Save" fx:id="btnSave" />
+                <Button text="Nuovo" fx:id="btnNew" />
+                <Button text="Apri" fx:id="btnOpen" />
+                <Button text="Salva" fx:id="btnSave" />
                 <Separator orientation="VERTICAL" />
-                <Button text="Run Clustering" fx:id="btnRun" />
+                <Button text="Avvia Clustering" fx:id="btnRun" />
                 <Separator orientation="VERTICAL" />
-                <Button text="Export" fx:id="btnExport" />
+                <Button text="Esporta" fx:id="btnExport" />
             </ToolBar>
         </VBox>
     </top>
@@ -58,12 +58,12 @@
                         <Font name="System Bold" size="32" />
                     </font>
                 </Label>
-                <Label text="Quality Threshold Clustering Algorithm">
+                <Label text="Algoritmo di Clustering Quality Threshold">
                     <font>
                         <Font size="18" />
                     </font>
                 </Label>
-                <Label text="Welcome! Use File > New Analysis to start." />
+                <Label text="Benvenuto! Usa File > Nuova Analisi per iniziare." />
             </VBox>
         </StackPane>
     </center>
@@ -74,7 +74,7 @@
             <padding>
                 <Insets top="5" right="10" bottom="5" left="10" />
             </padding>
-            <Label fx:id="statusLabel" text="Ready" />
+            <Label fx:id="statusLabel" text="Pronto" />
             <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="progressLabel" text="" />
         </HBox>

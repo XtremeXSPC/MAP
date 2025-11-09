@@ -13,9 +13,8 @@ import java.util.Properties;
  * Gestisce i temi e le dimensioni del font dell'applicazione.
  * Singleton che consente di cambiare tema (light/dark) e dimensione font dinamicamente.
  *
- * @author MAP Team
+ * @author Lombardi Costantino
  * @version 1.0.0
- * @since Sprint 4
  */
 public class ThemeManager {
 
@@ -26,8 +25,7 @@ public class ThemeManager {
     private static final String DARK_THEME_CSS = "/styles/dark-theme.css";
 
     public enum Theme {
-        LIGHT("Light"),
-        DARK("Dark");
+        LIGHT("Light"), DARK("Dark");
 
         private final String displayName;
 
@@ -50,10 +48,7 @@ public class ThemeManager {
     }
 
     public enum FontSize {
-        SMALL("Small (12px)", 12),
-        MEDIUM("Medium (14px)", 14),
-        LARGE("Large (16px)", 16),
-        XLARGE("X-Large (18px)", 18);
+        SMALL("Small (12px)", 12), MEDIUM("Medium (14px)", 14), LARGE("Large (16px)", 16), XLARGE("X-Large (18px)", 18);
 
         private final String displayName;
         private final int size;

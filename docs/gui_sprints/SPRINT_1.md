@@ -800,17 +800,20 @@ Creare foglio di stile CSS moderno e professionale per l'applicazione.
 ### Obiettivi Raggiunti
 
 ✅ **Main Window**
+
 - Layout completo con MenuBar, ToolBar, StatusBar
 - Sistema navigazione funzionante
 - Gestione eventi menu e toolbar
 
 ✅ **Home View**
+
 - Form configurazione completo
 - Validazione input real-time
 - Supporto CSV/Database/Hardcoded
 - Gestione errori visualizzata
 
 ✅ **Clustering View**
+
 - Progress feedback real-time
 - Task asincrono JavaFX
 - Activity log dettagliato
@@ -818,6 +821,7 @@ Creare foglio di stile CSS moderno e professionale per l'applicazione.
 - Gestione cancellazione
 
 ✅ **Results View**
+
 - TreeView con gerarchia cluster
 - 3 tab per dettagli (Summary, Tuples, Statistics)
 - Espandi/comprimi ricorsivo
@@ -825,12 +829,14 @@ Creare foglio di stile CSS moderno e professionale per l'applicazione.
 - Dati di esempio caricati
 
 ✅ **Settings View**
+
 - Configurazione completa
 - Persistenza su Properties file
 - Validazione input
 - Ripristino predefiniti
 
 ✅ **Styling**
+
 - CSS moderno e professionale
 - Palette colori consistente
 - Responsive design
@@ -839,29 +845,32 @@ Creare foglio di stile CSS moderno e professionale per l'applicazione.
 ### Problemi Riscontrati
 
 ⚠️ **FXML Imports**
+
 - Necessario importare tutti i controlli usati
 - **Soluzione:** Verificare import in ogni FXML
 
 ⚠️ **Controller Injection**
+
 - Richiede `fx:controller` attribute in root element
 - Richiede `opens` in module-info.java
 - **Soluzione:** Documentato in module-info.java
 
 ⚠️ **Properties File**
+
 - File non salvato in password (sicurezza)
 - **Soluzione:** Documentato in SettingsController
 
 ### Metriche
 
-| Metrica | Valore |
-|---------|--------|
-| View FXML create | 5 |
-| Controller implementati | 5 |
-| Righe codice Java | ~2500 |
-| Righe FXML | ~400 |
-| Righe CSS | ~140 |
-| Metodi pubblici | 42 |
-| Tempo effettivo | 18 ore |
+| Metrica                 | Valore |
+| ----------------------- | ------ |
+| View FXML create        | 5      |
+| Controller implementati | 5      |
+| Righe codice Java       | ~2500  |
+| Righe FXML              | ~400   |
+| Righe CSS               | ~140   |
+| Metodi pubblici         | 42     |
+| Tempo effettivo         | 18 ore |
 
 ### Lesson Learned
 

@@ -25,6 +25,7 @@
 **Pattern**: Singleton
 
 **Responsabilità**:
+
 - Gestione centralizz ata di tema e dimensione font
 - Persistenza preferenze in `qtgui.properties`
 - Applicazione dinamica senza riavvio
@@ -47,6 +48,7 @@ enum FontSize {
 ```
 
 **Metodi Principali**:
+
 - `setPrimaryScene(Scene)` - Imposta scena e applica tema/font
 - `setTheme(Theme)` - Cambia tema
 - `setFontSize(FontSize)` - Cambia dimensione font
@@ -55,6 +57,7 @@ enum FontSize {
 - `isDarkMode()` - Verifica se dark mode attivo
 
 **Persistenza**:
+
 ```properties
 theme=Dark
 fontSize=Large (16px)
@@ -67,6 +70,7 @@ fontSize=Large (16px)
 **File Nuovo**: `qtGUI/src/main/resources/styles/dark-theme.css` (430+ linee)
 
 **Palette Colori**:
+
 - Background principale: `#1e1e1e`
 - Background secondario: `#2b2b2b`
 - Background controlli: `#3c3f41`
@@ -116,6 +120,7 @@ fontSize=Large (16px)
    - ScrollBar (thumb #4a4a4a)
 
 **Accessibilità**:
+
 - Contrasto testo-sfondo > 4.5:1 (WCAG AA)
 - Stati hover/focus ben visibili
 - Disabled states con opacità ridotta
@@ -127,12 +132,14 @@ fontSize=Large (16px)
 **Modifiche**: `qtGUI/src/main/java/gui/MainApp.java`
 
 **Before**:
+
 ```java
 Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 scene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
 ```
 
 **After**:
+
 ```java
 Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -142,6 +149,7 @@ themeManager.setPrimaryScene(scene);
 ```
 
 **Benefici**:
+
 - Caricamento automatico tema salvato
 - Applicazione dimensione font salvata
 - Nessun hardcoding del CSS
@@ -153,6 +161,7 @@ themeManager.setPrimaryScene(scene);
 **Modifiche**: `qtGUI/src/main/java/gui/controllers/SettingsController.java`
 
 **Nuovo Metodo**:
+
 ```java
 private void setupLiveListeners() {
     // Listener tema
@@ -174,6 +183,7 @@ private void setupLiveListeners() {
 ```
 
 **Comportamento**:
+
 1. Utente apre Settings
 2. Utente seleziona tema diverso dal ComboBox
 3. **Tema cambia immediatamente** (no restart)
@@ -183,6 +193,7 @@ private void setupLiveListeners() {
 7. Preferenze salvate in `qtgui.properties`
 
 **UX Migliorata**:
+
 - Anteprima live delle modifiche
 - Feedback immediato
 - Nessuna confusione su "quando si applica"
@@ -193,12 +204,14 @@ private void setupLiveListeners() {
 ### 5. Fix Testo Tagliato
 
 **Problema Originale**:
-```
+
+```example
 "New Clustering Analysis"
  ↑w tagliata     ↑s tagliata
 ```
 
 **Root Cause**:
+
 - Padding insufficiente (0px)
 - Nessun text wrapping
 - Nessun alignment center
@@ -206,6 +219,7 @@ private void setupLiveListeners() {
 **Fix Applicato**:
 
 **Light Theme** (`application.css`):
+
 ```css
 .title-label {
   -fx-font-size: 32px;
@@ -218,6 +232,7 @@ private void setupLiveListeners() {
 ```
 
 **Dark Theme** (`dark-theme.css`):
+
 ```css
 .title-label {
   -fx-font-size: 32px;
@@ -230,6 +245,7 @@ private void setupLiveListeners() {
 ```
 
 **Risultato**:
+
 - Testo completamente visibile
 - Padding 15px sinistra/destra
 - Centratura perfetta
@@ -240,6 +256,7 @@ private void setupLiveListeners() {
 ## Flusso Utente - Cambio Tema
 
 ### Scenario 1: Primo Avvio
+
 1. Utente lancia applicazione
 2. ThemeManager carica `qtgui.properties`
 3. Se file esiste: applica tema/font salvati
@@ -247,6 +264,7 @@ private void setupLiveListeners() {
 5. Applicazione si apre con tema corretto
 
 ### Scenario 2: Cambio in Settings
+
 1. Utente apre Settings
 2. ComboBox "Tema" mostra valore corrente ("Light")
 3. Utente seleziona "Dark"
@@ -258,6 +276,7 @@ private void setupLiveListeners() {
 9. Riavvio applicazione → Dark mode persiste
 
 ### Scenario 3: Cambio Font Size
+
 1. Utente in Settings
 2. ComboBox "Dimensione Font" mostra "Medium (14px)"
 3. Utente seleziona "Large (16px)"
@@ -268,6 +287,7 @@ private void setupLiveListeners() {
 8. Riavvio → Font size "Large" applicato
 
 ### Scenario 4: Cancel Changes
+
 1. Utente in Settings
 2. Cambia tema a "Dark"
 3. Tema cambia (live preview)
@@ -281,7 +301,9 @@ private void setupLiveListeners() {
 ## Compatibilità Temi
 
 ### Light Theme
+
 **Caratteristiche**:
+
 - Background bianco (#ffffff)
 - Testo scuro (#2c3e50)
 - Accent blu brillante (#3498db)
@@ -289,16 +311,20 @@ private void setupLiveListeners() {
 - Ottimale per: ambienti luminosi, preferenze tradizionali
 
 **Pro**:
+
 - Contrasto netto
 - Familiarità utenti
 - Meno affaticante in luce intensa
 
 **Contro**:
+
 - Affaticamento in ambienti bui
 - Alto consumo energetico (display LCD)
 
 ### Dark Theme
+
 **Caratteristiche**:
+
 - Background scuro (#1e1e1e, #2b2b2b)
 - Testo chiaro (#e0e0e0)
 - Accent blu intenso (#4a9eff)
@@ -306,12 +332,14 @@ private void setupLiveListeners() {
 - Ottimale per: ambienti scuri, lavoro notturno, risparmio energetico
 
 **Pro**:
+
 - Riduce affaticamento occhi
 - Risparmio batteria (OLED)
 - Aspetto moderno/professionale
 - Migliore focus sui dati
 
 **Contro**:
+
 - Meno leggibile in luce intensa
 - Richiede calibrazione contrasto
 
@@ -320,6 +348,7 @@ private void setupLiveListeners() {
 ## Testing Suggerito
 
 ### Test 1: Cambio Tema Live
+
 1. Avvia app (Light mode)
 2. Vai Settings → Aspetto
 3. Cambia "Tema" a "Dark"
@@ -332,6 +361,7 @@ private void setupLiveListeners() {
 **Pass Criteria**: Cambio seamless, nessun flickering, tutti i componenti stilizzati
 
 ### Test 2: Persistenza Tema
+
 1. Avvia app
 2. Settings → Tema "Dark"
 3. Salva Impostazioni
@@ -343,6 +373,7 @@ private void setupLiveListeners() {
 **Pass Criteria**: Tema persiste tra sessioni
 
 ### Test 3: Font Size Live
+
 1. Avvia app
 2. Settings → Dimensione Font "X-Large (18px)"
 3. **Verifica**: Tutto il testo diventa più grande
@@ -353,6 +384,7 @@ private void setupLiveListeners() {
 **Pass Criteria**: Font size applica globalmente, interfaccia ridimensiona correttamente
 
 ### Test 4: Title Label Fix
+
 1. Avvia app
 2. Vai Home (view "New")
 3. **Verifica**: Testo "New Clustering Analysis" completamente visibile
@@ -363,6 +395,7 @@ private void setupLiveListeners() {
 **Pass Criteria**: Nessun testo tagliato, padding adeguato
 
 ### Test 5: Tutti i Componenti Stilizzati
+
 1. Avvia app in Dark mode
 2. Verifica stilizzazione:
    - Buttons (standard, primary, danger)
@@ -383,36 +416,40 @@ private void setupLiveListeners() {
 ## Metriche
 
 ### Codice
-| Metrica                  | Valore |
-| ------------------------ | ------ |
-| File nuovi               | 2      |
-| File modificati          | 3      |
-| Linee aggiunte           | ~830   |
-| Classi nuove             | 1      |
-| Enumerazioni nuove       | 2      |
-| Metodi pubblici nuovi    | 12     |
+
+| Metrica               | Valore |
+| --------------------- | ------ |
+| File nuovi            | 2      |
+| File modificati       | 3      |
+| Linee aggiunte        | ~830   |
+| Classi nuove          | 1      |
+| Enumerazioni nuove    | 2      |
+| Metodi pubblici nuovi | 12     |
 
 ### CSS
-| Metrica                  | Light  | Dark   |
-| ------------------------ | ------ | ------ |
-| Linee totali             | 206    | 430    |
-| Selettori unici          | ~40    | ~60    |
-| Componenti stilizzati    | 25     | 35     |
-| Pseudo-classi (:hover)   | 15     | 20     |
+
+| Metrica                | Light | Dark |
+| ---------------------- | ----- | ---- |
+| Linee totali           | 206   | 430  |
+| Selettori unici        | ~40   | ~60  |
+| Componenti stilizzati  | 25    | 35   |
+| Pseudo-classi (:hover) | 15    | 20   |
 
 ### Performance
-| Operazione               | Tempo  |
-| ------------------------ | ------ |
-| Cambio tema              | <100ms |
-| Cambio font size         | <50ms  |
-| Caricamento CSS          | <20ms  |
-| Salvataggio preferenze   | <10ms  |
+
+| Operazione             | Tempo  |
+| ---------------------- | ------ |
+| Cambio tema            | <100ms |
+| Cambio font size       | <50ms  |
+| Caricamento CSS        | <20ms  |
+| Salvataggio preferenze | <10ms  |
 
 ---
 
 ## Limitazioni Note
 
 ### 1. Nessun Tema Personalizzato
+
 **Limitazione**: Solo Light e Dark predefiniti
 
 **Workaround**: Utente può modificare manualmente i file CSS
@@ -420,6 +457,7 @@ private void setupLiveListeners() {
 **Soluzione Futura**: Theme editor con color picker
 
 ### 2. Font Size Non Scalare
+
 **Limitazione**: Font size override globale, non scala proporz ionalmente tutti gli elementi
 
 **Impatto**: Alcuni elementi (es. icone) non si adattano
@@ -427,6 +465,7 @@ private void setupLiveListeners() {
 **Soluzione Futura**: Sistema scaling completo con fattore moltiplicativo
 
 ### 3. No Smooth Transition
+
 **Limitazione**: Cambio tema istantaneo senza animazione
 
 **Impatto**: Cambio può sembrare brusco
@@ -467,5 +506,3 @@ Implementazione completa del sistema di theming con:
 **Code Quality**: Alta, con pattern riconosciuti e logging completo
 
 ---
-
-**Fine Documento**

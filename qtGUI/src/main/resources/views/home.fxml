@@ -17,12 +17,12 @@
 
     <!-- Header -->
     <VBox spacing="10" alignment="CENTER">
-        <Label text="New Clustering Analysis" styleClass="title-label">
+        <Label text="Nuova Analisi di Clustering" styleClass="title-label">
             <font>
                 <Font name="System Bold" size="28" />
             </font>
         </Label>
-        <Label text="Configure dataset and clustering parameters">
+        <Label text="Configura dataset e parametri di clustering">
             <font>
                 <Font size="14" />
             </font>
@@ -33,19 +33,19 @@
 
     <!-- Dataset Selection Section -->
     <VBox spacing="15" styleClass="card">
-        <Label text="Dataset Selection" styleClass="form-label">
+        <Label text="Selezione Dataset" styleClass="form-label">
             <font>
                 <Font name="System Bold" size="16" />
             </font>
         </Label>
 
         <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Source:" minWidth="120" />
+            <Label text="Sorgente:" minWidth="120" />
             <ComboBox fx:id="dataSourceComboBox" prefWidth="250">
                 <items>
                     <javafx.collections.FXCollections fx:factory="observableArrayList">
                         <java.lang.String fx:value="Hardcoded (PlayTennis)" />
-                        <java.lang.String fx:value="CSV File" />
+                        <java.lang.String fx:value="File CSV" />
                         <java.lang.String fx:value="Database" />
                     </javafx.collections.FXCollections>
                 </items>
@@ -54,49 +54,49 @@
 
         <!-- CSV File Selection (visible when CSV is selected) -->
         <HBox fx:id="csvFileSection" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
-            <Label text="CSV File:" minWidth="120" />
-            <TextField fx:id="csvFilePathField" prefWidth="250" promptText="Select a CSV file..." editable="false" />
-            <Button fx:id="btnBrowseFile" text="Browse..." />
+            <Label text="File CSV:" minWidth="120" />
+            <TextField fx:id="csvFilePathField" prefWidth="250" promptText="Seleziona un file CSV..." editable="false" />
+            <Button fx:id="btnBrowseFile" text="Sfoglia..." />
         </HBox>
 
         <!-- Database Configuration (visible when Database is selected) -->
         <VBox fx:id="databaseSection" spacing="10" visible="false" managed="false">
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="DB Host:" minWidth="120" />
+                <Label text="Host DB:" minWidth="120" />
                 <TextField fx:id="dbHostField" prefWidth="250" text="localhost" />
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="DB Port:" minWidth="120" />
+                <Label text="Porta DB:" minWidth="120" />
                 <TextField fx:id="dbPortField" prefWidth="100" text="3306" />
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Database Name:" minWidth="120" />
-                <TextField fx:id="dbNameField" prefWidth="250" text="MapDB" promptText="e.g., MapDB" />
+                <Label text="Nome Database:" minWidth="120" />
+                <TextField fx:id="dbNameField" prefWidth="250" text="MapDB" promptText="es., MapDB" />
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Username:" minWidth="120" />
-                <TextField fx:id="dbUserField" prefWidth="250" text="MapUser" promptText="e.g., MapUser" />
+                <Label text="Nome Utente:" minWidth="120" />
+                <TextField fx:id="dbUserField" prefWidth="250" text="MapUser" promptText="es., MapUser" />
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Password:" minWidth="120" />
-                <PasswordField fx:id="dbPasswordField" prefWidth="250" text="map" promptText="Database password" />
+                <PasswordField fx:id="dbPasswordField" prefWidth="250" text="map" promptText="Password database" />
             </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Table Name:" minWidth="120" />
-                <TextField fx:id="tableNameField" prefWidth="250" promptText="Enter table name..." />
+                <Label text="Nome Tabella:" minWidth="120" />
+                <TextField fx:id="tableNameField" prefWidth="250" promptText="Inserisci nome tabella..." />
             </HBox>
         </VBox>
 
         <!-- Dataset Preview Button -->
         <HBox spacing="10" alignment="CENTER_LEFT">
             <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="btnPreviewDataset" text="Preview Dataset..." />
+            <Button fx:id="btnPreviewDataset" text="Anteprima Dataset..." />
         </HBox>
     </VBox>
 
     <!-- Clustering Parameters Section -->
     <VBox spacing="15" styleClass="card">
-        <Label text="Clustering Parameters" styleClass="form-label">
+        <Label text="Parametri di Clustering" styleClass="form-label">
             <font>
                 <Font name="System Bold" size="16" />
             </font>
@@ -104,11 +104,11 @@
 
         <HBox spacing="10" alignment="CENTER_LEFT">
             <Label text="Radius:" minWidth="120" />
-            <TextField fx:id="radiusField" prefWidth="150" promptText="e.g., 0.5" />
+            <TextField fx:id="radiusField" prefWidth="150" promptText="es., 0.5" />
             <Label fx:id="radiusValidationLabel" text="" styleClass="label-error" />
         </HBox>
 
-        <Label text="The radius defines the maximum distance for points to be in the same cluster." wrapText="true">
+        <Label text="Il radius definisce la distanza massima per i punti nello stesso cluster." wrapText="true">
             <font>
                 <Font size="12" />
             </font>
@@ -117,21 +117,21 @@
 
     <!-- Options Section -->
     <VBox spacing="15" styleClass="card">
-        <Label text="Options" styleClass="form-label">
+        <Label text="Opzioni" styleClass="form-label">
             <font>
                 <Font name="System Bold" size="16" />
             </font>
         </Label>
 
-        <CheckBox fx:id="enableCachingCheckBox" text="Enable distance caching (faster for large datasets)" selected="true" />
-        <CheckBox fx:id="verboseLoggingCheckBox" text="Verbose logging" selected="false" />
+        <CheckBox fx:id="enableCachingCheckBox" text="Abilita caching distanze (più veloce per dataset grandi)" selected="true" />
+        <CheckBox fx:id="verboseLoggingCheckBox" text="Logging dettagliato" selected="false" />
     </VBox>
 
     <!-- Action Buttons -->
     <HBox spacing="15" alignment="CENTER">
         <Region HBox.hgrow="ALWAYS" />
-        <Button fx:id="btnCancel" text="Cancel" prefWidth="120" />
-        <Button fx:id="btnStartClustering" text="Start Clustering" prefWidth="150" styleClass="button-primary" disable="true" />
+        <Button fx:id="btnCancel" text="Annulla" prefWidth="120" />
+        <Button fx:id="btnStartClustering" text="Avvia Clustering" prefWidth="150" styleClass="button-primary" disable="true" />
     </HBox>
 
     <!-- Validation Summary -->

@@ -16,6 +16,7 @@
 Il costruttore di ClusteringResult non valida i parametri null.
 
 **Codice attuale**:
+
 ```java
 public ClusteringResult(ClusterSet clusterSet, Data data, double radius,
                        long executionTimeMs, QTMiner miner) {
@@ -26,6 +27,7 @@ public ClusteringResult(ClusterSet clusterSet, Data data, double radius,
 ```
 
 **Fix consigliato**:
+
 ```java
 public ClusteringResult(ClusterSet clusterSet, Data data, double radius,
                        long executionTimeMs, QTMiner miner) {
@@ -49,16 +51,19 @@ public ClusteringResult(ClusterSet clusterSet, Data data, double radius,
 Password database memorizzata come `String` invece di `char[]`.
 
 **Codice attuale**:
+
 ```java
 private String dbPassword;
 ```
 
 **Motivazione problema**:
+
 - String sono immutabili e rimangono in memoria fino al garbage collection
 - Visibili in heap dumps
 - Non possono essere "pulite" dopo l'uso
 
 **Fix consigliato**:
+
 ```java
 private char[] dbPassword;
 
@@ -94,6 +99,7 @@ public void clearPassword() {
 Il setter di radius non valida che il valore sia >= 0.
 
 **Codice attuale**:
+
 ```java
 public void setRadius(double radius) {
     this.radius = radius;
@@ -101,6 +107,7 @@ public void setRadius(double radius) {
 ```
 
 **Fix consigliato**:
+
 ```java
 public void setRadius(double radius) {
     if (radius < 0) {
@@ -123,6 +130,7 @@ public void setRadius(double radius) {
 Nessun controllo che la porta sia nel range valido 1-65535.
 
 **Codice attuale**:
+
 ```java
 public void setDbPort(int dbPort) {
     this.dbPort = dbPort;
@@ -130,6 +138,7 @@ public void setDbPort(int dbPort) {
 ```
 
 **Fix consigliato**:
+
 ```java
 public void setDbPort(int dbPort) {
     if (dbPort < 1 || dbPort > 65535) {
@@ -154,6 +163,7 @@ public void setDbPort(int dbPort) {
 Aggiungere un test di connessione prima di avviare il clustering per dare feedback immediato all'utente.
 
 **Implementazione proposta**:
+
 ```java
 if (dataSource == DataSource.DATABASE) {
     DataImportService dataService = ApplicationContext.getInstance().getDataImportService();
@@ -182,6 +192,7 @@ if (dataSource == DataSource.DATABASE) {
 Verificare che il file CSV esista ancora prima di procedere.
 
 **Implementazione proposta**:
+
 ```java
 if (dataSource == DataSource.CSV && selectedCsvFile != null) {
     if (!selectedCsvFile.exists()) {
@@ -205,16 +216,19 @@ if (dataSource == DataSource.CSV && selectedCsvFile != null) {
 Le percentuali di progresso sono hardcoded e non riflettono il progresso reale dell'algoritmo.
 
 **Codice attuale**:
+
 ```java
 updateProgress(40, 100); // Percentuali fisse
 ```
 
 **Suggerimento per Sprint 3+**:
+
 - Modificare QTMiner per supportare callback di progresso
 - Aggiungere listener per aggiornamenti iterazione per iterazione
 - Calcolare percentuale reale: (cluster_trovati / tuple_totali) * 100
 
 **Esempio interfaccia**:
+
 ```java
 public interface ClusteringProgressListener {
     void onProgress(int clustersTrovati, int tupleClusterizzate, int tupleTotali);
@@ -244,9 +258,9 @@ Passare il timestamp come parametro al costruttore invece di generarlo intername
 ## Riepilogo Priorità
 
 | Priorità | Numero criticità | Tempo stimato | Sprint consigliato |
-|----------|------------------|---------------|-------------------|
-| MEDIA    | 4                | 2-3 ore       | Sprint 3          |
-| BASSA    | 3                | 1-2 ore       | Sprint 4+         |
+| -------- | ---------------- | ------------- | ------------------ |
+| MEDIA    | 4                | 2-3 ore       | Sprint 3           |
+| BASSA    | 3                | 1-2 ore       | Sprint 4+          |
 
 **Totale**: 7 miglioramenti, ~4-5 ore sviluppo
 
@@ -254,17 +268,19 @@ Passare il timestamp come parametro al costruttore invece di generarlo intername
 
 ## Note Implementazione
 
-### Quando implementare:
+### Quando implementare
 
 **Sprint 3** (Visualizzazione 2D):
+
 - Fix #1-4 (criticità MEDIA)
 - Applicare durante refactoring generale
 
 **Sprint 4+** (Export/Salvataggio):
+
 - Fix #5-7 (criticità BASSA)
 - Implementare se tempo disponibile
 
-### Ordine consigliato:
+### Ordine consigliato
 
 1. **Fix #3** (validazione radius) - più semplice, alto impatto
 2. **Fix #4** (validazione porta) - simile a #3
@@ -281,5 +297,3 @@ Le criticità ALTA sono state risolte in Sprint 2. Le criticità MEDIA e BASSA n
 **Raccomandazione**: Implementare fix #1-4 durante Sprint 3 come parte del normale sviluppo.
 
 ---
-
-**Fine documento**
