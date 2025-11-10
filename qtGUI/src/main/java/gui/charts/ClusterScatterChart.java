@@ -5,6 +5,7 @@ import data.Item;
 import data.Tuple;
 import gui.models.ClusteringResult;
 import gui.utils.ColorPalette;
+import gui.utils.Point2D;
 import mining.Cluster;
 import mining.ClusterSet;
 import org.knowm.xchart.XYChart;
@@ -12,6 +13,7 @@ import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.line.LineStyle;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ public class ClusterScatterChart {
 
     private int xAttributeIndex;
     private int yAttributeIndex;
+    private boolean convexHullMode = true;  // default: nuovo stile con convex hull
 
     /**
      * Crea un gestore di scatter chart per i risultati di clustering.
@@ -74,6 +77,15 @@ public class ClusterScatterChart {
     }
 
     /**
+     * Imposta la modalità di visualizzazione convex hull.
+     *
+     * @param enabled true per abilitare convex hull, false per stile classico
+     */
+    public void setConvexHullMode(boolean enabled) {
+        this.convexHullMode = enabled;
+    }
+
+    /**
      * Crea lo scatter plot 2D.
      *
      * @return oggetto XYChart pronto per la visualizzazione
@@ -101,10 +113,16 @@ public class ClusterScatterChart {
 
         for (int i = 0; i < clusterList.size(); i++) {
             Cluster cluster = clusterList.get(i);
+
+            // Prima disegna convex hull (se abilitato), poi punti
+            if (convexHullMode) {
+                addConvexHullSeries(chart, cluster, i);
+            }
+
             addClusterSeries(chart, cluster, i);
         }
 
-        // Aggiungi serie per i centroidi
+        // Aggiungi serie per i centroidi (in primo piano)
         addCentroidsSeries(chart, clusterList);
 
         logger.info("Scatter plot creato con {} cluster", clusterList.size());
@@ -157,6 +175,12 @@ public class ClusterScatterChart {
         series.setMarkerColor(clusterColor);
         series.setLineColor(clusterColor);
         series.setMarker(SeriesMarkers.CIRCLE);
+
+        // In modalità convex hull, rimuovi linee tra punti e riduci dimensione marker
+        if (convexHullMode) {
+            series.setLineStyle(LineStyle.NONE);
+            series.setMarkerSize(6);  // Marker più piccoli con hull
+        }
     }
 
     /**
@@ -185,6 +209,72 @@ public class ClusterScatterChart {
         centroidSeries.setLineColor(Color.BLACK);
         centroidSeries.setMarker(SeriesMarkers.CROSS); // Marker diverso per centroidi
 
+    }
+
+    /**
+     * Aggiunge una serie per visualizzare il convex hull di un cluster.
+     *
+     * <p>Il convex hull (inviluppo convesso) è la più piccola regione convessa
+     * che contiene tutti i punti del cluster. Viene disegnato come un poligono
+     * chiuso che delimita l'area del cluster.</p>
+     *
+     * <p>Se il cluster ha meno di 3 punti, il convex hull non può essere calcolato
+     * e nessuna serie viene aggiunta.</p>
+     *
+     * @param chart grafico a cui aggiungere la serie
+     * @param cluster cluster da visualizzare
+     * @param clusterIndex indice del cluster
+     */
+    private void addConvexHullSeries(XYChart chart, Cluster cluster, int clusterIndex) {
+        String seriesName = "Hull " + (clusterIndex + 1);
+
+        int[] tupleIds = cluster.getTupleIDs();
+
+        // Converti tuple in Point2D
+        List<Point2D> points = new ArrayList<>();
+        for (int tupleId : tupleIds) {
+            Tuple tuple = data.getItemSet(tupleId);
+            double x = getNumericValue(tuple.get(xAttributeIndex));
+            double y = getNumericValue(tuple.get(yAttributeIndex));
+            points.add(new Point2D(x, y));
+        }
+
+        // Calcola convex hull (gestisci caso < 3 punti)
+        if (points.size() < 3) {
+            // Se 1-2 punti, non disegnare hull
+            logger.debug("Cluster {} ha solo {} punti, skip convex hull", clusterIndex + 1, points.size());
+            return;
+        }
+
+        try {
+            List<Point2D> hull = ConvexHullCalculator.grahamScan(points);
+
+            // Chiudi poligono (aggiungi primo punto alla fine)
+            hull.add(hull.get(0));
+
+            // Estrai coordinate per XChart
+            List<Double> hullX = new ArrayList<>();
+            List<Double> hullY = new ArrayList<>();
+            for (Point2D p : hull) {
+                hullX.add(p.getX());
+                hullY.add(p.getY());
+            }
+
+            // Aggiungi serie hull al grafico
+            XYSeries hullSeries = chart.addSeries(seriesName, hullX, hullY);
+
+            // Configura stile
+            Color clusterColor = ColorPalette.getColor(clusterIndex);
+            hullSeries.setLineColor(clusterColor);
+            hullSeries.setLineWidth(2.0f);
+            hullSeries.setMarker(SeriesMarkers.NONE);  // No marker sui vertici hull
+            hullSeries.setShowInLegend(false);         // Nascondi da legenda
+
+            logger.debug("Convex hull aggiunto per cluster {}: {} vertici", clusterIndex + 1, hull.size() - 1);
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Impossibile calcolare convex hull per cluster {}: {}", clusterIndex + 1, e.getMessage());
+        }
     }
 
     /**
@@ -255,6 +345,12 @@ public class ClusterScatterChart {
 
         for (int i = 0; i < clusterList.size(); i++) {
             Cluster cluster = clusterList.get(i);
+
+            // Prima disegna convex hull (se abilitato), poi punti
+            if (convexHullMode) {
+                addConvexHullSeries(chart, cluster, i);
+            }
+
             addClusterSeries(chart, cluster, i);
         }
 

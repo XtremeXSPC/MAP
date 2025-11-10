@@ -6,6 +6,7 @@ import gui.dialogs.DatasetPreviewDialog;
 import gui.models.ClusteringConfiguration;
 import gui.services.DataImportService.DataSource;
 import gui.utils.ApplicationContext;
+import gui.utils.DatasetLoader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -287,6 +288,11 @@ public class HomeController {
                 data = new Data();
                 logger.info("Caricato dataset hardcoded per preview");
 
+            } else if (dataSourceStr.contains("Dataset Standard")) {
+                // Dataset standard Iris
+                data = DatasetLoader.loadIrisDataset();
+                logger.info("Caricato dataset Iris per preview");
+
             } else if (dataSourceStr.contains("CSV")) {
                 // CSV non ancora supportato
                 showError("CSV Non Supportato", "La preview da file CSV sarà implementata in futuro.");
@@ -423,6 +429,8 @@ public class HomeController {
 
             if (dataSourceStr.contains("Hardcoded")) {
                 dataSource = DataSource.HARDCODED;
+            } else if (dataSourceStr.contains("Dataset Standard")) {
+                dataSource = DataSource.IRIS;
             } else if (dataSourceStr.contains("CSV")) {
                 dataSource = DataSource.CSV;
             } else if (dataSourceStr.contains("Database")) {

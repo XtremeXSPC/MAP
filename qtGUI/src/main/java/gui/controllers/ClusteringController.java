@@ -163,6 +163,10 @@ public class ClusteringController {
                             Platform.runLater(() -> appendLog("Caricamento dataset hardcoded (PlayTennis)..."));
                             yield dataService.loadHardcodedData();
                         }
+                        case IRIS -> {
+                            Platform.runLater(() -> appendLog("Caricamento dataset standard Iris (150 tuple)..."));
+                            yield dataService.loadIrisData();
+                        }
                         case CSV -> {
                             Platform.runLater(
                                     () -> appendLog("Caricamento dataset da CSV: " + config.getCsvFilePath()));

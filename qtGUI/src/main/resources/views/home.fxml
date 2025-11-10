@@ -45,6 +45,7 @@
                 <items>
                     <javafx.collections.FXCollections fx:factory="observableArrayList">
                         <java.lang.String fx:value="Hardcoded (PlayTennis)" />
+                        <java.lang.String fx:value="Dataset Standard (Iris)" />
                         <java.lang.String fx:value="File CSV" />
                         <java.lang.String fx:value="Database" />
                     </javafx.collections.FXCollections>

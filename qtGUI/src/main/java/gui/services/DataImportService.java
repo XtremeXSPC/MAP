@@ -36,7 +36,7 @@ public class DataImportService {
      * Enum per i tipi di sorgente dati supportati.
      */
     public enum DataSource {
-        HARDCODED, CSV, DATABASE
+        HARDCODED, IRIS, CSV, DATABASE
     }
 
     /**
@@ -57,6 +57,32 @@ public class DataImportService {
         } catch (Exception e) {
             logger.error("Errore durante caricamento dataset hardcoded", e);
             throw new EmptyDatasetException("Errore caricamento dataset hardcoded: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Carica il dataset standard Iris (150 tuple, 4 attributi continui).
+     *
+     * @return il dataset Iris
+     * @throws EmptyDatasetException se il dataset risulta vuoto
+     * @throws IOException se errore durante caricamento da resources
+     * @throws InvalidDataFormatException se formato CSV invalido
+     */
+    public Data loadIrisData() throws EmptyDatasetException, IOException, InvalidDataFormatException {
+        logger.info("Caricamento dataset standard Iris");
+
+        try {
+            Data data = gui.utils.DatasetLoader.loadIrisDataset();
+            logger.info("Dataset Iris caricato: {} tuple, {} attributi", data.getNumberOfExamples(),
+                    data.getNumberOfExplanatoryAttributes());
+            return data;
+
+        } catch (IOException | InvalidDataFormatException e) {
+            logger.error("Errore durante caricamento dataset Iris", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Errore inaspettato durante caricamento dataset Iris", e);
+            throw new EmptyDatasetException("Errore caricamento dataset Iris: " + e.getMessage());
         }
     }
 
