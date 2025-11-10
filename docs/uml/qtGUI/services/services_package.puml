@@ -22,8 +22,16 @@ package gui.services {
     + loadFromCSV(filePath: String): Data
     + loadFromDatabase(tableName: String): Data
     + loadFromSerializedFile(filePath: String): Data
+    + loadIrisData(): Data
     - parseCSV(filePath: String): Data
     - connectToDatabase(): DbAccess
+  }
+
+  enum DataSource << NEW >> {
+    HARDCODED
+    IRIS
+    CSV
+    DATABASE
   }
 
   ' ===== Export Service =====
@@ -44,6 +52,7 @@ package gui.services {
 
   DataImportService ..> "data.Data" : <<creates>>
   DataImportService ..> "database.DbAccess" : <<uses>>
+  DataImportService ..> "gui.utils.DatasetLoader" : <<uses>>
 
   ExportService ..> "gui.models.ClusteringResult" : <<uses>>
 }
@@ -65,11 +74,19 @@ note top of DataImportService
   Import dati da sorgenti multiple.
 
   Sorgenti supportate:
+  - Dataset Standard: Iris (150 tuple, 4 continui) **(NEW)**
   - CSV file (parsing con inferenza tipi)
   - Database MySQL (via JDBC)
   - File serializzati (.dmp)
 
-  Gestione errori robusto
+  Enum DataSource (NEW v1.1):
+  - HARDCODED: PlayTennis (14 tuple)
+  - IRIS: Dataset standard UCI
+  - CSV: File CSV generico
+  - DATABASE: Tabella MySQL
+
+  Dataset Iris caricato da resources tramite
+  DatasetLoader utility.
 end note
 
 note bottom of ExportService

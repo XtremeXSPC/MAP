@@ -6,24 +6,47 @@ skinparam packageStyle rectangle
 
 package gui.charts {
   class ClusterScatterChart {
-    - xAxis: NumberAxis
-    - yAxis: NumberAxis
+    - result: ClusteringResult
+    - data: Data
+    - clusterSet: ClusterSet
+    - xAttributeIndex: int
+    - yAttributeIndex: int
+    - convexHullMode: boolean
     --
-    + ClusterScatterChart(data: Data, clusters: ClusterSet)
-    + updateData(data: Data, clusters: ClusterSet): void
-    - applyPCA(data: Data): double[][]
-    - getClusterColor(index: int): Color
-    - createSeries(cluster: Cluster, index: int): Series
+    + ClusterScatterChart(result: ClusteringResult)
+    + setAxes(xIndex: int, yIndex: int): void
+    + setConvexHullMode(enabled: boolean): void
+    + createChart(): XYChart
+    + saveAsPNG(file: File, width: int, height: int): void
+    - addClusterSeries(chart: XYChart, cluster: Cluster, index: int): void
+    - addConvexHullSeries(chart: XYChart, cluster: Cluster, index: int): void
+    - addCentroidsSeries(chart: XYChart, clusters: List<Cluster>): void
+    - getNumericValue(item: Item): double
   }
 
   class ChartViewer {
-    - chart: ClusterScatterChart
-    - zoomEnabled: boolean
+    - result: ClusteringResult
+    - chartManager: ClusterScatterChart
+    - stage: Stage
+    - xAxisComboBox: ComboBox<String>
+    - yAxisComboBox: ComboBox<String>
+    - chartNode: SwingNode
     --
-    + ChartViewer()
-    + setChart(chart: ClusterScatterChart): void
-    + enableZoom(): void
-    + exportToPNG(filePath: String): void
+    + ChartViewer(result: ClusteringResult)
+    + show(): void
+    - createTopPanel(): VBox
+    - createBottomPanel(): HBox
+    - updateChart(): void
+    - onAxisChanged(): void
+    - handleExport(): void
+    - handleExportHD(): void
+  }
+
+  class ConvexHullCalculator << NEW >> {
+    --
+    + {static} grahamScan(points: List<Point2D>): List<Point2D>
+    - {static} findLowestPoint(points: List<Point2D>): Point2D
+    - {static} ccw(p1: Point2D, p2: Point2D, p3: Point2D): double
   }
 }
 
@@ -117,11 +140,35 @@ package gui.utils {
     + {static} getTextColor(theme: Theme): Color
     + {static} getBackgroundColor(theme: Theme): Color
   }
+
+  class Point2D << NEW >> {
+    - x: double
+    - y: double
+    --
+    + Point2D(x: double, y: double)
+    + getX(): double
+    + getY(): double
+    + distanceTo(other: Point2D): double
+    + polarAngleFrom(pivot: Point2D): double
+    + toString(): String
+    + equals(obj: Object): boolean
+    + hashCode(): int
+  }
+
+  class DatasetLoader << NEW >> {
+    --
+    + {static} loadIrisDataset(): Data
+    + {static} getAvailableDatasets(): String[]
+  }
 }
 
 ' ===== Relazioni =====
-ClusterScatterChart --|> "javafx.scene.chart.ScatterChart" : extends
-ChartViewer *-- "1" ClusterScatterChart : chart
+ChartViewer *-- "1" ClusterScatterChart : chartManager
+ChartViewer ..> "org.knowm.xchart.XYChart" : <<uses>>
+
+ClusterScatterChart ..> ConvexHullCalculator : <<uses>>
+ClusterScatterChart ..> ColorPalette : <<uses>>
+ConvexHullCalculator ..> Point2D : <<uses>>
 
 AboutDialog --|> "javafx.scene.control.Dialog" : extends
 DatasetPreviewDialog --|> "javafx.scene.control.Dialog" : extends
@@ -129,19 +176,67 @@ StatisticsDialog --|> "javafx.scene.control.Dialog" : extends
 
 ThemeManager o-- "1" Theme : currentTheme
 ThemeManager ..> FontSize : <<uses>>
-ClusterScatterChart ..> ColorPalette : <<uses>>
+DatasetLoader ..> "data.Data" : <<creates>>
 
 note right of ClusterScatterChart
-  Scatter chart JavaFX per cluster.
+  Scatter chart XChart per cluster con convex hull.
 
-  Funzionalità:
+  Funzionalità (NEW v1.1):
+  - **Convex Hull Plotting**: inviluppi convessi colorati
+  - Toggle convex hull vs scatter classico
+  - Selezione assi dinamica (X/Y attributi)
+  - Gestione cluster < 3 punti (skip hull)
+  - Export PNG/PNG HD (800x600, 1920x1440)
+
+  Funzionalità originali:
   - Plot 2D punti cluster
-  - Colori distinti per cluster
-  - PCA per riduzione dimensionalità
+  - Colori distinti per cluster (ColorPalette)
+  - Centroidi evidenziati (croce nera)
   - Tooltip informativi
   - Legenda automatica
 
-  Se dataset > 2 attributi: PCA proietta a 2D
+  Libreria: XChart 3.x (non JavaFX Charts)
+end note
+
+note top of ConvexHullCalculator
+  Algoritmo Graham Scan per convex hull.
+
+  Complessità: O(n log n)
+
+  Fasi:
+  1. Trova pivot (punto Y minima)
+  2. Ordina per angolo polare rispetto pivot
+  3. Costruisce hull con stack e CCW test
+
+  CCW (Counter-Clockwise):
+  - > 0: svolta sinistra
+  - < 0: svolta destra
+  - = 0: collineari
+
+  Input: List<Point2D> (min 3 punti)
+  Output: List<Point2D> vertici hull (antiorario)
+end note
+
+note right of Point2D
+  Punto 2D immutabile per geometria.
+
+  Operazioni:
+  - distanceTo(): distanza euclidea
+  - polarAngleFrom(): angolo [-π, π]
+
+  Usata da ConvexHullCalculator
+  per rappresentare coordinate cluster.
+end note
+
+note left of DatasetLoader
+  Caricamento dataset standard.
+
+  Dataset disponibili:
+  - Iris (150 tuple, 4 continui)
+  - PlayTennis (hardcoded)
+
+  Carica da resources JAR tramite
+  file temporaneo.
 end note
 
 note top of StatisticsDialog

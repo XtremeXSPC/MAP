@@ -37,14 +37,16 @@ Il modulo **qtGUI** fornisce un'interfaccia grafica moderna e user-friendly per 
 
 ### Funzionalità Principali
 
-| Funzionalità        | Descrizione                         | Package                      |
-| ------------------- | ----------------------------------- | ---------------------------- |
-| **Import Dati**     | Caricamento da CSV, DB, file        | `services.DataImportService` |
-| **Clustering**      | Esecuzione QT con progress tracking | `services.ClusteringService` |
-| **Visualizzazione** | Scatter chart interattivo 2D        | `charts`                     |
-| **Export**          | CSV, TXT, ZIP dei risultati         | `services.ExportService`     |
-| **Theming**         | Dark/Light mode con persistenza     | `utils.ThemeManager`         |
-| **Navigazione**     | Multi-view con state management     | `controllers`                |
+| Funzionalità            | Descrizione                                | Package                      |
+| ----------------------- | ------------------------------------------ | ---------------------------- |
+| **Import Dati**         | Caricamento da CSV, DB, file, Iris dataset | `services.DataImportService` |
+| **Clustering**          | Esecuzione QT con progress tracking        | `services.ClusteringService` |
+| **Visualizzazione**     | Scatter chart 2D con convex hull plotting  | `charts`                     |
+| **Convex Hull**         | Inviluppi convessi per cluster (NEW)       | `charts.ConvexHullCalculator`|
+| **Dataset Standard**    | Iris dataset UCI integrato (NEW)           | `utils.DatasetLoader`        |
+| **Export**              | CSV, TXT, ZIP, PNG HD dei risultati        | `services.ExportService`     |
+| **Theming**             | Dark/Light mode con persistenza            | `utils.ThemeManager`         |
+| **Navigazione**         | Multi-view con state management            | `controllers`                |
 
 ### Posizione nell'Architettura Generale
 
@@ -154,6 +156,67 @@ Riferimenti ai diagrammi UML:
 
 ---
 
+## Nuove Funzionalità v1.1
+
+### Convex Hull Plotting
+
+Visualizzazione innovativa dei cluster utilizzando **inviluppi convessi** (convex hulls) anziché scatter plot tradizionale.
+
+**Caratteristiche**:
+- **Poligoni colorati**: Ogni cluster racchiuso in area delimitata
+- **Percezione immediata**: Forma e densità cluster visibili a colpo d'occhio
+- **Modalità toggle**: Possibilità di alternare tra convex hull e scatter classico
+- **Algoritmo Graham Scan**: Complessità O(n log n), implementazione efficiente
+
+**Vantaggi rispetto scatter tradizionale**:
+- Nessuna confusione da linee intrecciate
+- Delimitazione chiara dei confini cluster
+- Identificazione immediata di overlap tra cluster
+- Migliore per presentazioni e pubblicazioni
+
+**Implementazione**:
+```java
+// Classe ConvexHullCalculator
+List<Point2D> hull = ConvexHullCalculator.grahamScan(points);
+// Restituisce vertici ordinati in senso antiorario
+```
+
+**File coinvolti**:
+- `gui/charts/ConvexHullCalculator.java` - Algoritmo Graham Scan
+- `gui/charts/ClusterScatterChart.java` - Integrazione plotting
+- `gui/charts/ChartViewer.java` - Toggle UI
+- `gui/utils/Point2D.java` - Geometria 2D
+
+### Dataset Standard: Iris
+
+Integrazione dataset **Iris** (Fisher, 1936) come benchmark standard per clustering.
+
+**Caratteristiche Iris**:
+- **150 tuple**: 50 setosa, 50 versicolor, 50 virginica
+- **4 attributi continui**: sepal length/width, petal length/width
+- **3 cluster reali**: Separabilità nota (setosa isolata, altre parzialmente sovrapposte)
+- **Licenza**: CC BY 4.0 - UCI Machine Learning Repository
+
+**Utilizzo**:
+1. Home → Sorgente Dati: Seleziona "Dataset Standard (Iris)"
+2. Clustering → Radius consigliato: 0.4-0.6
+3. Results → Visualize → Assi consigliati: petal_length vs petal_width
+
+**File coinvolti**:
+- `resources/datasets/iris.csv` - Dataset CSV (150 righe)
+- `gui/utils/DatasetLoader.java` - Utility caricamento
+- `gui/services/DataImportService.java` - Integrazione enum IRIS
+- `gui/controllers/HomeController.java` - UI selezione
+- `resources/views/home.fxml` - ComboBox aggiornata
+
+**Applicazioni**:
+- Benchmark algoritmo QT
+- Tutorial e demo
+- Validazione implementazione
+- Confronto con altri algoritmi clustering
+
+---
+
 ## Package
 
 ### Package `controllers` - MVC Controllers
@@ -191,7 +254,7 @@ public void showView(String viewName) {
 | Service             | Responsabilità                                    |
 | ------------------- | ------------------------------------------------- |
 | `ClusteringService` | Esecuzione clustering QT, salvataggio/caricamento |
-| `DataImportService` | Import dati da CSV, database, file                |
+| `DataImportService` | Import dati da CSV, database, file, Iris **(UPD)**|
 | `ExportService`     | Export risultati in CSV, TXT, ZIP                 |
 
 **API**:
@@ -200,6 +263,13 @@ public void showView(String viewName) {
 // ClusteringService
 public ClusterSet runClustering(Data data, double radius)
 public void saveClustering(String fileName, ClusteringResult result)
+
+// DataImportService (UPDATED)
+public enum DataSource { HARDCODED, IRIS, CSV, DATABASE }  // NEW: IRIS
+public Data loadHardcodedData()
+public Data loadIrisData()  // NEW
+public Data loadDataFromCSV(String filePath)
+public Data loadDataFromDatabase(...)
 
 // ExportService
 public void exportToCsv(String filePath, ClusteringResult result)
@@ -234,15 +304,31 @@ public void exportToZip(String zipFilePath, ClusteringResult result)
 
 **Classi**:
 
-- `ClusterScatterChart`: Scatter plot 2D JavaFX
-- `ChartViewer`: Container visualizzazione
+- `ClusterScatterChart`: Scatter plot 2D con supporto convex hull
+- `ChartViewer`: Container visualizzazione interattiva
+- `ConvexHullCalculator`: Algoritmo Graham Scan O(n log n) **(NEW)**
 
 **Funzionalità**:
 
+- **Convex Hull Plotting** (NEW):
+  - Visualizzazione cluster con inviluppi convessi
+  - Poligoni colorati per delimitare aree cluster
+  - Toggle modalità convex hull vs scatter classico
+  - Gestione automatica cluster < 3 punti
 - Scatter plot con colori per cluster
-- PCA per riduzione dimensionalità (> 2 attributi)
+- Selezione assi dinamica (X/Y)
 - Tooltip informativi
 - Legenda cluster
+- Export PNG/PNG HD (800x600, 1920x1440)
+
+**Algoritmo Graham Scan**:
+- Input: Lista di punti 2D
+- Output: Vertici convex hull ordinati (senso antiorario)
+- Complessità: O(n log n)
+- Componenti:
+  - Trova pivot (punto Y minima)
+  - Ordina punti per angolo polare
+  - Costruisce hull con stack e CCW test
 
 **Diagramma UML**: `docs/uml/qtGUI/views/charts_dialogs_utils.puml`
 
@@ -264,11 +350,24 @@ public void exportToZip(String zipFilePath, ClusteringResult result)
 
 **Classi**:
 
-| Utility              | Pattern   | Scopo                      |
-| -------------------- | --------- | -------------------------- |
-| `ApplicationContext` | Singleton | Stato globale applicazione |
-| `ThemeManager`       | Singleton | Gestione Dark/Light theme  |
-| `ColorPalette`       | Utility   | Palette colori coerente    |
+| Utility              | Pattern   | Scopo                                   |
+| -------------------- | --------- | --------------------------------------- |
+| `ApplicationContext` | Singleton | Stato globale applicazione              |
+| `ThemeManager`       | Singleton | Gestione Dark/Light theme               |
+| `ColorPalette`       | Utility   | Palette colori coerente                 |
+| `DatasetLoader`      | Utility   | Caricamento dataset standard **(NEW)**  |
+| `Point2D`            | Value     | Punto 2D per geometria **(NEW)**        |
+
+**DatasetLoader** (NEW):
+- `loadIrisDataset()`: Carica Iris da resources (150 tuple, 4 continui)
+- `getAvailableDatasets()`: Lista dataset predefiniti
+- Gestione file temporanei per parsing CSV da JAR
+
+**Point2D** (NEW):
+- Classe immutabile per coordinate 2D
+- `distanceTo()`: Distanza euclidea
+- `polarAngleFrom()`: Angolo polare rispetto a pivot
+- Utilizzata da ConvexHullCalculator
 
 **Diagramma UML**: `docs/uml/qtGUI/views/charts_dialogs_utils.puml`
 
