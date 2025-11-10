@@ -34,12 +34,12 @@ Il modulo **qtClient** è un'applicazione client CLI (Command-Line Interface) pe
 
 ### Funzionalità Principali
 
-| Funzionalità | Descrizione |
-|--------------|-------------|
-| **Connessione remota** | Socket TCP/IP al server qtServer |
-| **Input robusto** | Package `keyboardinput.Keyboard` per validazione |
-| **Menu interattivo** | Interfaccia testuale guidata |
-| **Gestione errori** | Eccezioni server catturate e mostrate all'utente |
+| Funzionalità           | Descrizione                                      |
+| ---------------------- | ------------------------------------------------ |
+| **Connessione remota** | Socket TCP/IP al server qtServer                 |
+| **Input robusto**      | Package `keyboardinput.Keyboard` per validazione |
+| **Menu interattivo**   | Interfaccia testuale guidata                     |
+| **Gestione errori**    | Eccezioni server catturate e mostrate all'utente |
 
 ### Posizione nell'Architettura Generale
 
@@ -58,6 +58,7 @@ Il modulo **qtClient** è un'applicazione client CLI (Command-Line Interface) pe
 ```
 
 **Caratteristiche architetturali**:
+
 - **Thin client**: Logica minima, delega computazione al server
 - **Stateless**: Nessuna persistenza locale (dati gestiti da server)
 - **Interattivo**: Input guidato con validazione robusta
@@ -121,10 +122,10 @@ Riferimento ai diagrammi UML dettagliati:
 
 **Classi principali**:
 
-| Classe | Tipo | Responsabilità |
-|--------|------|----------------|
-| `MainTest` | Concrete | Entry point client, gestione comunicazione Socket |
-| `ServerException` | Exception | Eccezione per errori server-side |
+| Classe            | Tipo      | Responsabilità                                    |
+| ----------------- | --------- | ------------------------------------------------- |
+| `MainTest`        | Concrete  | Entry point client, gestione comunicazione Socket |
+| `ServerException` | Exception | Eccezione per errori server-side                  |
 
 #### Classe `MainTest`
 
@@ -150,12 +151,12 @@ private String learningFromFile()       // Comando 3: Carica e cluster
 
 **Protocollo di comunicazione**:
 
-| Comando | Codice | Parametri | Risposta Server |
-|---------|--------|-----------|-----------------|
-| **Load from DB** | 0 | `String tableName` | "OK" / "ERROR: <msg>" |
-| **Learn from DB** | 1 | `double radius` | "OK" + numClusters + clusterString |
-| **Save clusters** | 2 | nessuno | "OK" / "ERROR: <msg>" |
-| **Learn from file** | 3 | `String tableName`, `double radius` | "OK" + clusterString |
+| Comando             | Codice | Parametri                           | Risposta Server                    |
+| ------------------- | ------ | ----------------------------------- | ---------------------------------- |
+| **Load from DB**    | 0      | `String tableName`                  | "OK" / "ERROR: <msg>"              |
+| **Learn from DB**   | 1      | `double radius`                     | "OK" + numClusters + clusterString |
+| **Save clusters**   | 2      | nessuno                             | "OK" / "ERROR: <msg>"              |
+| **Learn from file** | 3      | `String tableName`, `double radius` | "OK" + clusterString               |
 
 **Flusso tipico**:
 
@@ -269,13 +270,14 @@ String tableName = Keyboard.readString();
 Il modulo qtClient **non dipende** da altri moduli del progetto a compile-time.
 
 **Dipendenza runtime**:
+
 - **qtServer** deve essere in esecuzione sulla porta specificata
 
 ### Dipendenze Esterne
 
-| Libreria | Versione | Scopo | Obbligatoria |
-|----------|----------|-------|--------------|
-| **JDK** | 8+ | Runtime Java | SI |
+| Libreria | Versione | Scopo        | Obbligatoria |
+| -------- | -------- | ------------ | ------------ |
+| **JDK**  | 8+       | Runtime Java | SI           |
 
 **Nota**: Nessuna libreria esterna richiesta.
 
@@ -302,10 +304,10 @@ java -jar qtClient.jar <ip> <port>
 
 **Parametri linea di comando**:
 
-| Parametro | Tipo | Descrizione | Esempio |
-|-----------|------|-------------|---------|
-| `ip` | String | Indirizzo IP server | `localhost`, `192.168.1.100` |
-| `port` | int | Porta server | `8080`, `9999` |
+| Parametro | Tipo   | Descrizione         | Esempio                      |
+| --------- | ------ | ------------------- | ---------------------------- |
+| `ip`      | String | Indirizzo IP server | `localhost`, `192.168.1.100` |
+| `port`    | int    | Porta server        | `8080`, `9999`               |
 
 **Sessione tipica**:
 
@@ -452,6 +454,7 @@ java -jar qtClient.jar localhost 8080
 ### Scenario 1: Clustering da Database
 
 **Prerequisiti**:
+
 - Server qtServer avviato e connesso a database MySQL
 - Tabella dati presente nel database (es. `playtennis`)
 
@@ -483,6 +486,7 @@ Number of Clusters: 5
 ### Scenario 2: Clustering da File (opzione 1)
 
 **Prerequisiti**:
+
 - Server qtServer avviato
 - File dataset presente sul server (es. `playtennis.csv`)
 

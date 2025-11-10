@@ -8,5 +8,6 @@
   "maven.view": "hierarchical",
   "files.watcherExclude": {
     "**/target": true
-  }
+  },
+  "java.project.sourcePaths": ["qtServer/src", "qtExt", "qtClient/src"]
 }

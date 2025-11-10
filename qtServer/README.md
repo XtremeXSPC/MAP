@@ -35,12 +35,12 @@ Il modulo **qtServer** costituisce il nucleo computazionale del sistema Quality 
 
 ### Funzionalità Principali
 
-| Funzionalità | Descrizione | Package |
-|--------------|-------------|---------|
-| **Clustering QT** | Algoritmo Quality Threshold con garanzia di qualità | `mining` |
-| **Server Socket** | Server multi-threaded per client concorrenti | `server` |
-| **Gestione Dati** | Caricamento da CSV, database, hardcoded | `data` |
-| **Database JDBC** | Connessione MySQL e query su tabelle | `database` |
+| Funzionalità      | Descrizione                                         | Package    |
+| ----------------- | --------------------------------------------------- | ---------- |
+| **Clustering QT** | Algoritmo Quality Threshold con garanzia di qualità | `mining`   |
+| **Server Socket** | Server multi-threaded per client concorrenti        | `server`   |
+| **Gestione Dati** | Caricamento da CSV, database, hardcoded             | `data`     |
+| **Database JDBC** | Connessione MySQL e query su tabelle                | `database` |
 
 ### Posizione nell'Architettura Generale
 
@@ -63,6 +63,7 @@ Il modulo **qtServer** costituisce il nucleo computazionale del sistema Quality 
 ```
 
 Il modulo **qtServer** è il componente centrale che può essere utilizzato:
+
 - Come **server standalone** per clustering distribuito (qtClient)
 - Come **libreria** integrata direttamente nella GUI (qtGUI)
 - Da **utility di testing** e benchmarking (qtExt)
@@ -166,16 +167,16 @@ Riferimenti ai diagrammi UML dettagliati:
 
 **Classi principali**:
 
-| Classe | Tipo | Responsabilità |
-|--------|------|----------------|
-| `Attribute` | Abstract | Classe base per attributi |
-| `DiscreteAttribute` | Concrete | Attributi categorici (es. "sunny", "rain") |
-| `ContinuousAttribute` | Concrete | Attributi numerici con normalizzazione |
-| `Item` | Abstract | Coppia (attributo, valore) |
-| `DiscreteItem` | Concrete | Item con distanza di Hamming |
-| `ContinuousItem` | Concrete | Item con distanza Euclidea |
-| `Tuple` | Concrete | Riga del dataset (sequenza di Item) |
-| `Data` | Concrete | Gestione completa dataset |
+| Classe                | Tipo     | Responsabilità                             |
+| --------------------- | -------- | ------------------------------------------ |
+| `Attribute`           | Abstract | Classe base per attributi                  |
+| `DiscreteAttribute`   | Concrete | Attributi categorici (es. "sunny", "rain") |
+| `ContinuousAttribute` | Concrete | Attributi numerici con normalizzazione     |
+| `Item`                | Abstract | Coppia (attributo, valore)                 |
+| `DiscreteItem`        | Concrete | Item con distanza di Hamming               |
+| `ContinuousItem`      | Concrete | Item con distanza Euclidea                 |
+| `Tuple`               | Concrete | Riga del dataset (sequenza di Item)        |
+| `Data`                | Concrete | Gestione completa dataset                  |
 
 **Interfacce pubbliche**:
 
@@ -192,6 +193,7 @@ Object value = data.getValue(exampleIndex, attributeIndex);
 ```
 
 **Eccezioni**:
+
 - `EmptyDatasetException`: Lanciata quando dataset vuoto
 - `InvalidDataFormatException`: Lanciata per errori di formato CSV
 
@@ -205,13 +207,13 @@ Object value = data.getValue(exampleIndex, attributeIndex);
 
 **Classi principali**:
 
-| Classe | Tipo | Responsabilità |
-|--------|------|----------------|
-| `DbAccess` | Concrete | Gestione connessione MySQL |
-| `TableSchema` | Concrete | Metadata schema tabella |
-| `TableData` | Concrete | Lettura dati da tabella |
-| `Example` | Concrete | Singola riga da database |
-| `QUERY_TYPE` | Enum | Tipo query (MIN, MAX) |
+| Classe        | Tipo     | Responsabilità             |
+| ------------- | -------- | -------------------------- |
+| `DbAccess`    | Concrete | Gestione connessione MySQL |
+| `TableSchema` | Concrete | Metadata schema tabella    |
+| `TableData`   | Concrete | Lettura dati da tabella    |
+| `Example`     | Concrete | Singola riga da database   |
+| `QUERY_TYPE`  | Enum     | Tipo query (MIN, MAX)      |
 
 **Interfacce pubbliche**:
 
@@ -233,11 +235,13 @@ db.closeConnection();
 ```
 
 **Eccezioni**:
+
 - `DatabaseConnectionException`: Errore connessione al database
 - `EmptySetException`: Query restituisce risultato vuoto
 - `NoValueException`: Valore non trovato
 
 **Configurazione**:
+
 - **Server**: localhost (default)
 - **Port**: 3306 (default)
 - **Database**: MapDB (default)
@@ -253,13 +257,13 @@ db.closeConnection();
 
 **Classi principali**:
 
-| Classe | Tipo | Responsabilità |
-|--------|------|----------------|
-| `QTMiner` | Concrete | Algoritmo QT principale |
-| `Cluster` | Concrete | Singolo cluster con centroide |
-| `ClusterSet` | Concrete | Insieme di cluster |
-| `DistanceCache` | Concrete | Cache distanze per ottimizzazioni |
-| `SerializableClusteringData` | Concrete | Wrapper serializzabile completo |
+| Classe                       | Tipo     | Responsabilità                    |
+| ---------------------------- | -------- | --------------------------------- |
+| `QTMiner`                    | Concrete | Algoritmo QT principale           |
+| `Cluster`                    | Concrete | Singolo cluster con centroide     |
+| `ClusterSet`                 | Concrete | Insieme di cluster                |
+| `DistanceCache`              | Concrete | Cache distanze per ottimizzazioni |
+| `SerializableClusteringData` | Concrete | Wrapper serializzabile completo   |
 
 **Interfacce pubbliche**:
 
@@ -307,15 +311,18 @@ FUNZIONE buildCandidateCluster(points)
 ```
 
 **Complessità**:
+
 - **Temporale**: O(k × n²), caso peggiore O(n³)
 - **Spaziale**: O(n)
 
 **Ottimizzazioni implementate**:
+
 - **Caching distanze** (opzionale, configurabile)
 - **HashSet** per ricerca O(1) membership
 - **ArrayList** per accesso diretto O(1)
 
 **Eccezioni**:
+
 - `ClusteringRadiusException`: Radius negativo o non valido
 - `IncompatibleClusterException`: Cluster incompatibile con dataset
 - `InvalidFileFormatException`: File .dmp malformato
@@ -330,10 +337,10 @@ FUNZIONE buildCandidateCluster(points)
 
 **Classi principali**:
 
-| Classe | Tipo | Responsabilità |
-|--------|------|----------------|
-| `MultiServer` | Concrete | Server multi-client su porta configurabile |
-| `ServerOneClient` | Thread | Thread dedicato per ogni client connesso |
+| Classe            | Tipo     | Responsabilità                             |
+| ----------------- | -------- | ------------------------------------------ |
+| `MultiServer`     | Concrete | Server multi-client su porta configurabile |
+| `ServerOneClient` | Thread   | Thread dedicato per ogni client connesso   |
 
 **Interfacce pubbliche**:
 
@@ -351,12 +358,12 @@ Il protocollo Socket utilizza serializzazione Java di oggetti tramite `ObjectInp
 
 **Comandi supportati**:
 
-| Comando | Descrizione | Parametri |
-|---------|-------------|-----------|
-| `0` | Carica dati da file | `String fileName` |
-| `1` | Carica dati da database | `String tableName` |
-| `2` | Esegui clustering | nessuno |
-| `3` | Salva cluster su file | `String fileName` |
+| Comando | Descrizione             | Parametri          |
+| ------- | ----------------------- | ------------------ |
+| `0`     | Carica dati da file     | `String fileName`  |
+| `1`     | Carica dati da database | `String tableName` |
+| `2`     | Esegui clustering       | nessuno            |
+| `3`     | Salva cluster su file   | `String fileName`  |
 
 **Flusso comunicazione**:
 
@@ -380,11 +387,13 @@ Client                          Server
 ```
 
 **Gestione errori**:
+
 - Eccezioni serializzate e inviate al client
 - Log server-side con timestamp
 - Chiusura graceful delle connessioni
 
 **Thread Safety**:
+
 - Ogni client ha thread dedicato e dati isolati
 - Nessuna condivisione stato tra client
 - Thread pool implicito (un thread per connessione)
@@ -410,10 +419,10 @@ data ──independent──
 
 ### Dipendenze Esterne
 
-| Libreria | Versione | Scopo | Obbligatoria |
-|----------|----------|-------|--------------|
-| **JDK** | 8+ | Runtime Java | SI |
-| **MySQL Connector/J** | 8.0+ | Driver JDBC MySQL | NO (solo se usi database) |
+| Libreria              | Versione | Scopo             | Obbligatoria              |
+| --------------------- | -------- | ----------------- | ------------------------- |
+| **JDK**               | 8+       | Runtime Java      | SI                        |
+| **MySQL Connector/J** | 8.0+     | Driver JDBC MySQL | NO (solo se usi database) |
 
 **Importazione MySQL Connector**:
 
@@ -446,6 +455,7 @@ java -cp bin server.MultiServer 8080
 ```
 
 **Output atteso**:
+
 ```
 ===========================================
 QT Server avviato sulla porta 8080
@@ -521,6 +531,7 @@ qtClient                qtServer
 ```
 
 **Riferimenti**:
+
 - Vedere [`qtClient/README.md`](../qtClient/README.md)
 - Sequence diagram: `docs/uml/workflows/client_server_communication_sequence.puml`
 
@@ -543,11 +554,13 @@ qtGUI                      qtServer
 ```
 
 **Vantaggi**:
+
 - Nessun overhead di rete
 - Velocità massima
 - Esecuzione locale semplificata
 
 **Riferimenti**:
+
 - Vedere [`qtGUI/README.md`](../qtGUI/README.md)
 
 ### qtServer ← qtExt
@@ -567,6 +580,7 @@ qtExt/tests               qtServer
 ```
 
 **Riferimenti**:
+
 - Vedere [`qtExt/README.md`](../qtExt/README.md)
 
 ---
@@ -589,6 +603,7 @@ ls -R bin/
 ```
 
 **Output atteso**:
+
 ```
 bin/
 ├── data/
@@ -669,13 +684,13 @@ Il modulo qtServer è testato tramite:
 
 ### Test Disponibili
 
-| Test | File | Scopo |
-|------|------|-------|
-| Algoritmo QT | `TestQTAlgorithm.java` | Verifica correttezza clustering |
-| Operazioni cluster | `TestClusterOperations.java` | Test add/remove/iterate |
-| Operazioni dati | `TestDataOperations.java` | Test caricamento CSV/DB |
-| Calcoli distanze | `TestDistanceCalculations.java` | Verifica metriche Hamming/Euclidea |
-| Attributi continui | `TestContinuousAttributes.java` | Test normalizzazione |
+| Test               | File                            | Scopo                              |
+| ------------------ | ------------------------------- | ---------------------------------- |
+| Algoritmo QT       | `TestQTAlgorithm.java`          | Verifica correttezza clustering    |
+| Operazioni cluster | `TestClusterOperations.java`    | Test add/remove/iterate            |
+| Operazioni dati    | `TestDataOperations.java`       | Test caricamento CSV/DB            |
+| Calcoli distanze   | `TestDistanceCalculations.java` | Verifica metriche Hamming/Euclidea |
+| Attributi continui | `TestContinuousAttributes.java` | Test normalizzazione               |
 
 ### Esecuzione Test
 
@@ -704,6 +719,7 @@ java -cp ../../qtServer/bin:. RunBenchmark
 ```
 
 **Metriche misurate**:
+
 - Tempo esecuzione (ms)
 - Numero cluster generati
 - Distanza media cluster
@@ -769,6 +785,7 @@ QTMiner miner = new QTMiner(0.5);  // radius = 0.5
 ```
 
 **Linee guida radius**:
+
 - **0.0 - 0.3**: Cluster molto stretti, alta purezza, molti cluster piccoli
 - **0.4 - 0.6**: Bilanciato (raccomandato per la maggior parte dei casi)
 - **0.7 - 1.0**: Cluster aggregati, pochi cluster grandi, minore purezza

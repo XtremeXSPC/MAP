@@ -37,14 +37,14 @@ Il modulo **qtGUI** fornisce un'interfaccia grafica moderna e user-friendly per 
 
 ### Funzionalità Principali
 
-| Funzionalità | Descrizione | Package |
-|--------------|-------------|---------|
-| **Import Dati** | Caricamento da CSV, DB, file | `services.DataImportService` |
-| **Clustering** | Esecuzione QT con progress tracking | `services.ClusteringService` |
-| **Visualizzazione** | Scatter chart interattivo 2D | `charts` |
-| **Export** | CSV, TXT, ZIP dei risultati | `services.ExportService` |
-| **Theming** | Dark/Light mode con persistenza | `utils.ThemeManager` |
-| **Navigazione** | Multi-view con state management | `controllers` |
+| Funzionalità        | Descrizione                         | Package                      |
+| ------------------- | ----------------------------------- | ---------------------------- |
+| **Import Dati**     | Caricamento da CSV, DB, file        | `services.DataImportService` |
+| **Clustering**      | Esecuzione QT con progress tracking | `services.ClusteringService` |
+| **Visualizzazione** | Scatter chart interattivo 2D        | `charts`                     |
+| **Export**          | CSV, TXT, ZIP dei risultati         | `services.ExportService`     |
+| **Theming**         | Dark/Light mode con persistenza     | `utils.ThemeManager`         |
+| **Navigazione**     | Multi-view con state management     | `controllers`                |
 
 ### Posizione nell'Architettura Generale
 
@@ -67,6 +67,7 @@ Il modulo **qtGUI** fornisce un'interfaccia grafica moderna e user-friendly per 
 ```
 
 **Caratteristiche**:
+
 - **Thick client**: Logica business integrata localmente
 - **Stateful**: Persistenza configurazioni e preferenze
 - **Reattivo**: Pattern Observer per aggiornamenti UI
@@ -106,6 +107,7 @@ qtGUI/src/main/java/gui/
 ```
 
 **Package mapping**:
+
 - **View**: File FXML in `resources/views/`
 - **Controller**: Classi in `controllers/`
 - **Model**: Classi in `models/` + `services/`
@@ -160,13 +162,13 @@ Riferimenti ai diagrammi UML:
 
 **Classi principali**:
 
-| Controller | Responsabilità | Vista Associata |
-|------------|---------------|-----------------|
-| `MainController` | Finestra principale, menu, toolbar, navigazione | `main.fxml` |
-| `HomeController` | Schermata home, selezione dataset | `home.fxml` |
-| `ClusteringController` | Configurazione parametri, avvio clustering | `clustering.fxml` |
-| `ResultsController` | Visualizzazione risultati, scatter chart | `results.fxml` |
-| `SettingsController` | Impostazioni applicazione, tema, database | `settings.fxml` |
+| Controller             | Responsabilità                                  | Vista Associata   |
+| ---------------------- | ----------------------------------------------- | ----------------- |
+| `MainController`       | Finestra principale, menu, toolbar, navigazione | `main.fxml`       |
+| `HomeController`       | Schermata home, selezione dataset               | `home.fxml`       |
+| `ClusteringController` | Configurazione parametri, avvio clustering      | `clustering.fxml` |
+| `ResultsController`    | Visualizzazione risultati, scatter chart        | `results.fxml`    |
+| `SettingsController`   | Impostazioni applicazione, tema, database       | `settings.fxml`   |
 
 **Pattern di navigazione**:
 
@@ -186,11 +188,11 @@ public void showView(String viewName) {
 
 **Classi principali**:
 
-| Service | Responsabilità |
-|---------|----------------|
+| Service             | Responsabilità                                    |
+| ------------------- | ------------------------------------------------- |
 | `ClusteringService` | Esecuzione clustering QT, salvataggio/caricamento |
-| `DataImportService` | Import dati da CSV, database, file |
-| `ExportService` | Export risultati in CSV, TXT, ZIP |
+| `DataImportService` | Import dati da CSV, database, file                |
+| `ExportService`     | Export risultati in CSV, TXT, ZIP                 |
 
 **API**:
 
@@ -206,6 +208,7 @@ public void exportToZip(String zipFilePath, ClusteringResult result)
 ```
 
 **Formato export**:
+
 - **CSV**: Formato tabulare (ClusterID, TupleID, Distance, Attributi)
 - **TXT**: Report con statistiche
 - **ZIP**: Pacchetto completo (.dmp + CSV + TXT + README)
@@ -218,10 +221,10 @@ public void exportToZip(String zipFilePath, ClusteringResult result)
 
 **Classi**:
 
-| Model | Responsabilità |
-|-------|----------------|
-| `ClusteringResult` | Wrapper risultato clustering + metadata |
-| `ClusteringConfiguration` | Configurazione parametri clustering |
+| Model                     | Responsabilità                          |
+| ------------------------- | --------------------------------------- |
+| `ClusteringResult`        | Wrapper risultato clustering + metadata |
+| `ClusteringConfiguration` | Configurazione parametri clustering     |
 
 **Diagramma UML**: `docs/uml/qtGUI/models/models_package.puml`
 
@@ -230,10 +233,12 @@ public void exportToZip(String zipFilePath, ClusteringResult result)
 ### Package `charts` - Visualizzazioni
 
 **Classi**:
+
 - `ClusterScatterChart`: Scatter plot 2D JavaFX
 - `ChartViewer`: Container visualizzazione
 
 **Funzionalità**:
+
 - Scatter plot con colori per cluster
 - PCA per riduzione dimensionalità (> 2 attributi)
 - Tooltip informativi
@@ -246,6 +251,7 @@ public void exportToZip(String zipFilePath, ClusteringResult result)
 ### Package `dialogs` - Dialoghi Modali
 
 **Classi**:
+
 - `AboutDialog`: Info applicazione
 - `DatasetPreviewDialog`: Anteprima dataset
 - `StatisticsDialog`: Dashboard statistiche con 4 tab
@@ -258,11 +264,11 @@ public void exportToZip(String zipFilePath, ClusteringResult result)
 
 **Classi**:
 
-| Utility | Pattern | Scopo |
-|---------|---------|-------|
+| Utility              | Pattern   | Scopo                      |
+| -------------------- | --------- | -------------------------- |
 | `ApplicationContext` | Singleton | Stato globale applicazione |
-| `ThemeManager` | Singleton | Gestione Dark/Light theme |
-| `ColorPalette` | Utility | Palette colori coerente |
+| `ThemeManager`       | Singleton | Gestione Dark/Light theme  |
+| `ColorPalette`       | Utility   | Palette colori coerente    |
 
 **Diagramma UML**: `docs/uml/qtGUI/views/charts_dialogs_utils.puml`
 
@@ -282,12 +288,12 @@ qtGUI ──depends on──> qtServer
 
 ### Dipendenze Esterne
 
-| Libreria | Versione | Scopo | Obbligatoria |
-|----------|----------|-------|--------------|
-| **JDK** | 11+ | Runtime Java | SI |
-| **JavaFX** | 17+ | Framework GUI | SI |
-| **SLF4J** | 1.7+ | Logging | SI |
-| **Logback** | 1.2+ | Logging impl | SI |
+| Libreria    | Versione | Scopo         | Obbligatoria |
+| ----------- | -------- | ------------- | ------------ |
+| **JDK**     | 11+      | Runtime Java  | SI           |
+| **JavaFX**  | 17+      | Framework GUI | SI           |
+| **SLF4J**   | 1.7+     | Logging       | SI           |
+| **Logback** | 1.2+     | Logging impl  | SI           |
 
 ---
 
@@ -311,6 +317,7 @@ java --module-path $JAVAFX_PATH --add-modules javafx.controls,javafx.fxml \
 **Tipo**: Chiamata diretta (no Socket)
 
 **Vantaggi**:
+
 - Nessun overhead rete
 - Performance massime
 - Debug semplificato
@@ -354,13 +361,13 @@ make all      # Compila tutto
 
 ### Keyboard Shortcuts
 
-| Shortcut | Azione |
-|----------|--------|
-| `Ctrl+N` | Nuovo clustering |
-| `Ctrl+O` | Apri file |
-| `Ctrl+S` | Salva risultati |
+| Shortcut | Azione                  |
+| -------- | ----------------------- |
+| `Ctrl+N` | Nuovo clustering        |
+| `Ctrl+O` | Apri file               |
+| `Ctrl+S` | Salva risultati         |
 | `Ctrl+T` | Toggle Dark/Light theme |
-| `F1` | Help |
+| `F1`     | Help                    |
 
 ---
 
@@ -369,6 +376,7 @@ make all      # Compila tutto
 ### Database
 
 Settings → Database tab:
+
 - Server: `localhost`
 - Port: `3306`
 - Database: `MapDB`

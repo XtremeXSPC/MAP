@@ -12,9 +12,7 @@ import database.NoValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -69,6 +67,10 @@ public class DataImportService {
      * - Righe successive: tuple di dati
      * - Separatore: virgola
      *
+     * Inferisce automaticamente il tipo degli attributi:
+     * - ContinuousAttribute: se tutti i valori sono numerici e ci sono > 5 valori distinti
+     * - DiscreteAttribute: altrimenti
+     *
      * @param filePath percorso del file CSV
      * @return il dataset caricato dal CSV
      * @throws FileNotFoundException se il file non esiste
@@ -85,26 +87,28 @@ public class DataImportService {
 
         logger.info("Caricamento dataset da CSV: {}", filePath);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try {
+            // Usa il costruttore Data(String) che implementa il parsing CSV completo
+            Data data = new Data(filePath);
 
-            // Leggi header
-            String headerLine = reader.readLine();
-            if (headerLine == null || headerLine.trim().isEmpty()) {
-                throw new EmptyDatasetException("File CSV vuoto o senza header");
-            }
+            logger.info("Dataset CSV caricato con successo: {} tuple, {} attributi",
+                    data.getNumberOfExamples(),
+                    data.getNumberOfExplanatoryAttributes());
 
-            // TODO: Implementare parsing CSV completo
-            // Per ora lanciamo eccezione NotImplemented
-            logger.warn("Import CSV non ancora completamente implementato");
-            throw new UnsupportedOperationException("Import CSV sarà implementato in una versione futura. "
-                    + "Usa il dataset hardcoded o database per ora.");
+            return data;
 
         } catch (FileNotFoundException e) {
             logger.error("File CSV non trovato: {}", filePath, e);
             throw e;
+        } catch (InvalidDataFormatException e) {
+            logger.error("Formato CSV non valido: {}", e.getMessage(), e);
+            throw e;
         } catch (IOException e) {
             logger.error("Errore I/O durante lettura CSV", e);
             throw e;
+        } catch (Exception e) {
+            logger.error("Errore imprevisto durante caricamento CSV", e);
+            throw new IOException("Errore durante caricamento CSV: " + e.getMessage(), e);
         }
     }
 

@@ -168,6 +168,10 @@ public class HomeController {
                 radiusValidationLabel.setText("Il radius deve essere non negativo");
                 return false;
             }
+            if (radius > 1.0) {
+                radiusValidationLabel.setText("Il radius deve essere <= 1.0 (distanza normalizzata)");
+                return false;
+            }
             radiusValidationLabel.setText("");
             return true;
         } catch (NumberFormatException e) {

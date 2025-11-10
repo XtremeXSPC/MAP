@@ -31,11 +31,11 @@ Il modulo **qtExt** fornisce strumenti per testing e benchmarking del sistema Qu
 
 ### Funzionalità Principali
 
-| Funzionalità | Descrizione | Package |
-|--------------|-------------|---------|
-| **Testing** | Suite completa test unitari e integrazione | `tests` |
-| **Benchmarking** | Misurazione performance e scalabilità | `utility.QTBenchmark` |
-| **Data Generation** | Generazione dataset sintetici | `utility.DatasetGenerator` |
+| Funzionalità        | Descrizione                                | Package                    |
+| ------------------- | ------------------------------------------ | -------------------------- |
+| **Testing**         | Suite completa test unitari e integrazione | `tests`                    |
+| **Benchmarking**    | Misurazione performance e scalabilità      | `utility.QTBenchmark`      |
+| **Data Generation** | Generazione dataset sintetici              | `utility.DatasetGenerator` |
 
 ### Posizione nell'Architettura Generale
 
@@ -89,16 +89,17 @@ qtExt/
 
 **Classi test**:
 
-| Test | Scopo |
-|------|-------|
-| `TestQTAlgorithm` | Verifica correttezza algoritmo QT |
-| `TestClusterOperations` | Test operazioni su Cluster |
-| `TestDataOperations` | Test caricamento dati (CSV, DB) |
-| `TestDistanceCalculations` | Verifica metriche distanza |
-| `TestContinuousAttributes` | Test attributi continui |
-| `TestIteratorsComparators` | Test iteratori e comparatori |
+| Test                       | Scopo                             |
+| -------------------------- | --------------------------------- |
+| `TestQTAlgorithm`          | Verifica correttezza algoritmo QT |
+| `TestClusterOperations`    | Test operazioni su Cluster        |
+| `TestDataOperations`       | Test caricamento dati (CSV, DB)   |
+| `TestDistanceCalculations` | Verifica metriche distanza        |
+| `TestContinuousAttributes` | Test attributi continui           |
+| `TestIteratorsComparators` | Test iteratori e comparatori      |
 
 **Approccio testing**:
+
 - Test unitari per singole classi
 - Test di integrazione per flussi completi
 - Asserzioni su output attesi
@@ -125,11 +126,11 @@ done
 
 **Classi**:
 
-| Utility | Scopo |
-|---------|-------|
-| `QTBenchmark` | Framework benchmarking performance |
-| `RunBenchmark` | Runner per esecuzione benchmark |
-| `DatasetGenerator` | Generazione dataset sintetici |
+| Utility            | Scopo                              |
+| ------------------ | ---------------------------------- |
+| `QTBenchmark`      | Framework benchmarking performance |
+| `RunBenchmark`     | Runner per esecuzione benchmark    |
+| `DatasetGenerator` | Generazione dataset sintetici      |
 
 #### QTBenchmark
 
@@ -144,6 +145,7 @@ public static BenchmarkResult runBenchmark(
 ```
 
 **Metriche misurate**:
+
 - `executionTimeMs`: Tempo esecuzione (ms)
 - `numClusters`: Numero cluster generati
 - `distanceCalculations`: Calcoli distanza effettuati
@@ -224,9 +226,9 @@ qtExt ──depends on──> qtServer
 
 ### Dipendenze Esterne
 
-| Libreria | Versione | Scopo | Obbligatoria |
-|----------|----------|-------|--------------|
-| **JDK** | 8+ | Runtime Java | SI |
+| Libreria | Versione | Scopo        | Obbligatoria |
+| -------- | -------- | ------------ | ------------ |
+| **JDK**  | 8+       | Runtime Java | SI           |
 
 **Nota**: Nessuna libreria esterna richiesta.
 
@@ -289,6 +291,7 @@ miner.compute(largeDataset);
 #### Execution Time
 
 **Interpretazione**:
+
 - < 100 ms: Eccellente (dataset piccoli)
 - 100-500 ms: Buono (dataset medi)
 - 500-2000 ms: Accettabile (dataset grandi)
@@ -297,17 +300,20 @@ miner.compute(largeDataset);
 #### Cache Hit Rate
 
 **Interpretazione**:
+>
 - > 80%: Cache molto efficace
 - 50-80%: Cache moderatamente efficace
 - < 50%: Cache poco efficace (overhead > beneficio)
 
 **Raccomandazione**:
+
 - Disabilita caching se hit rate < 40%
 - Dataset < 500 tuple: Caching non consigliato
 
 #### Memory Usage
 
 **Interpretazione**:
+
 - Crescita lineare O(n): Normale
 - Crescita quadratica O(n²): Problematica (leak possibile)
 
