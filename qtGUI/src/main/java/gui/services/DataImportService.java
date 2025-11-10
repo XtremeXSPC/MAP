@@ -117,8 +117,7 @@ public class DataImportService {
             // Usa il costruttore Data(String) che implementa il parsing CSV completo
             Data data = new Data(filePath);
 
-            logger.info("Dataset CSV caricato con successo: {} tuple, {} attributi",
-                    data.getNumberOfExamples(),
+            logger.info("Dataset CSV caricato con successo: {} tuple, {} attributi", data.getNumberOfExamples(),
                     data.getNumberOfExplanatoryAttributes());
 
             return data;

@@ -13,7 +13,7 @@ import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.style.Styler;
-import org.knowm.xchart.style.line.LineStyle;
+import org.knowm.xchart.style.lines.SeriesLines;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class ClusterScatterChart {
 
     private int xAttributeIndex;
     private int yAttributeIndex;
-    private boolean convexHullMode = true;  // default: nuovo stile con convex hull
+    private boolean convexHullMode = true; // default: nuovo stile con convex hull
 
     /**
      * Crea un gestore di scatter chart per i risultati di clustering.
@@ -137,7 +137,6 @@ public class ClusterScatterChart {
     private void configureStyling(XYChart chart) {
         Styler styler = chart.getStyler();
 
-
         styler.setLegendVisible(true);
         styler.setLegendPosition(Styler.LegendPosition.OutsideE);
         styler.setMarkerSize(8);
@@ -176,10 +175,9 @@ public class ClusterScatterChart {
         series.setLineColor(clusterColor);
         series.setMarker(SeriesMarkers.CIRCLE);
 
-        // In modalità convex hull, rimuovi linee tra punti e riduci dimensione marker
+        // In modalità convex hull, rimuovi linee tra punti
         if (convexHullMode) {
-            series.setLineStyle(LineStyle.NONE);
-            series.setMarkerSize(6);  // Marker più piccoli con hull
+            series.setLineStyle(SeriesLines.NONE);
         }
     }
 
@@ -208,7 +206,7 @@ public class ClusterScatterChart {
         centroidSeries.setMarkerColor(Color.BLACK);
         centroidSeries.setLineColor(Color.BLACK);
         centroidSeries.setMarker(SeriesMarkers.CROSS); // Marker diverso per centroidi
-
+        centroidSeries.setLineStyle(SeriesLines.NONE); // Rimuovi linee tra centroidi
     }
 
     /**
@@ -265,10 +263,15 @@ public class ClusterScatterChart {
 
             // Configura stile
             Color clusterColor = ColorPalette.getColor(clusterIndex);
+
+            // NOTA: XChart Area rendering richiede coordinate X in ordine crescente,
+            // ma i punti del convex hull sono in ordine antiorario (non ordinati per X).
+            // Per ora, usiamo solo il bordo (Line style) senza riempimento.
+            // TODO: Implementare riempimento custom usando Java2D Graphics2D
             hullSeries.setLineColor(clusterColor);
             hullSeries.setLineWidth(2.0f);
-            hullSeries.setMarker(SeriesMarkers.NONE);  // No marker sui vertici hull
-            hullSeries.setShowInLegend(false);         // Nascondi da legenda
+            hullSeries.setMarker(SeriesMarkers.NONE); // No marker sui vertici hull
+            hullSeries.setShowInLegend(false); // Nascondi da legenda
 
             logger.debug("Convex hull aggiunto per cluster {}: {} vertici", clusterIndex + 1, hull.size() - 1);
 

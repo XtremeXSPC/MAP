@@ -33,7 +33,6 @@ import java.util.*;
  *
  * @author Lombardi Costantino
  * @version 1.0.0
- * @since 1.1.0
  * @see Point2D
  */
 public class ConvexHullCalculator {
@@ -52,9 +51,7 @@ public class ConvexHullCalculator {
      */
     public static List<Point2D> grahamScan(List<Point2D> points) {
         if (points == null || points.size() < 3) {
-            throw new IllegalArgumentException(
-                "Convex hull richiede almeno 3 punti"
-            );
+            throw new IllegalArgumentException("Convex hull richiede almeno 3 punti");
         }
 
         // 1. Trova punto con Y minima (pivot)
@@ -63,20 +60,20 @@ public class ConvexHullCalculator {
         // 2. Ordina punti per angolo polare rispetto al pivot
         List<Point2D> sorted = new ArrayList<>(points);
         sorted.sort((p1, p2) -> {
-            if (p1.equals(pivot)) return -1;
-            if (p2.equals(pivot)) return 1;
+            if (p1.equals(pivot))
+                return -1;
+            if (p2.equals(pivot))
+                return 1;
 
             double angle1 = p1.polarAngleFrom(pivot);
             double angle2 = p2.polarAngleFrom(pivot);
 
             int angleCompare = Double.compare(angle1, angle2);
-            if (angleCompare != 0) return angleCompare;
+            if (angleCompare != 0)
+                return angleCompare;
 
             // Se stesso angolo, prendi il più vicino al pivot
-            return Double.compare(
-                pivot.distanceTo(p1),
-                pivot.distanceTo(p2)
-            );
+            return Double.compare(pivot.distanceTo(p1), pivot.distanceTo(p2));
         });
 
         // 3. Graham Scan: costruisci hull usando stack
@@ -88,8 +85,7 @@ public class ConvexHullCalculator {
             Point2D top = hull.pop();
 
             // Rimuovi punti che creano svolta a destra (clockwise)
-            while (!hull.isEmpty() &&
-                   ccw(hull.peek(), top, sorted.get(i)) <= 0) {
+            while (!hull.isEmpty() && ccw(hull.peek(), top, sorted.get(i)) <= 0) {
                 top = hull.pop();
             }
 
@@ -115,8 +111,7 @@ public class ConvexHullCalculator {
         Point2D lowest = points.get(0);
 
         for (Point2D p : points) {
-            if (p.getY() < lowest.getY() ||
-                (p.getY() == lowest.getY() && p.getX() < lowest.getX())) {
+            if (p.getY() < lowest.getY() || (p.getY() == lowest.getY() && p.getX() < lowest.getX())) {
                 lowest = p;
             }
         }
@@ -146,7 +141,6 @@ public class ConvexHullCalculator {
      * @return valore positivo se CCW, negativo se CW, zero se collineari
      */
     private static double ccw(Point2D p1, Point2D p2, Point2D p3) {
-        return (p2.getX() - p1.getX()) * (p3.getY() - p1.getY()) -
-               (p2.getY() - p1.getY()) * (p3.getX() - p1.getX());
+        return (p2.getX() - p1.getX()) * (p3.getY() - p1.getY()) - (p2.getY() - p1.getY()) * (p3.getX() - p1.getX());
     }
 }

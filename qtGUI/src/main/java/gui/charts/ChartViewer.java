@@ -113,7 +113,7 @@ public class ChartViewer {
 
         // Checkbox per convex hull
         CheckBox convexHullCheckBox = new CheckBox("Convex Hull");
-        convexHullCheckBox.setSelected(true);  // Default: abilitato
+        convexHullCheckBox.setSelected(true); // Default: abilitato
         convexHullCheckBox.setOnAction(e -> {
             chartManager.setConvexHullMode(convexHullCheckBox.isSelected());
             updateChart();
@@ -122,7 +122,8 @@ public class ChartViewer {
         Button refreshButton = new Button("Aggiorna Grafico");
         refreshButton.setOnAction(e -> updateChart());
 
-        axisSelectionBox.getChildren().addAll(xLabel, xAxisComboBox, yLabel, yAxisComboBox, convexHullCheckBox, refreshButton);
+        axisSelectionBox.getChildren().addAll(xLabel, xAxisComboBox, yLabel, yAxisComboBox, convexHullCheckBox,
+                refreshButton);
 
         panel.getChildren().addAll(titleLabel, axisSelectionBox);
         return panel;
