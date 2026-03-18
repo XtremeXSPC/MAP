@@ -92,11 +92,8 @@ MAP/
 ├── data/                      # Dataset CSV di esempio e benchmark
 ├── docs/
 │   ├── manuale_utente/
-│   │   ├── *.md               # Documentazione storica
 │   │   ├── gui_images/        # Immagini della GUI
 │   │   └── latex/             # Manuale utente in LaTeX
-│   ├── plans/
-│   ├── sprints/
 │   └── uml/
 ├── qtClient/                  # Client testuale
 ├── qtExt/                     # Test e utility
