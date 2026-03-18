@@ -1,0 +1,41 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+\input{preamble}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \centering
+  {\Large Università degli Studi di Bari, Aldo Moro\par}
+  \vspace{2.5cm}
+  {\Huge \bfseries Manuale Utente\par}
+  \vspace{0.6cm}
+  {\LARGE Quality Threshold Clustering\par}
+  \vspace{2cm}
+  {\large Progetto per il corso di "Metodi Avanzati di Programmazione"\par}
+  \vfill
+  {\large \par}
+\end{titlepage}
+\clearpage
+\hypersetup{pageanchor=true}
+
+\pagenumbering{roman}
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents
+\clearpage
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures
+\clearpage
+
+\pagenumbering{arabic}
+
+\input{chapters/01_introduzione}
+\input{chapters/02_architettura}
+\input{chapters/03_requisiti_build_esecuzione}
+\input{chapters/04_gui}
+\input{chapters/05_client_server}
+\input{chapters/06_dati_persistenza_export}
+\input{chapters/07_limiti_troubleshooting}
+
+\end{document}

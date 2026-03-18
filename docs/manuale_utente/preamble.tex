@@ -1,0 +1,72 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage[a4paper,top=2.4cm,bottom=2.6cm,left=2.4cm,right=2.4cm]{geometry}
+\usepackage[nopatch=footnote]{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{setspace}
+
+\graphicspath{{../gui_images/}}
+\setstretch{1.15}
+\setlength{\parindent}{1.2em}
+\setlength{\parskip}{0.35em}
+\setlength{\headheight}{15pt}
+\emergencystretch=2em
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\setlist[itemize]{itemsep=0.25em,topsep=0.3em}
+\setlist[enumerate]{itemsep=0.25em,topsep=0.3em}
+
+\definecolor{BlockBorder}{RGB}{126,136,150}
+\urlstyle{same}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue!50!black,
+  pdftitle={Manuale utente - Quality Threshold Clustering},
+  pdfauthor={Progetto MAP},
+  pdfsubject={Manuale utente}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Manuale Utente}
+\fancyhead[R]{\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[L]{Manuale Utente}
+  \fancyhead[R]{\nouppercase{\leftmark}}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+\DefineVerbatimEnvironment{commandblock}{Verbatim}{
+  fontsize=\small,
+  frame=single,
+  framerule=0.6pt,
+  rulecolor=\color{BlockBorder},
+  framesep=8pt,
+  xleftmargin=0.5em,
+  xrightmargin=0.5em
+}
+
+\newcommand{\module}[1]{\texttt{#1}}
+\newcommand{\filepath}[1]{\path{#1}}
+\newcommand{\qt}{Quality Threshold}
