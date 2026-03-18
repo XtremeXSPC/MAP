@@ -1,0 +1,139 @@
+@startuml utility_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package utility {
+  ' ===== QTBenchmark =====
+  class QTBenchmark {
+    + {static} runBenchmark(datasetPath: String, radius: double, enableOpt: boolean): BenchmarkResult
+    - measureExecutionTime(miner: QTMiner, data: Data): long
+    - measureMemoryUsage(): long
+  }
+
+  ' ===== Benchmark Result =====
+  class BenchmarkResult {
+    + datasetName: String
+    + numTuples: int
+    + numAttributes: int
+    + radius: double
+    + optimizationsEnabled: boolean
+    + executionTimeMs: long
+    + numClusters: int
+    + distanceCalculations: int
+    + cacheHits: int
+    + cacheMisses: int
+    + cacheHitRate: double
+    + memoryUsedMB: long
+    --
+    + toString(): String
+    + toCsv(): String
+  }
+
+  ' ===== RunBenchmark =====
+  class RunBenchmark {
+    + {static} main(args: String[]): void
+    - runAllBenchmarks(): List<BenchmarkResult>
+    - saveToCsv(results: List<BenchmarkResult>, filePath: String): void
+    - printSummary(results: List<BenchmarkResult>): void
+  }
+
+  ' ===== DatasetGenerator =====
+  class DatasetGenerator {
+    + {static} generateRandomDataset(numTuples, numDiscrete, numContinuous, numDistinctValues): Data
+    + {static} generateClusteredDataset(numClusters, tuplesPerCluster, numAttributes): Data
+    + {static} saveToCSV(data: Data, filePath: String): void
+    - generateRandomDiscreteValue(numDistinctValues: int): String
+    - generateRandomContinuousValue(min: double, max: double): double
+  }
+
+  ' ===== Relazioni =====
+  QTBenchmark ..> BenchmarkResult : <<creates>>
+  RunBenchmark ..> QTBenchmark : <<uses>>
+  RunBenchmark ..> BenchmarkResult : <<uses>>
+
+  ' ===== Relazioni con qtServer =====
+  QTBenchmark ..> "mining.QTMiner" : <<benchmarks>>
+  QTBenchmark ..> "data.Data" : <<uses>>
+  DatasetGenerator ..> "data.Data" : <<creates>>
+  DatasetGenerator ..> "data.DiscreteAttribute" : <<creates>>
+  DatasetGenerator ..> "data.ContinuousAttribute" : <<creates>>
+}
+
+note right of QTBenchmark
+  Framework benchmarking performance.
+
+  Metriche misurate:
+  - Execution time (ms)
+  - Number of clusters
+  - Distance calculations
+  - Cache hit/miss rate
+  - Memory usage (MB)
+
+  Output: BenchmarkResult
+end note
+
+note top of BenchmarkResult
+  DTO risultato benchmark.
+
+  Informazioni dataset:
+  - Nome, dimensioni, parametri
+
+  Metriche performance:
+  - Tempo, cluster, calcoli
+  - Cache statistics
+  - Memoria
+
+  Formattazione:
+  - toString(): Human-readable
+  - toCsv(): CSV row
+end note
+
+note bottom of RunBenchmark
+  Runner suite benchmark completa.
+
+  Workflow:
+  1. Carica dataset multipli
+  2. Esegui benchmark per ciascuno
+  3. Raccog
+
+li risultati
+  4. Stampa summary
+  5. Salva CSV
+
+  Output: benchmark_results.csv
+end note
+
+note left of DatasetGenerator
+  Generatore dataset sintetici.
+
+  Tipi generazione:
+  - Random: Valori casuali uniformi
+  - Clustered: Con cluster predefiniti
+
+  Parametri:
+  - Numero tuple
+  - Attributi discreti/continui
+  - Valori distinti (discreti)
+
+  Export: Salva CSV per riuso
+end note
+
+note as N1
+  Utilizzo Benchmarking
+
+  Analisi scalabilità:
+  for (size in [100, 500, 1000, 5000]) {
+    Data data = generateRandom(size, 5, 2, 10);
+    BenchmarkResult r = runBenchmark(data, 0.5, false);
+    print(r);
+  }
+
+  Verifica complessità:
+  - O(n²) attesa
+  - Identificare colli di bottiglia
+  - Ottimizzazioni data-driven
+end note
+
+@enduml

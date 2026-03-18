@@ -1,0 +1,208 @@
+@startuml mining_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package mining {
+  ' ===== Classe Principale: QTMiner =====
+  class QTMiner {
+    - C: ClusterSet
+    - radius: double
+    - enableOptimizations: boolean
+    - distanceCache: DistanceCache
+    - data: Data
+    --
+    + QTMiner(radius: double)
+    + QTMiner(radius: double, enableOptimizations: boolean)
+    + QTMiner(fileName: String)
+    + compute(data: Data): int
+    + save(fileName: String): void
+    + getC(): ClusterSet
+    + getData(): Data
+    + getRadius(): double
+    - buildCandidateCluster(data: Data, isClustered: Set<Integer>): Cluster
+    - getDistance(data: Data, i: int, j: int): double
+  }
+
+  ' ===== Classe Cluster =====
+  class Cluster {
+    - centroid: Tuple
+    - clusteredData: Set<Integer>
+    --
+    + Cluster(centroid: Tuple)
+    + getCentroid(): Tuple
+    + addData(id: int): boolean
+    + contain(id: int): boolean
+    + removeTuple(id: int): void
+    + getSize(): int
+    + iterator(): Iterator<Integer>
+    + toString(): String
+    + toString(data: Data): String
+  }
+
+  ' ===== Classe ClusterSet =====
+  class ClusterSet {
+    - C: List<Cluster>
+    --
+    + ClusterSet()
+    + add(c: Cluster): void
+    + get(i: int): Cluster
+    + size(): int
+    + iterator(): Iterator<Cluster>
+    + toString(): String
+    + toString(data: Data): String
+  }
+
+  ' ===== Classe DistanceCache =====
+  class DistanceCache {
+    - cache: Map<String, Double>
+    - hits: long
+    - misses: long
+    --
+    + DistanceCache()
+    + getDistance(i: int, j: int): Double
+    + putDistance(i: int, j: int, distance: double): void
+    + clear(): void
+    + getHitRate(): double
+    + getCacheSize(): int
+    + getStats(): String
+    - makeKey(i: int, j: int): String
+  }
+
+  ' ===== Classe SerializableClusteringData =====
+  class SerializableClusteringData {
+    - clusterSet: ClusterSet
+    - data: Data
+    - radius: double
+    - timestamp: LocalDateTime
+    --
+    + SerializableClusteringData(clusterSet: ClusterSet, data: Data, radius: double)
+    + getClusterSet(): ClusterSet
+    + getData(): Data
+    + getRadius(): double
+    + getTimestamp(): LocalDateTime
+    + toString(): String
+  }
+
+  ' ===== Eccezioni =====
+  class ClusteringRadiusException << (E,orchid) exception >> {
+    + ClusteringRadiusException(message: String)
+  }
+
+  class IncompatibleClusterException << (E,orchid) exception >> {
+    + IncompatibleClusterException(message: String)
+  }
+
+  class InvalidFileFormatException << (E,orchid) exception >> {
+    + InvalidFileFormatException(message: String)
+  }
+
+  ' ===== Relazioni Composizione/Aggregazione =====
+  QTMiner *-- "1" ClusterSet : C
+  QTMiner o-- "0..1" DistanceCache : distanceCache
+  QTMiner ..> Data : <<uses>>
+
+  ClusterSet *-- "n" Cluster : C
+
+  Cluster o-- "1" Tuple : centroid
+  Cluster *-- "n" Integer : clusteredData (Set)
+
+  SerializableClusteringData *-- "1" ClusterSet : clusterSet
+  SerializableClusteringData *-- "1" Data : data
+
+  ' ===== Relazioni Dipendenza =====
+  QTMiner ..> Cluster : <<creates>>
+  QTMiner ..> SerializableClusteringData : <<creates>>
+
+  QTMiner ..> ClusteringRadiusException : <<throws>>
+  QTMiner ..> InvalidFileFormatException : <<throws>>
+  Cluster ..> IncompatibleClusterException : <<throws>>
+
+  ' ===== Relazioni con package data =====
+  QTMiner ..> "data.Data" : <<uses>>
+  QTMiner ..> "data.Tuple" : <<uses>>
+  Cluster ..> "data.Tuple" : <<uses>>
+  SerializableClusteringData ..> "data.Data" : <<uses>>
+
+  ' ===== Interfacce Serializzabili =====
+  QTMiner ..|> "java.io.Serializable" : <<implements>>
+  Cluster ..|> "java.io.Serializable" : <<implements>>
+  ClusterSet ..|> "java.io.Serializable" : <<implements>>
+  SerializableClusteringData ..|> "java.io.Serializable" : <<implements>>
+
+  ' ===== Interfacce Iterable =====
+  Cluster ..|> "Iterable<Integer>" : <<implements>>
+  ClusterSet ..|> "Iterable<Cluster>" : <<implements>>
+}
+
+' ===== Note Esplicative =====
+note right of QTMiner
+  Implementazione algoritmo Quality Threshold.
+
+  Complessità:
+  - Temporale: O(k × n²), worst case O(n³)
+  - Spaziale: O(n)
+
+  Ottimizzazioni:
+  - DistanceCache (opzionale, configurabile)
+  - HashSet per membership O(1)
+  - ArrayList per accesso diretto O(1)
+
+  Serializzazione:
+  - Salva su file .dmp
+  - Formato completo (SerializableClusteringData)
+  - Formato legacy (solo ClusterSet)
+end note
+
+note top of Cluster
+  Rappresenta singolo cluster.
+
+  Componenti:
+  - centroid: Tuple rappresentativa
+  - clusteredData: Set<Integer> ID tuple
+
+  Invariante:
+  Distanza ogni tupla da centroid ≤ radius
+
+  Pattern: Iterable per foreach loop
+end note
+
+note bottom of ClusterSet
+  Insieme di cluster (risultato algoritmo QT).
+
+  Operazioni:
+  - add(Cluster): Aggiunge cluster
+  - get(int): Accesso per indice
+  - iterator(): Attraversamento
+
+  Pattern: Iterable per foreach loop
+end note
+
+note left of DistanceCache
+  Cache LRU per distanze calcolate.
+
+  Benefici:
+  - Evita ricalcolo distanze
+  - Tracking hit/miss rate
+
+  Trade-off:
+  - Memoria vs Tempo
+  - Vantaggioso solo per n > 500
+
+  Chiave cache: "min(i,j)-max(i,j)"
+end note
+
+note right of SerializableClusteringData
+  Wrapper completo per serializzazione.
+
+  Include:
+  - ClusterSet (cluster scoperti)
+  - Data (dataset originale)
+  - radius (parametro usato)
+  - timestamp (quando generato)
+
+  Permette ricaricamento completo stato.
+end note
+
+@enduml

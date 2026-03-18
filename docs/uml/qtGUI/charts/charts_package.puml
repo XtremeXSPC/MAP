@@ -1,0 +1,81 @@
+@startuml charts_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+top to bottom direction
+
+package "gui.charts" {
+  class ClusterScatterChart {
+    - {static} logger: Logger
+    - result: ClusteringResult
+    - data: Data
+    - clusterSet: ClusterSet
+    - discreteMappings: Map<Integer, Map<String, Integer>>
+    - xAttributeIndex: int
+    - yAttributeIndex: int
+    - convexHullMode: boolean
+    --
+    + ClusterScatterChart(result: ClusteringResult)
+    + getAttributeNames(): String[]
+    + getXAttributeIndex(): int
+    + getYAttributeIndex(): int
+    + setConvexHullMode(enabled: boolean): void
+    + setAxes(xIndex: int, yIndex: int): void
+    + createChart(): XYChart
+    + saveAsPNG(outputFile: File): void
+    + saveAsPNG(outputFile: File, width: int, height: int): void
+    - configureStyling(chart: XYChart): void
+    - getNumericValue(item: Item, attributeIndex: int): double
+    - addClusterSeries(chart: XYChart, cluster: Cluster, clusterIndex: int): void
+    - addCentroidsSeries(chart: XYChart, clusterList: List<Cluster>): void
+    - addConvexHullSeries(chart: XYChart, cluster: Cluster, clusterIndex: int): void
+  }
+
+  class ChartViewer {
+    - {static} logger: Logger
+    - result: ClusteringResult
+    - chartManager: ClusterScatterChart
+    - stage: Stage
+    - xAxisComboBox: ComboBox<String>
+    - yAxisComboBox: ComboBox<String>
+    - chartNode: SwingNode
+    --
+    + ChartViewer(result: ClusteringResult)
+    + show(): void
+    + getStage(): Stage
+    - initializeUI(): void
+    - createTopPanel(): VBox
+    - createBottomPanel(): HBox
+    - onAxisChanged(): void
+    - updateChart(): void
+    - handleExport(): void
+    - handleExportHD(): void
+    - exportChart(width: int, height: int): void
+    - showError(title: String, message: String): void
+  }
+
+  class ConvexHullCalculator {
+    --
+    + {static} grahamScan(points: List<Point2D>): List<Point2D>
+    - {static} findLowestPoint(points: List<Point2D>): Point2D
+    - {static} ccw(p1: Point2D, p2: Point2D, p3: Point2D): double
+  }
+}
+
+ChartViewer *-- "1" ClusterScatterChart : chartManager
+
+ClusterScatterChart ..> ConvexHullCalculator : <<uses>>
+ClusterScatterChart ..> ColorPalette : <<uses>>
+ClusterScatterChart ..> Point2D : <<uses>>
+ClusterScatterChart ..> "org.knowm.xchart.XYChart" : <<uses>>
+ClusterScatterChart ..> "data.Data" : <<uses>>
+ClusterScatterChart ..> "mining.Cluster" : <<uses>>
+ClusterScatterChart ..> "mining.ClusterSet" : <<uses>>
+ClusterScatterChart ..> "data.Item" : <<uses>>
+ClusterScatterChart ..> "data.Tuple" : <<uses>>
+ClusterScatterChart ..> "gui.models.ClusteringResult" : <<uses>>
+
+ChartViewer ..> "gui.models.ClusteringResult" : <<uses>>
+
+@enduml

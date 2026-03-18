@@ -1,0 +1,433 @@
+/*
+ * QT Clustering GUI - Application Stylesheet
+ * Modern, clean design for JavaFX application
+ */
+
+/* ============================== ROOT E BASE =============================== */
+
+.root {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  -fx-font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  -fx-font-size: 14px;
+  -fx-base: #f3f3f3;
+  background: #f3f3f3;
+  -fx-background: #f3f3f3;
+
+  /* Accent color */
+  -fx-accent: #0078d4;
+  -fx-focus-color: #0078d4;
+  -fx-faint-focus-color: rgba(0, 120, 212, 0.25);
+}
+
+/* ================================= LABELS ================================= */
+
+.label {
+  -fx-text-fill: #201f1e;
+}
+
+.title-label {
+  font-size: 28px;
+  -fx-font-size: 28px;
+  font-weight: bold;
+  -fx-font-weight: bold;
+  -fx-text-fill: #0078d4;
+  padding: 15px 20px 15px 20px;
+  -fx-padding: 15 20 15 20;
+  -fx-wrap-text: true;
+  -fx-alignment: center;
+  -fx-line-spacing: 5px;
+}
+
+.form-label {
+  font-size: 15px;
+  -fx-font-size: 15px;
+  font-weight: bold;
+  -fx-font-weight: bold;
+  -fx-text-fill: #323130;
+}
+
+.label-error {
+  -fx-text-fill: #a80000;
+  font-weight: bold;
+  -fx-font-weight: bold;
+}
+
+.label-success {
+  -fx-text-fill: #107c10;
+  font-weight: bold;
+  -fx-font-weight: bold;
+}
+
+.label-warning {
+  -fx-text-fill: #797775;
+  font-weight: bold;
+  -fx-font-weight: bold;
+}
+
+/* =============================== STATUS BAR =============================== */
+
+.status-bar {
+  background-color: #0078d4;
+  -fx-background-color: #0078d4;
+  border-color: transparent;
+  -fx-border-color: transparent;
+}
+
+.status-bar .label {
+  -fx-text-fill: white;
+}
+
+/* ================================= BUTTON ================================= */
+
+.button {
+  background-color: #ffffff;
+  -fx-background-color: #ffffff;
+  -fx-text-fill: #201f1e;
+  border-color: #8a8886;
+  -fx-border-color: #8a8886;
+  border-radius: 2px;
+  -fx-border-radius: 2;
+  -fx-background-radius: 2;
+  padding: 6px 14px 6px 14px;
+  -fx-padding: 6 14 6 14;
+  cursor: hand;
+  -fx-cursor: hand;
+}
+
+.button:hover {
+  background-color: #f3f2f1;
+  -fx-background-color: #f3f2f1;
+  border-color: #201f1e;
+  -fx-border-color: #201f1e;
+}
+
+.button:pressed {
+  background-color: #edebe9;
+  -fx-background-color: #edebe9;
+  border-color: #0078d4;
+  -fx-border-color: #0078d4;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  -fx-opacity: 0.5;
+  cursor: default;
+  -fx-cursor: default;
+}
+
+/* Primary button */
+.button-primary {
+  background-color: #0078d4;
+  -fx-background-color: #0078d4;
+  -fx-text-fill: white;
+  border-color: #0078d4;
+  -fx-border-color: #0078d4;
+}
+
+.button-primary:hover {
+  background-color: #106ebe;
+  -fx-background-color: #106ebe;
+  border-color: #106ebe;
+  -fx-border-color: #106ebe;
+}
+
+.button-primary:pressed {
+  background-color: #005a9e;
+  -fx-background-color: #005a9e;
+  border-color: #005a9e;
+  -fx-border-color: #005a9e;
+}
+
+/* Danger button */
+.button-danger {
+  background-color: #a80000;
+  -fx-background-color: #a80000;
+  -fx-text-fill: white;
+  border-color: #a80000;
+  -fx-border-color: #a80000;
+}
+
+.button-danger:hover {
+  background-color: #c50f1f;
+  -fx-background-color: #c50f1f;
+  border-color: #c50f1f;
+  -fx-border-color: #c50f1f;
+}
+
+/* =============================== TEXT INPUT =============================== */
+
+.text-field,
+.text-area {
+  background-color: white;
+  -fx-background-color: white;
+  border-color: #8a8886;
+  -fx-border-color: #8a8886;
+  border-radius: 2px;
+  -fx-border-radius: 2;
+  -fx-background-radius: 2;
+  padding: 6px 10px 6px 10px;
+  -fx-padding: 6 10 6 10;
+}
+
+.text-field:focused,
+.text-area:focused {
+  border-color: #0078d4;
+  -fx-border-color: #0078d4;
+  border-width: 2px;
+  -fx-border-width: 2;
+  padding: 5px 9px 5px 9px; /* Adjust padding to prevent layout shift */
+  -fx-padding: 5 9 5 9; /* Adjust padding to prevent layout shift */
+}
+
+/* =============================== COMBO BOX ================================ */
+
+.combo-box {
+  background-color: white;
+  -fx-background-color: white;
+  border-color: #8a8886;
+  -fx-border-color: #8a8886;
+  border-radius: 2px;
+  -fx-border-radius: 2;
+  -fx-background-radius: 2;
+}
+
+.combo-box:hover {
+  border-color: #323130;
+  -fx-border-color: #323130;
+}
+
+.combo-box:focused {
+  border-color: #0078d4;
+  -fx-border-color: #0078d4;
+}
+
+/* ============================== PROGRESS BAR ============================== */
+
+.progress-bar {
+  background-color: transparent;
+  -fx-background-color: transparent;
+}
+
+.progress-bar > .bar {
+  background-color: #0078d4;
+  -fx-background-color: #0078d4;
+  -fx-background-insets: 0;
+  -fx-background-radius: 2;
+}
+
+.progress-bar > .track {
+  background-color: #edebe9;
+  -fx-background-color: #edebe9;
+  -fx-background-radius: 2;
+}
+
+/* ==================== TREEVIEW & LISTVIEW & TABLEVIEW ===================== */
+
+.tree-view,
+.list-view,
+.table-view {
+  background-color: white;
+  -fx-background-color: white;
+  border-color: #8a8886;
+  -fx-border-color: #8a8886;
+  border-radius: 2px;
+  -fx-border-radius: 2;
+}
+
+.tree-cell:selected,
+.list-cell:selected,
+.table-row-cell:selected {
+  background-color: #c7e0f4;
+  -fx-background-color: #c7e0f4;
+  -fx-text-fill: #201f1e;
+}
+
+.tree-cell:selected .label,
+.list-cell:selected .label,
+.table-row-cell:selected .label {
+  -fx-text-fill: #201f1e;
+}
+
+/* ============================== SPLIT PANE =============================== */
+
+.split-pane {
+  background-color: transparent;
+  -fx-background-color: transparent;
+}
+
+.split-pane-divider {
+  background-color: #edebe9;
+  -fx-background-color: #edebe9;
+  padding: 0 1px 0 1px;
+  -fx-padding: 0 1 0 1;
+}
+
+/* ================================ MENUBAR ================================= */
+
+.menu-bar {
+  background-color: #f3f3f3;
+  -fx-background-color: #f3f3f3;
+  border-color: #edebe9;
+  -fx-border-color: #edebe9;
+  border-width: 0 0 1px 0;
+  -fx-border-width: 0 0 1 0;
+}
+
+.menu-item:focused {
+  background-color: #edebe9;
+  -fx-background-color: #edebe9;
+}
+
+/* ================================ TOOL BAR ================================ */
+
+.tool-bar {
+  background-color: #f3f3f3;
+  -fx-background-color: #f3f3f3;
+  border-color: #edebe9;
+  -fx-border-color: #edebe9;
+  border-width: 0 0 1px 0;
+  -fx-border-width: 0 0 1 0;
+  -fx-spacing: 5;
+  padding: 5px;
+  -fx-padding: 5;
+}
+
+.tool-bar .button {
+  background-color: transparent;
+  -fx-background-color: transparent;
+  border-color: transparent;
+  -fx-border-color: transparent;
+}
+
+.tool-bar .button:hover {
+  background-color: #edebe9;
+  -fx-background-color: #edebe9;
+}
+
+/* =============================== CARD/PANEL =============================== */
+
+.card {
+  background-color: white;
+  -fx-background-color: white;
+  border-color: #edebe9;
+  -fx-border-color: #edebe9;
+  border-radius: 4px;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
+  padding: 20px;
+  -fx-padding: 20;
+}
+
+.form-section {
+  background-color: #f3f3f3;
+  -fx-background-color: #f3f3f3;
+  padding: 20px;
+  -fx-padding: 20;
+  -fx-spacing: 15;
+}
+
+/* ================================ TOOLTIP ================================= */
+
+.tooltip {
+  background-color: white;
+  -fx-background-color: white;
+  -fx-text-fill: #323130;
+  border-color: #8a8886;
+  -fx-border-color: #8a8886;
+  border-width: 1px;
+  -fx-border-width: 1;
+  -fx-background-radius: 2;
+  border-radius: 2px;
+  -fx-border-radius: 2;
+  padding: 5px 8px 5px 8px;
+  -fx-padding: 5 8 5 8;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+}
+
+/* ================================ TAB PANE ================================= */
+
+.tab-pane {
+  background-color: transparent;
+  -fx-background-color: transparent;
+}
+
+.tab-header-area .tab-header-background {
+  background-color: transparent;
+  -fx-background-color: transparent;
+}
+
+.tab {
+  background-color: #f3f2f1;
+  -fx-background-color: #f3f2f1;
+  -fx-background-insets: 0;
+  -fx-background-radius: 4 4 0 0;
+  padding: 8px 15px 8px 15px;
+  -fx-padding: 8 15 8 15;
+  border-color: #edebe9;
+  -fx-border-color: #edebe9;
+  border-width: 1px 1px 0 1px;
+  -fx-border-width: 1 1 0 1;
+}
+
+.tab:selected {
+  background-color: white;
+  -fx-background-color: white;
+  border-color: #8a8886;
+  -fx-border-color: #8a8886;
+  border-width: 1px 1px 0 1px;
+  -fx-border-width: 1 1 0 1;
+}
+
+.tab:selected .focus-indicator {
+  border-width: 0;
+  -fx-border-width: 0;
+}
+
+.tab-label {
+  -fx-text-fill: #323130;
+  font-weight: normal;
+  -fx-font-weight: normal;
+}
+
+.tab:selected .tab-label {
+  -fx-text-fill: #0078d4;
+  font-weight: bold;
+  -fx-font-weight: bold;
+}
+
+/* ================================ CHARTS ================================= */
+
+.chart {
+  padding: 10px;
+  -fx-padding: 10px;
+}
+
+.chart-content {
+  padding: 10px;
+  -fx-padding: 10px;
+}
+
+.chart-title {
+  font-size: 1.2em;
+  -fx-font-size: 1.2em;
+  font-weight: bold;
+  -fx-font-weight: bold;
+  -fx-text-fill: #323130;
+}
+
+.axis-label {
+  -fx-text-fill: #605e5c;
+}
+
+.chart-legend {
+  background-color: transparent;
+  -fx-background-color: transparent;
+}
+
+/* =========================== PROGRESS INDICATOR =========================== */
+
+.progress-indicator {
+  -fx-progress-color: #0078d4;
+}

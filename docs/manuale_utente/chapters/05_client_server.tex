@@ -1,0 +1,131 @@
+\chapter{Utilizzo del client testuale e del server}
+\label{chap:client-server}
+
+\section{Scopo della modalita' client-server}
+
+La coppia \module{qtServer}/\module{qtClient} rappresenta la modalita' remota del
+progetto. A differenza della GUI, che ingloba il backend e lavora in locale, qui
+l'algoritmo QT viene eseguito esclusivamente sul server. Il client si limita a stabilire
+una connessione, inviare comandi e visualizzare le risposte testuali ricevute. Questa
+modalita' e' utile per comprendere l'evoluzione storica del progetto e per utilizzare il
+backend senza passare dall'interfaccia grafica.
+
+\section{Avvio del server}
+
+Il server viene avviato tramite la classe \module{server.MultiServer}. Se non viene
+specificata alcuna porta, il valore di default e' 8080. All'avvio il server apre una
+\module{ServerSocket}, stampa un messaggio di disponibilita' e resta in attesa di nuove
+connessioni. Per ogni client viene creato un thread \module{ServerOneClient} indipendente.
+
+\begin{commandblock}
+  make run-server PORT=8080
+\end{commandblock}
+
+Questa organizzazione implica che piu' client possano collegarsi contemporaneamente senza
+condividere lo stesso stato applicativo. Ogni thread mantiene infatti il proprio dataset
+corrente e l'ultimo clustering calcolato.
+
+\section{Avvio del client}
+
+Il client testuale richiede esplicitamente due argomenti: indirizzo IP e porta del
+server. Una volta avviato, costruisce uno \module{ObjectOutputStream} e uno
+\module{ObjectInputStream}, quindi presenta un menu numerico. La connessione resta aperta
+finche' l'utente non seleziona l'opzione di uscita.
+
+\begin{commandblock}
+  make run-client IP=localhost PORT=8080
+\end{commandblock}
+
+All'atto pratico il client mostra un menu con cinque opzioni numerate da 0 a 4. La logica
+dell'applicazione dipende fortemente dalla sequenza con cui queste opzioni vengono usate,
+perche' alcune richiedono che il server abbia gia' memorizzato un dataset o un clustering
+all'interno della stessa sessione.
+
+\section{Descrizione dettagliata dei comandi}
+
+\subsection{Comando 0: caricamento di una tabella da database}
+
+L'opzione 0 chiede il nome della tabella da caricare e invia tale informazione al server.
+Il thread \module{ServerOneClient} costruisce quindi un oggetto \module{Data(tableName,
+true)}, che usa la connessione JDBC predefinita e recupera le tuple dalla tabella
+indicata. In caso di successo il dataset viene memorizzato nello stato della sessione e
+qualsiasi clustering precedente viene invalidato.
+
+Dal punto di vista operativo, questo comando e' il prerequisito naturale del comando 1,
+che esegue il clustering sul dataset appena caricato. Se la tabella non esiste o il
+database non e' raggiungibile, il server restituisce un messaggio di errore testuale
+invece della risposta \module{OK}.
+
+\subsection{Comando 1: esecuzione del clustering sulla tabella corrente}
+
+L'opzione 1 richiede il valore di \emph{radius} e lo inoltra al server. Prima di
+procedere, il thread verifica che un dataset sia gia' stato caricato nella sessione. Se
+manca, il server risponde con un messaggio che invita a usare prima il comando 0.
+
+Quando il dataset e' presente, il server istanzia un nuovo \module{QTMiner}, esegue
+\module{compute(data)} e restituisce al client tre elementi: la stringa \module{OK}, il
+numero di cluster trovati e una rappresentazione testuale dell'intero
+\module{ClusterSet}. Il client visualizza quindi l'output nel terminale. A differenza
+della GUI, qui non sono disponibili grafici, dialoghi statistici o funzioni di
+esplorazione interattiva del risultato.
+
+\subsection{Comando 2: salvataggio dei cluster su file}
+
+L'opzione 2 usa l'ultimo \module{QTMiner} disponibile nella sessione e salva il
+clustering in un file \module{.dmp}. Il nome del file viene costruito automaticamente dal
+server concatenando il nome della tabella corrente e un timestamp nel formato
+\module{yyyyMMdd\_HHmmss}. Se l'utente prova a usare il comando senza aver prima eseguito
+un clustering, il server risponde con un messaggio d'errore esplicito.
+
+Questa scelta automatica del nome file riduce il numero di parametri da inserire nel
+client, ma richiede all'utente di prestare attenzione alla cartella di lavoro da cui il
+server e' stato avviato, poiche' il file viene scritto proprio in quel contesto.
+
+\subsection{Comando 3: caricamento di un clustering da file}
+
+L'opzione 3 consente di riaprire un clustering gia' serializzato. Il client chiede il
+nome del file senza estensione \module{.dmp}, invia tale nome al server e, per ragioni di
+compatibilita', chiede anche un radius che sul lato server viene pero' ignorato. Il
+\module{QTMiner} viene ricostruito a partire dal file, il dataset associato viene
+recuperato e il server restituisce nuovamente una rappresentazione testuale del clustering.
+
+L'uso di questo comando non richiede che un database sia attivo, a patto che il file
+\module{.dmp} esista gia' e sia leggibile dal server. Di conseguenza la modalita'
+client-server puo' essere usata anche per consultare risultati archiviati in precedenza.
+
+\subsection{Comando 4: chiusura della sessione}
+
+L'opzione 4 non invia un'operazione complessa al server, ma termina il ciclo principale
+del client e chiude la connessione. Il server rileva la fine della comunicazione come
+\module{EOF} e provvede a liberare le risorse relative al thread dedicato.
+
+\section{Stato di sessione e dipendenze tra operazioni}
+
+Il comportamento del client puo' essere compreso pienamente solo tenendo presente che il
+server mantiene uno stato per ogni connessione. Tre campi sono particolarmente
+importanti: il dataset corrente, l'ultimo miner calcolato e il nome della tabella
+caricata. Questa progettazione ha conseguenze immediate:
+
+\begin{itemize}
+  \item il comando 1 dipende dal comando 0, salvo che non si stia lavorando su un file
+    \module{.dmp};
+  \item il comando 2 dipende dal comando 1, perche' salva l'ultimo clustering calcolato;
+  \item il comando 3 puo' reintrodurre sia cluster sia dataset direttamente da disco.
+\end{itemize}
+
+In altri termini, il client testuale non e' uno strumento puramente stateless. La singola
+sessione costituisce un piccolo spazio di lavoro temporaneo sul server.
+
+\section{Indicazioni pratiche d'uso}
+
+Per un uso corretto della modalita' client-server e' consigliabile seguire una procedura
+lineare. Si avvia il server, si apre il client, si carica una tabella dal database, si
+esegue il clustering con un \emph{radius} scelto con cura e, solo a valle della verifica
+dell'output, si decide se salvare il risultato. Qualora si voglia lavorare esclusivamente
+su dati gia' archiviati, e' possibile saltare il caricamento da database e usare
+direttamente il comando 3.
+
+Pur essendo semplice, questa interfaccia non guida l'utente in modo ricco come la GUI.
+Non ci sono convalide avanzate sul contenuto della tabella, non sono disponibili grafici,
+e l'output e' interamente testuale. La sua utilita' principale resta quindi quella di
+offrire un canale minimale e trasparente verso il backend remoto.

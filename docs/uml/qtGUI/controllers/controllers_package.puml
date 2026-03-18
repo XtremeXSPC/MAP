@@ -1,0 +1,298 @@
+@startuml controllers_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+top to bottom direction
+
+package "gui.controllers" as Controllers {
+  ' ===== Main Controller =====
+  class MainController {
+    - {static} logger: Logger
+    - menuNew: MenuItem
+    - menuOpen: MenuItem
+    - menuSave: MenuItem
+    - menuSaveAs: MenuItem
+    - menuExit: MenuItem
+    - menuSettings: MenuItem
+    - menuShowToolbar: CheckMenuItem
+    - menuShowStatusBar: CheckMenuItem
+    - menuHelp: MenuItem
+    - menuAbout: MenuItem
+    - toolbar: ToolBar
+    - btnNew: Button
+    - btnOpen: Button
+    - btnSave: Button
+    - btnRun: Button
+    - btnExport: Button
+    - contentArea: StackPane
+    - statusBar: HBox
+    - statusLabel: Label
+    - progressLabel: Label
+    --
+    + initialize(): void
+    + updateStatus(message: String): void
+    + updateProgress(progress: String): void
+    + navigateTo(fxmlFile: String): void
+    - setupMenuHandlers(): void
+    - setupToolbarHandlers(): void
+    - setupStatusBar(): void
+    - handleNewAnalysis(): void
+    - handleOpen(): void
+    - handleSave(): void
+    - handleSaveAs(): void
+    - handleExit(): void
+    - handleSettings(): void
+    - handleRunClustering(): void
+    - handleExport(): void
+    - handleHelp(): void
+    - handleAbout(): void
+    - showInfo(title: String, message: String): void
+    - showError(title: String, message: String): void
+    - showWarning(title: String, message: String): void
+  }
+
+  ' ===== Home Controller =====
+  class HomeController {
+    - {static} logger: Logger
+    - {static} DEFAULT_DB_HOST: String
+    - {static} DEFAULT_DB_NAME: String
+    - {static} DEFAULT_DB_USER: String
+    - {static} DEFAULT_DB_PASSWORD: String
+    - {static} DEFAULT_DB_PORT: int
+    - dataSourceComboBox: ComboBox<String>
+    - csvFileSection: HBox
+    - csvFilePathField: TextField
+    - btnBrowseFile: Button
+    - databaseSection: VBox
+    - dbHostField: TextField
+    - dbPortField: TextField
+    - dbNameField: TextField
+    - dbUserField: TextField
+    - dbPasswordField: PasswordField
+    - tableNameField: TextField
+    - btnPreviewDataset: Button
+    - radiusField: TextField
+    - radiusValidationLabel: Label
+    - enableCachingCheckBox: CheckBox
+    - verboseLoggingCheckBox: CheckBox
+    - btnCancel: Button
+    - btnStartClustering: Button
+    - validationSummary: HBox
+    - validationMessageLabel: Label
+    - selectedCsvFile: File
+    --
+    + initialize(): void
+    + getRadius(): double
+    + getDataSourceType(): String
+    + isCachingEnabled(): boolean
+    + getSelectedCsvFile(): File
+    - setupDataSourceSelection(): void
+    - setupRadiusValidation(): void
+    - validateRadius(value: String): boolean
+    - setupButtons(): void
+    - validateForm(): boolean
+    - handleDataSourceChange(dataSource: String): void
+    - handleBrowseFile(): void
+    - handlePreviewDataset(): void
+    - handleCancel(): void
+    - handleStartClustering(): void
+    - buildConfiguration(): ClusteringConfiguration
+    - navigateToClusteringView(): void
+    - parseDbPort(portText: String): int
+    - showError(title: String, message: String): void
+  }
+
+  ' ===== Clustering Controller =====
+  class ClusteringController {
+    - {static} logger: Logger
+    - clusteringTask: Task<Void>
+    - startTime: Instant
+    - isCancelled: boolean
+    - miner: QTMiner
+    - logLock: Object
+    - logBuffer: StringBuilder
+    - logFlushScheduled: boolean
+    - progressBar: ProgressBar
+    - progressIndicator: ProgressIndicator
+    - progressLabel: Label
+    - progressPercentLabel: Label
+    - currentStepLabel: Label
+    - clustersFoundLabel: Label
+    - tuplesClusteredLabel: Label
+    - elapsedTimeLabel: Label
+    - logTextArea: TextArea
+    - chartContainer: VBox
+    - chartPlaceholder: Label
+    - btnCancel: Button
+    - btnViewResults: Button
+    - statusFooter: HBox
+    - statusMessageLabel: Label
+    --
+    + initialize(): void
+    - setupButtons(): void
+    - startClustering(): void
+    - createClusteringTask(): Task<Void>
+    - startElapsedTimeUpdater(): void
+    - appendLog(message: String): void
+    - createClusterDistributionChart(): void
+    - handleClusteringSuccess(): void
+    - handleClusteringFailure(): void
+    - handleClusteringCancelled(): void
+    - handleCancel(): void
+    - handleViewResults(): void
+    - showError(title: String, message: String): void
+  }
+
+  ' ===== Results Controller =====
+  class ResultsController {
+    - {static} logger: Logger
+    - clusteringResult: ClusteringResult
+    - clusterSet: ClusterSet
+    - data: Data
+    - clusterList: List<Cluster>
+    - summaryLabel: Label
+    - totalClustersLabel: Label
+    - totalTuplesLabel: Label
+    - radiusLabel: Label
+    - avgClusterSizeLabel: Label
+    - largestClusterLabel: Label
+    - smallestClusterLabel: Label
+    - clusterTreeView: TreeView<String>
+    - summaryTextArea: TextArea
+    - tuplesTextArea: TextArea
+    - statisticsTextArea: TextArea
+    - btnVisualize: Button
+    - btnStatistics: Button
+    - btnExport: Button
+    - btnSave: Button
+    - btnNewAnalysis: Button
+    - btnExpandAll: Button
+    - btnCollapseAll: Button
+    - btnCopyDetails: Button
+    - statusLabel: Label
+    - timestampLabel: Label
+    --
+    + initialize(): void
+    - setupTreeView(): void
+    - setupButtons(): void
+    - loadClusteringResults(): void
+    - handleClusterSelection(item: TreeItem<String>): void
+    - expandAllNodes(): void
+    - expandTreeView(item: TreeItem<String>): void
+    - collapseAllNodes(): void
+    - collapseTreeView(item: TreeItem<String>): void
+    - updateTimestamp(): void
+    - handleStatistics(): void
+    - handleVisualize(): void
+    - handleExport(): void
+    - exportToFile(format: String, file: File): void
+    - getDefaultExportFileName(format: String): String
+    - handleSave(): void
+    - getDefaultSaveFileName(): String
+    - handleNewAnalysis(): void
+    - handleCopyDetails(): void
+    - navigateToHome(): void
+    - showError(title: String, message: String): void
+    - showInfo(title: String, message: String): void
+  }
+
+  ' ===== Settings Controller =====
+  class SettingsController {
+    - {static} logger: Logger
+    - {static} SETTINGS_FILE: String
+    - settings: Properties
+    - statusHideTimer: PauseTransition
+    - themeComboBox: ComboBox<String>
+    - fontSizeComboBox: ComboBox<String>
+    - showWelcomeCheckBox: CheckBox
+    - enableCachingCheckBox: CheckBox
+    - threadPoolSpinner: Spinner<Integer>
+    - memoryLimitField: TextField
+    - verboseLoggingCheckBox: CheckBox
+    - defaultRadiusField: TextField
+    - defaultDataSourceComboBox: ComboBox<String>
+    - autoStartClusteringCheckBox: CheckBox
+    - exportFormatComboBox: ComboBox<String>
+    - exportDirectoryField: TextField
+    - btnBrowseExportDir: Button
+    - includeTimestampCheckBox: CheckBox
+    - dbHostField: TextField
+    - dbPortField: TextField
+    - dbNameField: TextField
+    - dbUsernameField: TextField
+    - dbPasswordField: PasswordField
+    - btnTestConnection: Button
+    - btnResetDefaults: Button
+    - btnCancel: Button
+    - btnSaveSettings: Button
+    - statusFooter: HBox
+    - statusMessageLabel: Label
+    --
+    + initialize(): void
+    - setupSpinners(): void
+    - setupLiveListeners(): void
+    - setupButtons(): void
+    - loadSettings(): void
+    - applySettings(): void
+    - applyDefaults(): void
+    - handleBrowseExportDirectory(): void
+    - handleTestConnection(): void
+    - handleResetDefaults(): void
+    - handleCancel(): void
+    - handleSaveSettings(): void
+    - validateSettings(): boolean
+    - showStatus(message: String, success: boolean): void
+    - showError(title: String, message: String): void
+  }
+
+  ' ===== Relazioni =====
+  MainController ..down..> ApplicationContext : <<uses>>
+  MainController ..down..> ClusteringService : <<uses>>
+  MainController ..down..> AboutDialog : <<uses>>
+  MainController ..down..> FXMLLoader : <<uses>>
+
+  HomeController ..down..> ClusteringConfiguration : <<uses>>
+  HomeController ..down..> ApplicationContext : <<uses>>
+  HomeController ..down..> DatasetLoader : <<uses>>
+  HomeController ..down..> DbAccess : <<uses>>
+  HomeController ..down..> DatasetPreviewDialog : <<uses>>
+
+  ClusteringController ..down..> ApplicationContext : <<uses>>
+  ClusteringController ..down..> DataImportService : <<uses>>
+  ClusteringController ..down..> QTMiner : <<uses>>
+
+  ResultsController ..down..> ApplicationContext : <<uses>>
+  ResultsController ..down..> ExportService : <<uses>>
+  ResultsController ..down..> ClusteringService : <<uses>>
+  ResultsController ..down..> ChartViewer : <<uses>>
+  ResultsController ..down..> StatisticsDialog : <<uses>>
+
+  SettingsController ..down..> ThemeManager : <<uses>>
+  SettingsController ..down..> DbAccess : <<uses>>
+}
+
+note as LayoutNote
+  Nota di layout:
+  Il package "gui.controllers" e' esplicito per mantenere le classi
+  raggruppate e stabilizzare il layout del diagramma.
+
+  Dipendenze mostrate:
+  - gui.utils.ApplicationContext
+  - gui.services.ClusteringService
+  - gui.services.DataImportService
+  - gui.services.ExportService
+  - gui.models.ClusteringConfiguration
+  - gui.utils.DatasetLoader
+  - gui.utils.ThemeManager
+  - gui.dialogs.AboutDialog
+  - gui.dialogs.DatasetPreviewDialog
+  - gui.dialogs.StatisticsDialog
+  - gui.charts.ChartViewer
+  - database.DbAccess
+  - mining.QTMiner
+  - javafx.fxml.FXMLLoader
+end note
+
+
+@enduml

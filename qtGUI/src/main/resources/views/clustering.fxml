@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="gui.controllers.ClusteringController"
+            fitToWidth="true"
+            fitToHeight="true"
+            styleClass="background-pane">
+
+    <VBox spacing="30"
+          alignment="CENTER"
+          styleClass="form-section">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20" />
+        </padding>
+
+        <!-- Header -->
+        <VBox spacing="15" alignment="CENTER">
+            <Label text="Clustering in Corso" styleClass="title-label">
+                <font>
+                    <Font name="System Bold" size="28" />
+                </font>
+            </Label>
+            <Label text="Attendere mentre l'algoritmo Quality Threshold elabora i dati...">
+                <font>
+                    <Font size="14" />
+                </font>
+            </Label>
+        </VBox>
+
+        <!-- Progress Section -->
+        <VBox spacing="25" alignment="CENTER" styleClass="card" VBox.vgrow="ALWAYS" maxWidth="Infinity" fillWidth="true">
+
+            <padding>
+                 <Insets top="20" right="20" bottom="20" left="20" />
+            </padding>
+
+            <!-- Progress Bar -->
+            <VBox spacing="10" alignment="CENTER" maxWidth="Infinity">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ProgressIndicator fx:id="progressIndicator" prefWidth="20" prefHeight="20" />
+                    <Label fx:id="progressLabel" text="Inizializzazione..." styleClass="form-label" />
+                </HBox>
+                <ProgressBar fx:id="progressBar" maxWidth="Infinity" prefHeight="30" progress="0.0" />
+                <Label fx:id="progressPercentLabel" text="0%" />
+            </VBox>
+
+            <Separator maxWidth="Infinity" />
+
+            <!-- Status Information & Chart -->
+            <HBox spacing="20" alignment="TOP_CENTER" VBox.vgrow="ALWAYS" maxWidth="Infinity">
+                <!-- Left: Status Info -->
+                <VBox spacing="15" alignment="CENTER_LEFT" minWidth="250" HBox.hgrow="SOMETIMES">
+                    <HBox spacing="10">
+                        <Label text="Fase Corrente:" styleClass="form-label" minWidth="140" />
+                        <Label fx:id="currentStepLabel" text="Avvio..." wrapText="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label text="Cluster Trovati:" styleClass="form-label" minWidth="140" />
+                        <Label fx:id="clustersFoundLabel" text="0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label text="Tuple Clusterizzate:" styleClass="form-label" minWidth="140" />
+                        <Label fx:id="tuplesClusteredLabel" text="0 / 0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label text="Tempo Trascorso:" styleClass="form-label" minWidth="140" />
+                        <Label fx:id="elapsedTimeLabel" text="00:00:00" />
+                    </HBox>
+                </VBox>
+
+                <Separator orientation="VERTICAL" />
+
+                <!-- Right: Chart Container -->
+                <VBox fx:id="chartContainer" spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS" prefHeight="200">
+                    <Label text="Distribuzione Cluster" styleClass="form-label" />
+                    <!-- Chart will be injected here -->
+                    <Label text="(In attesa di risultati...)" styleClass="label-warning" fx:id="chartPlaceholder"/>
+                </VBox>
+            </HBox>
+
+            <Separator maxWidth="Infinity" />
+
+            <!-- Detailed Log -->
+            <VBox spacing="10" VBox.vgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Log Attività:" styleClass="form-label" />
+                <TextArea fx:id="logTextArea"
+                         editable="false"
+                         wrapText="true"
+                         prefHeight="150"
+                         maxWidth="Infinity"
+                         styleClass="log-area" />
+            </VBox>
+
+        </VBox>
+
+        <!-- Control Buttons -->
+        <HBox spacing="15" alignment="CENTER">
+            <Button fx:id="btnCancel" text="Annulla Clustering" prefWidth="180" styleClass="button-danger" />
+            <Button fx:id="btnViewResults" text="Visualizza Risultati" prefWidth="180" styleClass="button-primary"
+                    visible="false" managed="false" />
+        </HBox>
+
+        <!-- Status Footer -->
+        <HBox fx:id="statusFooter" spacing="10" alignment="CENTER" visible="false" managed="false">
+            <Label fx:id="statusMessageLabel" text="" styleClass="label-success">
+                <font>
+                    <Font name="System Bold" size="14" />
+                </font>
+            </Label>
+        </HBox>
+
+    </VBox>
+
+</ScrollPane>

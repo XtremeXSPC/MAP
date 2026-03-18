@@ -1,0 +1,63 @@
+@startuml services_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package gui.services {
+  ' ===== Clustering Service =====
+  class ClusteringService {
+    - {static} logger: Logger
+    --
+    + runClustering(data: Data, radius: double): ClusterSet
+    + saveClusteringResults(filePath: String, miner: QTMiner): void
+    + loadClusteringResults(filePath: String): QTMiner
+    + getClusteringStatistics(clusterSet: ClusterSet, data: Data): String
+  }
+
+  ' ===== Data Import Service =====
+  class DataImportService {
+    - {static} logger: Logger
+    --
+    + loadHardcodedData(): Data
+    + loadIrisData(): Data
+    + loadDataFromCSV(filePath: String): Data
+    + loadDataFromDatabase(tableName: String, dbHost: String, dbPort: int, dbName: String, dbUser: String, dbPassword: String): Data
+    + getDatasetPreview(data: Data, maxRows: int): String
+    + testDatabaseConnection(dbHost: String, dbPort: int, dbName: String, dbUser: String, dbPassword: String): boolean
+  }
+
+  enum "gui.services.DataImportService.DataSource" as DataSource {
+    HARDCODED
+    IRIS
+    CSV
+    DATABASE
+  }
+
+  ' ===== Export Service =====
+  class ExportService {
+    - {static} logger: Logger
+    --
+    + exportToCsv(filePath: String, result: ClusteringResult): void
+    + exportToTextReport(filePath: String, result: ClusteringResult): void
+    + exportToZip(zipFilePath: String, result: ClusteringResult): void
+    - addFileToZip(zipOut: ZipOutputStream, file: File, entryName: String): void
+    - addReadmeToZip(zipOut: ZipOutputStream, entryName: String, result: ClusteringResult): void
+    - escapeCSV(value: String): String
+    - getTotalTuples(clusterSet: ClusterSet): int
+  }
+
+  ' ===== Relazioni con qtServer =====
+  ClusteringService ..> "mining.QTMiner" : <<uses>>
+  ClusteringService ..> "mining.ClusterSet" : <<uses>>
+  ClusteringService ..> "data.Data" : <<uses>>
+
+  DataImportService ..> "data.Data" : <<creates>>
+  DataImportService ..> "database.DbAccess" : <<uses>>
+  DataImportService ..> "gui.utils.DatasetLoader" : <<uses>>
+
+  ExportService ..> "gui.models.ClusteringResult" : <<uses>>
+  ExportService ..> "gui.services.ClusteringService" : <<uses>>
+}
+
+@enduml

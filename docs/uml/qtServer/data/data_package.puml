@@ -1,0 +1,147 @@
+@startuml data_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package data {
+  ' ===== Classi Base Attributi =====
+  abstract class Attribute {
+    - name: String
+    - index: int
+    --
+    + Attribute(name: String, index: int)
+    + getName(): String
+    + getIndex(): int
+    + toString(): String
+  }
+
+  class DiscreteAttribute {
+    - values: Set<String>
+    --
+    + DiscreteAttribute(name, index, values[])
+    + getNumberOfDistinctValues(): int
+    + iterator(): Iterator<String>
+  }
+
+  class ContinuousAttribute {
+    - max: double
+    - min: double
+    --
+    + ContinuousAttribute(name, index, min, max)
+    + getScaledValue(v: double): double
+  }
+
+  ' ===== Classi Item =====
+  abstract class Item {
+    - attribute: Attribute
+    - value: Object
+    --
+    + Item(attribute: Attribute, value: Object)
+    + getAttribute(): Attribute
+    + getValue(): Object
+    + toString(): String
+    + {abstract} distance(a: Object): double
+  }
+
+  class DiscreteItem {
+    + DiscreteItem(attr: DiscreteAttribute, val: String)
+    + distance(a: Object): double
+  }
+
+  class ContinuousItem {
+    + ContinuousItem(attr: ContinuousAttribute, val: Double)
+    + distance(a: Object): double
+  }
+
+  ' ===== Tuple =====
+  class Tuple {
+    - tuple: Item[]
+    --
+    + Tuple(size: int)
+    + getLength(): int
+    + get(i: int): Item
+    + add(c: Item, i: int): void
+    + getDistance(obj: Tuple): double
+    + avgDistance(data: Data, clusteredData: Set<Integer>): double
+  }
+
+  ' ===== Data =====
+  class Data {
+    - data: List<Example>
+    - numberOfExamples: int
+    - explanatorySet: List<Attribute>
+    --
+    + Data()
+    + Data(csvFilename: String)
+    + Data(db: DbAccess, tableName: String)
+    + Data(tableName: String, fromDatabase: boolean)
+    --
+    + getNumberOfExamples(): int
+    + getNumberOfExplanatoryAttributes(): int
+    + getAttributeSchema(): List<Attribute>
+    + getExplanatoryAttribute(index: int): Attribute
+    + getValue(exampleIndex: int, attributeIndex: int): Object
+    + getItemSet(index: int): Tuple
+    + toString(): String
+    - parseCSV(filename: String): void
+    - inferAttributeType(name, index, values): Attribute
+  }
+
+  ' ===== Eccezioni =====
+  class EmptyDatasetException << (E,orchid) exception >>
+  class InvalidDataFormatException << (E,orchid) exception >>
+
+  ' ===== Relazioni Ereditarieta =====
+  Attribute <|-- DiscreteAttribute
+  Attribute <|-- ContinuousAttribute
+
+  Item <|-- DiscreteItem
+  Item <|-- ContinuousItem
+
+  ' ===== Relazioni Composizione/Aggregazione =====
+  Item o-- Attribute : attribute
+
+  Tuple *-- "n" Item : tuple[]
+  Data *-- "n" Attribute : explanatorySet
+
+  ' ===== Relazioni Dipendenza =====
+  Data ..> Tuple : <<creates>>
+  Data ..> EmptyDatasetException : <<throws>>
+  Data ..> InvalidDataFormatException : <<throws>>
+
+  DiscreteItem ..> DiscreteAttribute : <<uses>>
+  ContinuousItem ..> ContinuousAttribute : <<uses>>
+}
+
+' ===== Note Esplicative =====
+note right of Attribute
+  <<Serializable>>
+  Classe base astratta per attributi.
+  Sottoclassi: DiscreteAttribute, ContinuousAttribute
+end note
+
+note right of Item
+  <<Serializable>>
+  Metrica distanza:
+  - DiscreteItem: Hamming (0 o 1)
+  - ContinuousItem: Euclidea normalizzata [0,1]
+end note
+
+note bottom of Data
+  <<Serializable>>
+  Supporta 3 sorgenti dati:
+  1. Hardcoded (PlayTennis dataset)
+  2. CSV file parsing
+  3. MySQL Database (JDBC)
+
+  Inferisce automaticamente tipi attributi da CSV
+end note
+
+note top of Tuple
+  <<Serializable>>
+  Rappresenta una riga del dataset.
+  Calcola distanze usando metriche Item.
+end note
+
+@enduml

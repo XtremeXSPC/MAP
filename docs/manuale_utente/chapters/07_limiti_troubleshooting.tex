@@ -1,0 +1,137 @@
+\chapter{Limiti operativi e troubleshooting}
+\label{chap:troubleshooting}
+
+\section{Premessa}
+
+Ogni manuale tecnico completo dovrebbe esplicitare non solo il funzionamento ordinario
+del sistema, ma anche i suoi limiti. Nel caso del progetto MAP questo aspetto e'
+particolarmente importante, perche' il repository nasce in contesto didattico e unisce
+moduli sviluppati con finalita' parzialmente diverse. Alcune funzioni sono molto
+rifinite, altre sono presenti in forma minima, altre ancora richiedono un uso accorto
+dell'ambiente di esecuzione. Questo capitolo raccoglie quindi le principali attenzioni
+operative emerse dal confronto diretto tra codice e documentazione storica.
+
+\section{Limiti funzionali da tenere presenti}
+
+\subsection{Anteprima CSV non disponibile nella Home}
+
+La schermata Home della GUI offre un pulsante di anteprima dataset, ma l'implementazione
+corrente della preview non copre i file CSV. L'anteprima e' disponibile per
+\emph{PlayTennis}, \emph{Iris} e database, mentre nel caso CSV la GUI mostra un messaggio
+che segnala l'assenza del supporto. Di conseguenza, chi lavora con CSV deve verificare il
+file esternamente oppure procedere direttamente all'esecuzione del clustering.
+
+\subsection{Parser CSV volutamente semplice}
+
+Il parser CSV non gestisce formati complessi con campi quotati contenenti virgole
+interne. In aggiunta, la gestione dei valori mancanti e' limitata alla fase di inferenza
+dei tipi e non corrisponde a una vera strategia di pulizia del dataset. Per evitare
+errori difficili da diagnosticare, e' consigliabile pre-processare i CSV in modo che
+contengano solo valori puliti, coerenti e facilmente interpretabili.
+
+\subsection{Differenza tra GUI locale e modalita' client-server}
+
+Una fonte frequente di confusione riguarda il ruolo del server. La GUI non necessita di
+\module{qtServer} in esecuzione, mentre il client testuale si'. Se l'utente avvia
+inutilmente il server prima della GUI non ottiene danni, ma introduce complessita'
+superflua nell'ambiente di lavoro. Il server va considerato necessario solo per la
+modalita' remota basata su \module{qtClient}.
+
+\subsection{Copertura ridotta del client testuale}
+
+Il client testuale non offre la stessa gamma di funzioni della GUI. Non carica CSV, non
+visualizza grafici e non permette di esplorare i risultati con il livello di dettaglio
+offerto dalla vista ad albero e dai dialoghi statistici. Il suo scopo e' soprattutto
+quello di fornire un canale remoto minimale verso il backend.
+
+\subsection{Visualizzazione Convex Hull}
+
+L'inviluppo convesso viene disegnato solo per cluster con almeno tre punti e viene reso
+come bordo, non come area piena. L'assenza del bordo in cluster molto piccoli non e'
+quindi un malfunzionamento, ma una conseguenza diretta dell'algoritmo geometrico usato
+per il calcolo.
+
+\section{Problemi di compilazione ed esecuzione}
+
+\subsection{Maven o JavaFX non disponibili}
+
+Se \module{make run-gui} o \module{make gui} falliscono, la prima verifica da fare
+riguarda la disponibilita' di Maven e della toolchain Java corretta. Il modulo
+\module{qtGUI} richiede un ambiente coerente con il \module{pom.xml}; usare una versione
+di Java troppo vecchia puo' produrre errori di compilazione o di risoluzione dei moduli.
+
+\subsection{Driver JDBC mancante}
+
+I moduli compilati con Makefile si aspettano di trovare il driver in
+\filepath{qtServer/JDBC/mysql-connector-java-9.5.0.jar}. Se questo file viene spostato o
+rimosso, il server e i test che dipendono dal database possono fallire con errori
+relativi al caricamento del driver MySQL. In questi casi occorre ripristinare il file
+nella posizione attesa o aggiornare il classpath nei Makefile.
+
+\subsection{Errore di porta occupata}
+
+Quando il server viene avviato su una porta gia' in uso, la classe \module{MultiServer}
+termina con un errore di binding. La soluzione piu' semplice consiste nel selezionare una
+porta alternativa:
+
+\begin{commandblock}
+  make run-server PORT=9090
+  make run-client IP=localhost PORT=9090
+\end{commandblock}
+
+L'importante e' mantenere allineati i parametri di client e server.
+
+\section{Problemi di connessione al database}
+
+\subsection{Credenziali errate o database assente}
+
+La maggior parte dei problemi JDBC deriva da configurazioni incoerenti: database non
+creato, utente non autorizzato, password errata o tabella inesistente. La GUI offre un
+pulsante di test connessione proprio per intercettare queste situazioni prima dell'avvio
+del clustering. In modalita' client-server, invece, l'errore emerge solo al momento del
+caricamento della tabella.
+
+\subsection{Schema non adatto al clustering}
+
+Anche quando la connessione riesce, il contenuto della tabella puo' non essere adeguato.
+Colonne solo tecniche, dati sporchi o tipi SQL inattesi possono produrre dataset poco
+significativi o errori in fase di caricamento. Poiche' il backend ignora le colonne
+auto-increment e riduce i tipi a \emph{string} e \emph{number}, e' opportuno progettare
+le tabelle come vere tabelle di feature, non come tabelle operative piene di metadati.
+
+\section{Problemi su file ed esportazioni}
+
+\subsection{File \module{.dmp} non apribile}
+
+Se un file \module{.dmp} non viene aperto correttamente, il primo controllo riguarda il
+nome fornito al client o il percorso selezionato nella GUI. Nel client testuale va
+inserito il nome senza estensione; nella GUI, invece, il file chooser gestisce
+direttamente l'estensione. Un secondo caso possibile riguarda i file legacy, che possono
+essere caricati ma non sempre consentono la ricostruzione completa del dataset.
+
+\subsection{Esportazione ZIP o report fallita}
+
+L'export ZIP dipende dalla creazione di file temporanei e dalla possibilita' di scrivere
+nella directory di destinazione. Se il sistema segnala errori I/O, la causa piu' comune
+e' un problema di permessi sul percorso scelto oppure la presenza di un file gia' aperto
+da un altro programma. In genere conviene riprovare su una directory semplice e locale.
+
+\subsection{PNG con assi poco leggibili}
+
+Quando si selezionano attributi discreti per gli assi, la visualizzazione usa codifiche
+ordinali numeriche. Il grafico resta corretto dal punto di vista tecnico, ma richiede una
+interpretazione qualitativa: le coordinate 0, 1, 2 non sono misure continue, bensi'
+etichette numeriche associate ai valori simbolici osservati. Per grafici piu' intuitivi
+e' preferibile usare attributi continui, come quelli del dataset \emph{Iris}.
+
+\section{Buone pratiche operative}
+
+Per un uso affidabile del sistema e' consigliabile adottare alcune regole semplici. Prima
+di tutto, scegliere dati puliti e coerenti con il modello di clustering. In secondo
+luogo, separare mentalmente i due scenari d'uso: GUI locale da un lato, client-server
+dall'altro. Infine, salvare i risultati importanti in formato \module{.dmp} oltre che
+esportarli in CSV o TXT, in modo da poterli riaprire in futuro senza dover ripetere il clustering.
+
+Queste indicazioni non eliminano tutti i possibili problemi, ma riducono sensibilmente la
+probabilita' di errori evitabili e aiutano a interpretare correttamente i messaggi
+prodotti dall'applicazione.

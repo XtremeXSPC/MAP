@@ -1,0 +1,147 @@
+\chapter{Gestione dei dati, persistenza ed esportazione}
+\label{chap:dati-export}
+
+\section{Panoramica delle sorgenti dati}
+
+Il progetto supporta quattro sorgenti dati principali, ma con accessi differenti a
+seconda dell'interfaccia usata. La GUI puo' lavorare con \emph{PlayTennis}, con il
+dataset \emph{Iris} incluso nelle risorse, con file CSV esterni e con tabelle MySQL. Il
+client testuale, invece, accede direttamente soltanto al database e ai file
+\module{.dmp}. Questa asimmetria non e' accidentale: la GUI e' stata pensata come
+front-end completo per l'uso locale, mentre il client testuale e' un front-end minimo per
+il backend remoto.
+
+\section{Caricamento da CSV}
+
+\subsection{Formato atteso}
+
+Il parser CSV implementato in \module{Data} richiede una struttura semplice. La prima
+riga deve contenere i nomi degli attributi, separati da virgole; le righe successive
+devono contenere esattamente lo stesso numero di campi. Le righe vuote vengono ignorate,
+mentre l'assenza di dati o l'incoerenza nel numero di colonne genera un'eccezione.
+
+Il parser usa una separazione testuale basata su \module{split(",")}. Questo dettaglio ha
+un effetto importante: il formato supportato e' un CSV semplice, senza gestione avanzata
+di campi quotati contenenti virgole interne. Per un uso affidabile del sistema e' quindi
+opportuno fornire file tabulari puliti, con valori atomici e senza dipendere da
+convenzioni CSV piu' sofisticate.
+
+\subsection{Inferenza dei tipi}
+
+La classificazione degli attributi avviene automaticamente per colonna. Un attributo
+viene considerato continuo solo se tutti i valori non mancanti sono numerici e i valori
+distinti superano la soglia di cinque. In caso contrario l'attributo e' trattato come
+discreto. I marker \module{?}, stringa vuota e \module{NA} vengono ignorati durante la
+sola fase di inferenza.
+
+Questo comportamento va interpretato con cautela. Il fatto che un valore mancante venga
+ignorato nell'inferenza non significa che il sistema implementi una vera strategia di
+gestione dei missing values. Se una colonna viene classificata come continua, valori non
+numerici presenti nelle righe possono comunque causare errori in fasi successive, quando
+la tupla viene convertita negli oggetti usati per il clustering. In termini pratici, il
+manuale raccomanda di usare CSV privi di valori mancanti o di normalizzarli prima del caricamento.
+
+\section{Dataset standard e dati hardcoded}
+
+Il dataset \emph{PlayTennis} e' incorporato direttamente nel costruttore di default della
+classe \module{Data}. Si tratta di un dataset piccolo, utile per test rapidi e per
+comprendere la struttura di un clustering su attributi prevalentemente discreti. Il
+dataset \emph{Iris}, invece, e' caricato da una risorsa CSV interna alla GUI tramite
+\module{DatasetLoader}. Per renderlo compatibile con il parser esistente, il loader copia
+temporaneamente il file delle risorse su disco, crea l'oggetto \module{Data} e poi
+rimuove il file temporaneo.
+
+Questi due dataset svolgono funzioni diverse. \emph{PlayTennis} e' ideale per una
+verifica rapida del comportamento dell'algoritmo e per testare l'infrastruttura.
+\emph{Iris} e' invece piu' adatto alla visualizzazione grafica, perche' contiene
+attributi continui ben interpretabili sugli assi del grafico 2D.
+
+\section{Caricamento da database}
+
+\subsection{Schema relazionale supportato}
+
+Quando i dati provengono da MySQL, il backend non copia indiscriminatamente tutte le
+colonne della tabella. \module{TableSchema} ispeziona i metadati JDBC e ignora le colonne
+auto-increment, tipicamente usate come chiavi primarie tecniche. Le colonne numeriche
+vengono trattate come candidate ad attributi continui, mentre quelle testuali vengono
+interpretate come discrete.
+
+Il file \filepath{setup_database.sql} fornisce un esempio concreto di tabelle
+compatibili. In tutti i casi la colonna \module{id} ha solo funzione identificativa e non
+entra nel dataset di clustering. L'utente deve quindi ragionare sulla propria tabella
+come su una matrice di attributi descrittivi, non come su una normale tabella
+amministrativa con chiavi e metadati ausiliari mescolati alle variabili di interesse.
+
+\subsection{Righe distinte e aggregati}
+
+Il caricamento effettivo viene eseguito da \module{TableData}, che usa una query
+\module{SELECT DISTINCT}. Questo significa che tuple duplicate a livello di attributi
+descrittivi vengono collassate in una sola occorrenza nel dataset caricato. Inoltre, per
+gli attributi numerici vengono calcolati minimo e massimo, indispensabili alla
+normalizzazione adottata dal backend.
+
+Per l'utente questo ha due implicazioni. La prima e' che la cardinalita' del dataset
+letto dal sistema potrebbe non coincidere con il numero totale di righe della tabella SQL
+se esistono duplicati perfetti. La seconda e' che la scala dei valori continui dipende
+integralmente dai valori presenti nella tabella al momento del caricamento.
+
+\section{Persistenza in formato \module{.dmp}}
+
+Il formato \module{.dmp} e' la forma di persistenza nativa del progetto. Attraverso il
+metodo \module{saveComplete()} del backend vengono serializzati insieme il
+\module{ClusterSet}, il dataset originario e il \emph{radius} usato per l'esecuzione.
+Questo consente non solo di conservare il risultato finale, ma anche di riaprirlo
+successivamente nella GUI con tutte le informazioni necessarie a popolare la schermata
+dei risultati.
+
+Il backend conserva comunque compatibilita' con un formato legacy in cui nel file era
+presente solo l'insieme dei cluster. In quel caso il caricamento e' ancora possibile, ma
+l'applicazione non puo' ricostruire i dettagli completi del dataset. La GUI, infatti,
+mostra un avviso quando apre un file di questo tipo e chiarisce che la consultazione
+piena dei risultati richiede il formato completo piu' recente.
+
+\section{Esportazione dei risultati}
+
+\subsection{CSV}
+
+L'export CSV della GUI genera un file orientato alla consultazione tabellare.
+L'intestazione contiene sempre le colonne \module{ClusterID}, \module{TupleID} e
+\module{DistanceFromCentroid}, seguite dai nomi di tutti gli attributi del dataset. Ogni
+riga descrive una tupla del clustering finale e riporta la sua distanza dal centroide del
+cluster di appartenenza. Questo formato e' particolarmente utile per analisi successive
+in fogli elettronici o strumenti esterni.
+
+\subsection{Report TXT}
+
+Il report testuale organizza l'output in due parti principali. La prima raccoglie i
+metadati dell'esecuzione: timestamp, radius, tempo di esecuzione e statistiche globali
+sui cluster. La seconda passa in rassegna ciascun cluster, riportando dimensione,
+centroide, distanze minima/massima/media e una lista delle tuple appartenenti al cluster.
+Se il cluster e' molto grande, il report limita la visualizzazione dettagliata alle prime
+tuple e segnala quante ne restano escluse dalla stampa.
+
+\subsection{ZIP}
+
+L'archivio ZIP e' pensato come pacchetto completo di consegna. La GUI crea file
+temporanei per \module{.dmp}, CSV e report TXT, li inserisce nello ZIP e aggiunge un
+\module{README.txt} descrittivo. I nomi dei file interni sono costruiti a partire da un
+timestamp, cosi' da rendere evidente il legame tra i diversi artefatti prodotti nella
+stessa esportazione.
+
+\subsection{PNG}
+
+L'export PNG riguarda la sola vista grafica dei cluster. Come illustrato nel
+Capitolo~\ref{chap:gui}, dedicato all'interfaccia grafica, l'utente puo' salvare il
+grafico in formato standard o alta definizione. Questo tipo di esportazione e' distinto
+dai tre precedenti: non descrive il clustering in forma tabellare o serializzata, ma ne
+offre una rappresentazione visuale.
+
+\section{Indicazioni operative}
+
+Dal punto di vista pratico, la scelta tra i diversi formati dipende dallo scopo. Il file
+\module{.dmp} e' la soluzione adatta quando si vuole riaprire in futuro lo stesso
+clustering dentro l'applicazione. Il CSV e' preferibile quando si intende lavorare sui
+dati con strumenti esterni. Il report TXT e' utile per una lettura umana immediata,
+mentre lo ZIP e' indicato quando si desidera archiviare o consegnare un pacchetto
+autosufficiente che contenga contemporaneamente persistenza, dati tabellari e
+documentazione sintetica dell'esecuzione.

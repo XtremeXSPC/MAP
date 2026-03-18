@@ -1,0 +1,178 @@
+\chapter{Requisiti, build ed esecuzione}
+\label{chap:build}
+
+\section{Requisiti software}
+
+Per usare l'intero repository in modo coerente conviene assumere come riferimento
+\module{JDK 21}. Questa scelta non e' imposta in modo uniforme da tutti i moduli, ma e'
+la piu' semplice da adottare perche' il modulo \module{qtGUI}, basato su Maven e JavaFX,
+dichiara esplicitamente \module{source} e \module{target} a versione 21. I moduli
+\module{qtServer}, \module{qtClient} e \module{qtExt} usano invece compilazione
+tradizionale tramite \module{javac}, ma risultano compatibili con la stessa toolchain.
+
+Accanto al JDK, l'ambiente di lavoro richiede:
+
+\begin{itemize}
+  \item \module{make}, per usare i target di orchestrazione del repository;
+  \item \module{Maven}, necessario a compilare, eseguire e impacchettare \module{qtGUI};
+  \item un'installazione di \module{MySQL} solo se si vogliono usare le funzioni di
+    caricamento da database;
+  \item il driver JDBC gia' presente in
+    \filepath{qtServer/JDBC/mysql-connector-java-9.5.0.jar} per i moduli costruiti con Makefile.
+\end{itemize}
+
+La presenza del database non e' obbligatoria per ogni scenario. La GUI puo' essere usata
+in locale con dataset hardcoded, risorse integrate o file CSV, mentre la modalita'
+client-server basata su \module{qtClient} e \module{qtServer} presuppone normalmente un
+database disponibile se si vuole caricare una tabella prima del clustering.
+
+\section{Compilazione dal Makefile principale}
+
+Il file \filepath{Makefile} nella radice del repository agisce come punto di ingresso
+unificato. Il target \module{all} richiama in sequenza la compilazione di client, server,
+estensioni e GUI. Per l'utente questo significa che la forma piu' rapida per verificare
+la salute del progetto e' il comando seguente:
+
+\begin{commandblock}
+  make all
+\end{commandblock}
+
+Il Makefile principale espone anche target dedicati per la creazione dei JAR,
+l'esecuzione dei test, la generazione di JavaDoc e la produzione di diagrammi UML. Questa
+impostazione ha un vantaggio documentale importante: consente di descrivere l'uso del
+repository in termini stabili, senza costringere l'utente a ricordare sintassi diverse
+per ogni modulo fin dalla prima esecuzione.
+
+\section{Compilazione per modulo}
+
+\subsection{\module{qtServer}}
+
+Il modulo server usa un Makefile autonomo che compila tutti i sorgenti presenti sotto
+\filepath{qtServer/src} e deposita i file risultanti nella directory
+\filepath{qtServer/bin}. Il target \module{jar} genera inoltre
+\filepath{qtServer/qtServer.jar}. Durante l'esecuzione, il classpath include il driver JDBC locale:
+
+\begin{commandblock}
+  make server
+  make server-jar
+\end{commandblock}
+
+L'entry point effettivo del modulo e' la classe \module{server.MultiServer}. Il server
+accetta facoltativamente una porta da linea di comando; se non viene fornita, usa la porta 8080.
+
+\subsection{\module{qtClient}}
+
+Anche il client testuale viene compilato tramite Makefile tradizionale. I sorgenti si
+trovano in \filepath{qtClient/src}, l'entry point e' \module{MainTest} e il JAR generato
+e' \filepath{qtClient/qtClient.jar}. Il client richiede in input indirizzo IP e porta del
+server, quindi la fase di esecuzione e' sempre successiva all'avvio di \module{qtServer}.
+
+\subsection{\module{qtExt}}
+
+Il modulo di test dipende dai binari di \module{qtServer}. Per questa ragione il relativo
+Makefile verifica prima che il backend sia gia' compilato, oppure provvede a compilarlo
+automaticamente. I test non sono organizzati con JUnit tradizionale, ma come classi Java
+eseguibili direttamente.
+
+\begin{commandblock}
+  make ext
+  make test
+\end{commandblock}
+
+\subsection{\module{qtGUI}}
+
+La GUI e' il solo modulo gestito da Maven. Il file \filepath{qtGUI/pom.xml} dichiara
+dipendenze JavaFX, XChart, ControlsFX, SLF4J/Logback e MySQL Connector/J, e usa il
+\emph{build-helper-maven-plugin} per includere i sorgenti di \module{qtServer} nella
+compilazione. In altre parole, l'applicazione grafica incorpora direttamente il backend
+senza passare per il server socket.
+
+I comandi usuali sono:
+
+\begin{commandblock}
+  make gui
+  make gui-jar
+  make run-gui
+\end{commandblock}
+
+Il JAR prodotto da Maven e' collocato in \filepath{qtGUI/target/qtGUI-1.0.0.jar} e usa la
+classe \module{gui.Launcher} come entry point.
+
+\section{Esecuzione dei diversi scenari}
+
+\subsection{Uso locale tramite GUI}
+
+L'avvio della GUI rappresenta lo scenario piu' diretto per l'utente. Una volta eseguito:
+
+\begin{commandblock}
+  make run-gui
+\end{commandblock}
+
+viene caricata l'applicazione JavaFX completa. In questa modalita' non occorre avviare
+\module{qtServer}, perche' il clustering viene eseguito localmente dalla GUI richiamando
+\module{QTMiner} dal backend incluso nella build. Questo punto merita di essere ribadito
+con forza, poiche' la documentazione storica del repository tendeva a descrivere la GUI
+come se fosse sempre dipendente dal server remoto.
+
+\subsection{Uso remoto tramite client e server}
+
+Per la modalita' distribuita occorre invece avviare prima il server:
+
+\begin{commandblock}
+  make run-server PORT=8080
+\end{commandblock}
+
+e poi, in una seconda shell, il client:
+
+\begin{commandblock}
+  make run-client IP=localhost PORT=8080
+\end{commandblock}
+
+Il server resta in ascolto di connessioni e crea un thread dedicato per ogni client. La
+sessione del client diventa quindi il contenitore dello stato remoto: dataset caricato,
+clustering piu' recente e nome della tabella eventualmente usata nel salvataggio dei file
+\module{.dmp}.
+
+\section{Preparazione del database}
+
+Il repository fornisce due artefatti utili per la parte database. Il primo e' lo script
+\filepath{setup_database.sql}, che crea le tabelle \module{playtennis},
+\module{weather\_mixed} e \module{iris} nel database \module{MapDB}. Il secondo e' lo
+script \filepath{import_csv.sh}, che genera \module{INSERT} SQL a partire dai file
+presenti nella cartella \filepath{data/}.
+
+Lo script SQL assume l'esistenza del database \module{MapDB}; in altre parole, prepara le
+tabelle ma non crea il database stesso. Una sequenza di lavoro ragionevole e' quindi la seguente:
+
+\begin{commandblock}
+  mysql -u root -p
+  CREATE DATABASE MapDB;
+  CREATE USER 'MapUser'@'localhost' IDENTIFIED BY 'map';
+  GRANT ALL PRIVILEGES ON MapDB.* TO 'MapUser'@'localhost';
+\end{commandblock}
+
+Successivamente si puo' applicare lo script:
+
+\begin{commandblock}
+  mysql -u MapUser -p MapDB < setup_database.sql
+\end{commandblock}
+
+e, se desiderato, importare i CSV. Lo script \filepath{import_csv.sh} usa pero' per
+default l'utente \module{LCS-MAP}; prima del suo utilizzo puo' quindi essere necessario
+adattare le variabili iniziali allo stesso account realmente creato nel database locale.
+
+\section{Artefatti prodotti}
+
+La build genera artefatti differenti a seconda del modulo:
+
+\begin{itemize}
+  \item \filepath{qtServer/bin} e \filepath{qtServer/qtServer.jar} per il backend;
+  \item \filepath{qtClient/bin} e \filepath{qtClient/qtClient.jar} per il client;
+  \item \filepath{qtExt/bin} per test e utility;
+  \item \filepath{qtGUI/target} per classi e JAR della GUI.
+\end{itemize}
+
+La GUI salva inoltre preferenze e impostazioni nel file \filepath{qtGUI/qtgui.properties}
+quando viene eseguita dalla directory del modulo. Questo file conserva tema, dimensione
+dei font, cartella di export, parametri database e altre preferenze dell'interfaccia. Non
+contiene pero' la password del database, scelta coerente con una politica minima di sicurezza.

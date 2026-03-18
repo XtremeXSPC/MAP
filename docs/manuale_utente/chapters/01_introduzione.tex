@@ -1,0 +1,127 @@
+\chapter{Introduzione}
+\label{chap:introduzione}
+
+\section{Contesto e finalita' del progetto}
+
+Il repository \emph{MAP} raccoglie una realizzazione didattica dell'algoritmo di
+clustering \qt{} sviluppata nell'ambito del corso di Metodi Avanzati di Programmazione.
+Il progetto non si limita a fornire una implementazione dell'algoritmo, ma costruisce
+attorno ad esso un piccolo ecosistema software composto da un backend di calcolo, una
+interfaccia grafica desktop, un client testuale per l'uso remoto e una suite di test e
+utility. In questa prospettiva, il sistema puo' essere letto sia come esercizio di
+programmazione orientata agli oggetti, sia come esempio di integrazione tra componenti
+eterogenei all'interno di un'unica base di codice.
+
+Lo scopo del manuale e' descrivere il funzionamento del sistema dal punto di vista
+dell'utilizzatore tecnico. Per questa ragione il testo evita di sovrapporsi al
+\filepath{README.md}, che ha il compito di sintetizzare requisiti e comandi essenziali, e
+si concentra invece sull'organizzazione logica dell'applicazione, sui flussi d'uso
+supportati e sulla corretta interpretazione degli artefatti prodotti durante
+l'esecuzione. Il manuale adotta quindi un taglio esplicativo: ogni capitolo mette in
+relazione le scelte di interfaccia con il comportamento effettivo dei moduli software che
+le implementano.
+
+\section{Il problema affrontato dal clustering Quality Threshold}
+
+Il clustering e' una tecnica di apprendimento non supervisionato che ha l'obiettivo di
+raggruppare elementi simili senza disporre, in partenza, di etichette di classe. Nel caso
+del \qt{} clustering, il criterio di costruzione dei gruppi non dipende da un numero
+prefissato di cluster, ma da una soglia di qualita' espressa dal parametro \emph{radius}.
+Tale soglia rappresenta il vincolo massimo di distanza ammesso tra il centroide scelto
+per un cluster e le tuple che ne fanno parte.
+
+Nel backend del progetto la distanza tra due tuple e' definita come media delle distanze
+calcolate attributo per attributo. Gli attributi discreti contribuiscono con una distanza
+di Hamming, pari a zero in caso di uguaglianza e a uno in caso di differenza. Gli
+attributi continui vengono invece normalizzati nell'intervallo $[0,1]$ mediante
+\emph{min-max scaling}, cosi' da poter essere combinati con quelli discreti all'interno
+della stessa misura complessiva. Questa scelta rende il parametro \emph{radius}
+interpretabile in modo uniforme su dataset misti, pur lasciando all'utente il compito di
+calibrarlo in funzione della natura del dominio analizzato.
+
+L'algoritmo implementato seleziona iterativamente, tra le tuple non ancora assegnate, il
+cluster candidato piu' popoloso compatibile con il raggio richiesto. Una volta fissato
+tale cluster, le tuple in esso contenute vengono rimosse dalla fase di ricerca
+successiva. Da questo meccanismo derivano due proprieta' importanti per l'uso del
+software. In primo luogo, il numero finale di cluster non viene richiesto come input, ma
+emerge dall'interazione tra distribuzione dei dati e valore del raggio. In secondo luogo,
+a parita' di dataset e di parametro, l'esecuzione resta deterministica: non intervengono
+inizializzazioni casuali come avviene in altri algoritmi largamente diffusi.
+
+\section{Architettura generale del sistema}
+
+La struttura del progetto e' modulare e ruota attorno a quattro componenti principali,
+riassunti nella Tabella~\ref{tab:moduli-principali}. Il modulo \module{qtServer} contiene
+il nucleo dell'algoritmo, la modellazione dei dati, il supporto JDBC e il server socket
+multi-client. Il modulo \module{qtGUI} fornisce invece una applicazione JavaFX che esegue
+il clustering in locale riutilizzando direttamente le classi del backend. Il modulo
+\module{qtClient} offre un'interfaccia a riga di comando per dialogare con il server
+remoto, mentre \module{qtExt} raccoglie test e utility accessorie.
+
+\begin{table}[H]
+  \centering
+  \caption{Moduli principali del progetto}
+  \label{tab:moduli-principali}
+  \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.3cm}
+    >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.7cm}}
+    \toprule
+    Modulo & Responsabilita' principale & Elementi notevoli \\
+    \midrule
+    \module{qtServer} & Implementazione dell'algoritmo QT, gestione dei dataset, accesso
+    a database e servizio socket & package \module{data}, \module{mining},
+    \module{database}, \module{server} \\
+    \module{qtGUI} & Esecuzione locale del clustering e presentazione grafica dei
+    risultati & controller JavaFX, grafici 2D, esportazione, caricamento file \module{.dmp} \\
+    \module{qtClient} & Interazione testuale con il server remoto & menu interattivo,
+    protocollo a oggetti, operazioni su database e file serializzati \\
+    \module{qtExt} & Verifica del comportamento del sistema e supporto sperimentale &
+    test automatici, benchmark, generatori di dataset \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Dal punto di vista operativo, e' essenziale distinguere due modalita' d'uso. La prima e'
+quella locale, basata su \module{qtGUI}: in questo caso non e' necessario avviare alcun
+server di rete, poiche' la GUI invoca direttamente le classi di \module{qtServer} incluse
+nella build Maven. La seconda e' quella distribuita, basata sulla coppia
+\module{qtClient}/\module{qtServer}: qui il server espone il backend tramite socket TCP e
+il client invia comandi per caricare dati dal database, eseguire il clustering o riaprire
+risultati serializzati. Questa distinzione chiarisce un punto spesso frainteso nella
+documentazione informale del progetto: il server e' una dipendenza della modalita'
+testuale remota, non dell'applicazione grafica.
+
+\section{Sorgenti dati e artefatti prodotti}
+
+Il sistema supporta piu' sorgenti dati, ma non tutte sono accessibili da tutti i moduli
+nello stesso modo. La GUI mette a disposizione quattro opzioni di caricamento: il dataset
+hardcoded \emph{PlayTennis}, il dataset \emph{Iris} incluso nelle risorse
+dell'applicazione, file CSV esterni e tabelle MySQL raggiunte via JDBC. Il client
+testuale, invece, opera in maniera piu' mirata: attraverso il protocollo implementato dal
+server puo' caricare una tabella dal database, eseguire il clustering sul dataset
+corrente, salvare il risultato in formato serializzato oppure riaprire un file
+\module{.dmp} gia' esistente.
+
+Tra gli artefatti di output, il formato piu' importante dal punto di vista della
+persistenza applicativa e' il file \module{.dmp}. Esso conserva non soltanto l'insieme
+dei cluster, ma anche il dataset e il valore di \emph{radius} utilizzato quando il
+salvataggio avviene tramite il formato completo introdotto nel backend corrente. Accanto
+a questa forma di persistenza interna, la GUI permette di esportare i risultati in CSV,
+in report testuale TXT e in un archivio ZIP che aggrega i principali file prodotti. Per
+l'analisi visiva e' inoltre disponibile l'esportazione dei grafici 2D in formato PNG, sia
+in risoluzione standard sia in alta definizione.
+
+\section{Struttura del manuale}
+
+Dopo questa introduzione, il manuale procede dal quadro generale verso i casi d'uso
+concreti. Il secondo capitolo descrive l'architettura del sistema e il ruolo dei singoli
+moduli. Il terzo capitolo raccoglie requisiti, build ed esecuzione, con una separazione
+netta tra modalita' locale e modalita' client-server. Il quarto capitolo e' dedicato
+all'interfaccia grafica, mentre il quinto analizza il flusso operativo del client
+testuale in combinazione con il server. Il sesto capitolo esamina le sorgenti dati, la
+persistenza dei risultati e i formati di esportazione. Il capitolo conclusivo riassume
+limiti operativi, problemi frequenti e strategie di troubleshooting.
+
+Questa organizzazione riflette una scelta metodologica precisa: prima di descrivere i
+singoli pulsanti o comandi, e' utile chiarire quale componente del sistema li interpreta
+e quali effetti producono sul backend. In tal modo il manuale non si riduce a una
+sequenza di istruzioni esecutive, ma diventa uno strumento di lettura tecnica dell'intero progetto.

@@ -1,0 +1,124 @@
+@startuml utils_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+top to bottom direction
+
+package "gui.utils" {
+  class ApplicationContext << Singleton >> {
+    - {static} instance: ApplicationContext
+    - clusteringService: ClusteringService
+    - dataImportService: DataImportService
+    - exportService: ExportService
+    - currentConfiguration: ClusteringConfiguration
+    - currentResult: ClusteringResult
+    --
+    - ApplicationContext()
+    + {static} getInstance(): ApplicationContext
+    + getClusteringService(): ClusteringService
+    + getDataImportService(): DataImportService
+    + getExportService(): ExportService
+    + setCurrentConfiguration(configuration: ClusteringConfiguration): void
+    + getCurrentConfiguration(): ClusteringConfiguration
+    + setCurrentResult(result: ClusteringResult): void
+    + getCurrentResult(): ClusteringResult
+    + clear(): void
+  }
+
+  class ThemeManager << Singleton >> {
+    - {static} logger: Logger
+    - {static} SETTINGS_FILE: String
+    - {static} LIGHT_THEME_CSS: String
+    - {static} DARK_THEME_CSS: String
+    - {static} instance: ThemeManager
+    - currentTheme: Theme
+    - currentFontSize: FontSize
+    - primaryScene: Scene
+    - settings: Properties
+    --
+    - ThemeManager()
+    + {static} getInstance(): ThemeManager
+    + setPrimaryScene(scene: Scene): void
+    + setTheme(theme: Theme): void
+    + setFontSize(fontSize: FontSize): void
+    + setThemeByName(themeDisplayName: String): void
+    + setFontSizeByName(fontSizeDisplayName: String): void
+    + getCurrentTheme(): Theme
+    + getCurrentFontSize(): FontSize
+    + getCurrentThemeDisplayName(): String
+    + getCurrentFontSizeDisplayName(): String
+    + isDarkMode(): boolean
+    + toggleTheme(): void
+    - loadSettings(): void
+    - saveSettings(): void
+    - applyTheme(): void
+    - applyFontSize(): void
+  }
+
+  enum "gui.utils.ThemeManager.Theme" as Theme {
+    LIGHT
+    DARK
+    --
+    + getDisplayName(): String
+    + fromDisplayName(displayName: String): Theme
+  }
+
+  enum "gui.utils.ThemeManager.FontSize" as FontSize {
+    SMALL
+    MEDIUM
+    LARGE
+    XLARGE
+    --
+    + getDisplayName(): String
+    + getSize(): int
+    + fromDisplayName(displayName: String): FontSize
+  }
+
+  class ColorPalette {
+    - {static} DEFAULT_PALETTE: Color[]
+    --
+    - ColorPalette()
+    - {static} generateColorHSB(index: int): Color
+    + {static} getColor(clusterIndex: int): Color
+    + {static} getColors(numClusters: int): Color[]
+    + {static} toHexString(color: Color): String
+    + {static} toJavaFX(awtColor: Color): javafx.scene.paint.Color
+    + {static} getDefaultPaletteSize(): int
+    + {static} getColorWithAlpha(clusterIndex: int, alpha: int): Color
+  }
+
+  class Point2D {
+    - x: double
+    - y: double
+    --
+    + Point2D(x: double, y: double)
+    + getX(): double
+    + getY(): double
+    + distanceTo(other: Point2D): double
+    + polarAngleFrom(pivot: Point2D): double
+    + toString(): String
+    + equals(obj: Object): boolean
+    + hashCode(): int
+  }
+
+  class DatasetLoader {
+    --
+    - DatasetLoader()
+    + {static} loadIrisDataset(): Data
+    + {static} getAvailableDatasets(): String[]
+  }
+}
+
+ThemeManager o-- "1" Theme : currentTheme
+ThemeManager ..> FontSize : <<uses>>
+
+ApplicationContext ..> ClusteringService : <<uses>>
+ApplicationContext ..> DataImportService : <<uses>>
+ApplicationContext ..> ExportService : <<uses>>
+ApplicationContext ..> ClusteringConfiguration : <<uses>>
+ApplicationContext ..> ClusteringResult : <<uses>>
+
+DatasetLoader ..> "data.Data" : <<creates>>
+
+@enduml

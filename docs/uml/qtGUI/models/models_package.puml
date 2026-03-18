@@ -1,0 +1,92 @@
+@startuml models_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package gui.models {
+  ' ===== Clustering Result =====
+  class ClusteringResult {
+    - clusterSet: ClusterSet
+    - data: Data
+    - radius: double
+    - executionTimeMs: long
+    - timestamp: LocalDateTime
+    - miner: QTMiner
+    --
+    + ClusteringResult(clusterSet: ClusterSet, data: Data, radius: double, executionTimeMs: long, miner: QTMiner)
+    + getClusterSet(): ClusterSet
+    + getData(): Data
+    + getRadius(): double
+    + getExecutionTimeMs(): long
+    + getTimestamp(): LocalDateTime
+    + getFormattedExecutionTime(): String
+    + getFormattedTimestamp(): String
+    + getNumClusters(): int
+    + getNumTuples(): int
+    + getMiner(): QTMiner
+    + getSummary(): String
+    + toString(): String
+  }
+
+  ' ===== Clustering Configuration =====
+  class ClusteringConfiguration {
+    - dataSource: DataSource
+    - radius: double
+    - csvFilePath: String
+    - dbHost: String
+    - dbPort: int
+    - dbName: String
+    - dbUser: String
+    - dbPassword: String
+    - dbTableName: String
+    - enableCaching: boolean
+    - verboseLogging: boolean
+    --
+    + ClusteringConfiguration(dataSource: DataSource, radius: double)
+    + getRadius(): double
+    + setRadius(radius: double): void
+    + getDataSource(): DataSource
+    + setDataSource(source: DataSource): void
+    + getCsvFilePath(): String
+    + setCsvFilePath(csvFilePath: String): void
+    + getDbHost(): String
+    + setDbHost(dbHost: String): void
+    + getDbPort(): int
+    + setDbPort(dbPort: int): void
+    + getDbName(): String
+    + setDbName(dbName: String): void
+    + getDbUser(): String
+    + setDbUser(dbUser: String): void
+    + getDbPassword(): String
+    + setDbPassword(dbPassword: String): void
+    + getDbTableName(): String
+    + setDbTableName(dbTableName: String): void
+    + isEnableCaching(): boolean
+    + setEnableCaching(enableCaching: boolean): void
+    + isVerboseLogging(): boolean
+    + setVerboseLogging(verboseLogging: boolean): void
+    + isValid(): boolean
+    + getDescription(): String
+    + toString(): String
+  }
+
+  ' ===== Relazioni =====
+  ClusteringResult *-- "1" ClusterSet : clusterSet
+  ClusteringResult *-- "1" Data : data
+  ClusteringConfiguration o-- "1" DataSource : dataSource
+
+  ' ===== Relazioni con qtServer =====
+  ClusteringResult ..> "mining.ClusterSet" : <<uses>>
+  ClusteringResult ..> "data.Data" : <<uses>>
+  ClusteringResult ..> "mining.QTMiner" : <<uses>>
+}
+
+enum "gui.services.DataImportService.DataSource" as DataSource {
+  HARDCODED
+  IRIS
+  CSV
+  DATABASE
+}
+
+@enduml

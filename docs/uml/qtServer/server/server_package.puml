@@ -1,0 +1,126 @@
+@startuml server_package
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam packageStyle rectangle
+
+package server {
+  ' ===== Classe MultiServer =====
+  class MultiServer {
+    - {static} PORT: int = 8080
+    --
+    + MultiServer(port: int)
+    + {static} main(args: String[]): void
+    - run(port: int): void
+    - getTimestamp(): String
+  }
+
+  ' ===== Classe ServerOneClient =====
+  class ServerOneClient {
+    - socket: Socket
+    - in: ObjectInputStream
+    - out: ObjectOutputStream
+    - data: Data
+    - qt: QTMiner
+    --
+    + ServerOneClient(socket: Socket)
+    + run(): void
+    - handleLoadFromFile(): void
+    - handleLoadFromDatabase(): void
+    - handleClustering(): void
+    - handleSaveToFile(): void
+    - sendError(message: String): void
+    - sendOK(): void
+  }
+
+  ' ===== Relazioni Ereditarieta =====
+  ServerOneClient --|> Thread : extends
+
+  ' ===== Relazioni Composizione/Aggregazione =====
+  MultiServer ..> ServerOneClient : <<creates>>
+  ServerOneClient *-- "1" Socket : socket
+  ServerOneClient *-- "1" ObjectInputStream : in
+  ServerOneClient *-- "1" ObjectOutputStream : out
+  ServerOneClient o-- "0..1" Data : data
+  ServerOneClient o-- "0..1" QTMiner : qt
+
+  ' ===== Relazioni Dipendenza =====
+  MultiServer ..> "java.net.ServerSocket" : <<uses>>
+  ServerOneClient ..> "mining.QTMiner" : <<uses>>
+  ServerOneClient ..> "data.Data" : <<uses>>
+  ServerOneClient ..> "database.DbAccess" : <<uses>>
+}
+
+' ===== Note Esplicative =====
+note right of MultiServer
+  Server multi-client principale.
+
+  Funzionamento:
+  1. Avvia ServerSocket su porta specificata
+  2. Loop infinito accept() per connessioni
+  3. Per ogni client → crea ServerOneClient thread
+
+  Entry point:
+  java server.MultiServer <port>
+
+  Default port: 8080
+end note
+
+note bottom of ServerOneClient
+  Thread dedicato per singolo client.
+
+  Pattern: Thread-per-Client
+
+  Protocollo comandi:
+  - Comando 0: Load dati da database
+  - Comando 1: Esegui clustering da DB
+  - Comando 2: Salva cluster su file
+  - Comando 3: Load + clustering da file
+
+  Flusso tipico:
+  1. Ricevi comando (int)
+  2. Ricevi parametri (Objects)
+  3. Esegui operazione
+  4. Invia risposta ("OK" o "ERROR: <msg>")
+  5. Invia risultati (se applicabile)
+
+  Thread safety:
+  - Ogni thread ha dati isolati (data, qt)
+  - Nessuna condivisione stato tra client
+end note
+
+note as N2
+  Gestione Errori
+
+  Eccezioni catturate e gestite:
+  - IOException → Errore I/O socket
+  - ClassNotFoundException → Deserializzazione
+  - DatabaseConnectionException → DB errore
+  - FileNotFoundException → File non trovato
+
+  Risposta errori:
+  out.writeObject("ERROR: <message>");
+
+  Logging server-side con timestamp:
+  [HH:mm:ss] Messaggio log
+end note
+
+note as N3
+  Serializzazione Oggetti
+
+  Comunicazione tramite ObjectStreams:
+  - Client → Server: Comandi e parametri
+  - Server → Client: Risposte e dati
+
+  Oggetti serializzabili:
+  - String (comandi, messaggi)
+  - Integer (codici comando)
+  - Double (radius)
+  - ClusterSet (risultati)
+  - SerializableClusteringData (completo)
+
+  IMPORTANTE: Ordine scrittura/lettura
+  deve essere consistente client-server
+end note
+
+@enduml

@@ -1,0 +1,384 @@
+@startuml data_import_sequence
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Flusso Importazione Dati - Sorgenti Multiple
+
+actor Utente
+participant "HomeController\n(GUI)" as Controller
+participant "DataImportService" as Service
+participant "JavaFX Task" as Task
+participant "Data" as Data
+participant "DbAccess" as DbAccess
+participant "TableData" as TableData
+database "MySQL\nDatabase" as DB
+participant "BufferedReader" as FileReader
+participant "ApplicationContext\n(Singleton)" as Context
+
+== Selezione Sorgente Dati ==
+
+Utente -> Controller: Seleziona sorgente dati
+activate Controller
+
+note right of Controller
+  Sorgenti disponibili:
+  - CSV File
+  - Database Table
+  - Esempio embedded (PlayTennis)
+end note
+
+alt Sorgente: CSV File
+
+    == Import da CSV ==
+
+    Utente -> Controller: Click "Load CSV"
+
+    Controller -> Controller: FileChooser.showOpenDialog()
+    Controller <-- Utente: Seleziona file.csv
+
+    Controller -> Service: importFromCSV(filePath)
+    activate Service
+
+    Service -> Task: new Task<Data>()
+    activate Task
+
+    Task -> FileReader: new BufferedReader(filePath)
+    activate FileReader
+
+    note right of FileReader
+      Formato CSV atteso:
+
+      attributo1,attributo2,...
+      valore1,valore2,...
+      ...
+    end note
+
+    Task -> Data: new Data()
+    activate Data
+
+    loop Prima riga (Header)
+
+        Task -> FileReader: readLine()
+        FileReader --> Task: headerLine
+
+        Task -> Task: split(",")
+
+        loop Per ogni colonna
+
+            Task -> Data: addAttribute(name, index)
+
+            note right of Task
+              Inferenza tipo attributo:
+              - Tutti valori numerici → Continuous
+              - Altrimenti → Discrete
+            end note
+
+        end
+
+    end
+
+    loop Righe dati
+
+        Task -> FileReader: readLine()
+        FileReader --> Task: dataLine
+
+        alt Fine file
+            Task -> Task: break
+        end
+
+        Task -> Task: split(",")
+
+        loop Per ogni valore
+
+            Task -> Data: addValue(row, col, value)
+
+        end
+
+        Task -> Data: addTuple()
+
+    end
+
+    FileReader -> Task: close()
+    deactivate FileReader
+
+    Data --> Task: dataset completo
+    deactivate Data
+
+    alt Import riuscito
+
+        Task -> Context: setCurrentData(data)
+        activate Context
+        Context --> Task: Data salvata
+        deactivate Context
+
+        Task -> Controller: onSucceeded()
+        Controller -> Utente: "Dataset caricato: N tuple, M attributi"
+
+    else Errore parsing
+
+        Task -> Controller: onFailed(exception)
+        Controller -> Utente: "Errore: Formato CSV non valido"
+
+    end
+
+    deactivate Task
+    deactivate Service
+
+else Sorgente: Database
+
+    == Import da Database ==
+
+    Utente -> Controller: Click "Load from Database"
+
+    Controller -> Controller: Mostra dialog connessione DB
+
+    Utente -> Controller: Inserisce credenziali
+    note right of Controller
+      - DB Type (MySQL, PostgreSQL)
+      - Host
+      - Port
+      - Database name
+      - Username
+      - Password
+      - Table name
+    end note
+
+    Controller -> Service: importFromDatabase(config)
+    activate Service
+
+    Service -> Task: new Task<Data>()
+    activate Task
+
+    Task -> DbAccess: initConnection(config)
+    activate DbAccess
+
+    note right of DbAccess
+      Singleton pattern
+      Gestisce connection pool
+    end note
+
+    alt Connessione riuscita
+
+        DbAccess -> DB: DriverManager.getConnection()
+        activate DB
+
+        DB --> DbAccess: Connection
+
+        Task -> TableData: new TableData(tableName)
+        activate TableData
+
+        TableData -> DB: SELECT * FROM tableName LIMIT 1
+        DB --> TableData: ResultSetMetaData
+
+        note right of TableData
+          Estrazione schema:
+          - Numero colonne
+          - Nome colonne
+          - Tipo colonne (SQL → Java)
+        end note
+
+        loop Per ogni colonna
+
+            TableData -> TableData: inferAttributeType()
+
+            alt SQL: VARCHAR, CHAR, TEXT
+                TableData -> TableData: type = Discrete
+            else SQL: INT, DOUBLE, FLOAT
+                TableData -> TableData: type = Continuous
+            end
+
+        end
+
+        TableData -> DB: SELECT * FROM tableName
+        DB --> TableData: ResultSet
+
+        loop ResultSet.next()
+
+            TableData -> TableData: getDistinctValues(column)
+
+            note right of TableData
+              Per attributi discreti:
+              SELECT DISTINCT column FROM table
+            end note
+
+        end
+
+        TableData --> Task: schema + distinct values
+        deactivate TableData
+
+        Task -> Data: new Data(tableName)
+        activate Data
+
+        Data -> TableData: getSchema()
+        TableData --> Data: attributi[]
+
+        loop Per ogni attributo
+
+            alt Tipo Discrete
+                Data -> Data: new DiscreteAttribute(name, values[])
+            else Tipo Continuous
+                Data -> Data: new ContinuousAttribute(name, min, max)
+            end
+
+        end
+
+        Data -> TableData: getData()
+
+        loop Per ogni riga ResultSet
+
+            TableData --> Data: Object[] row
+
+            Data -> Data: addTuple(row)
+
+        end
+
+        Data --> Task: dataset completo
+        deactivate Data
+
+        Task -> Context: setCurrentData(data)
+        activate Context
+        Context --> Task: Data salvata
+        deactivate Context
+
+        Task -> Controller: onSucceeded()
+        Controller -> Utente: "Dataset caricato da DB"
+
+        DbAccess -> DB: connection.close()
+        deactivate DB
+        deactivate DbAccess
+
+    else Errore connessione
+
+        DbAccess --> Task: DatabaseConnectionException
+
+        Task -> Controller: onFailed(exception)
+        Controller -> Utente: "Errore: Impossibile connettersi al database"
+
+        deactivate DbAccess
+
+    end
+
+    deactivate Task
+    deactivate Service
+
+else Sorgente: Esempio Embedded
+
+    == Import Esempio PlayTennis ==
+
+    Utente -> Controller: Click "Load PlayTennis Example"
+
+    Controller -> Data: new Data() // costruttore default
+    activate Data
+
+    note right of Data
+      Dataset hardcoded:
+      - 14 tuple
+      - 5 attributi discreti
+      - Esempi tennis (sunny, hot, etc.)
+    end note
+
+    Data -> Data: initializePlayTennis()
+
+    loop Attributi predefiniti
+
+        Data -> Data: addAttribute("Outlook", ["sunny", "overcast", "rain"])
+        Data -> Data: addAttribute("Temperature", ["hot", "mild", "cool"])
+        Data -> Data: addAttribute("Humidity", ["high", "normal"])
+        Data -> Data: addAttribute("Wind", ["weak", "strong"])
+        Data -> Data: addAttribute("PlayTennis", ["yes", "no"])
+
+    end
+
+    loop 14 tuple predefinite
+
+        Data -> Data: addTuple(values[])
+
+    end
+
+    Data --> Controller: dataset completo
+    deactivate Data
+
+    Controller -> Context: setCurrentData(data)
+    activate Context
+    Context --> Controller: Data salvata
+    deactivate Context
+
+    Controller -> Utente: "Dataset PlayTennis caricato (14 tuple)"
+
+end
+
+== Anteprima Dataset ==
+
+Utente -> Controller: Click "Preview Dataset"
+
+Controller -> Context: getCurrentData()
+activate Context
+Context --> Controller: data
+deactivate Context
+
+Controller -> Controller: new DatasetPreviewDialog(data)
+
+loop Per ogni tupla (max 100 righe)
+
+    Controller -> Data: getItemSet(i)
+    activate Data
+    Data --> Controller: Tuple
+    deactivate Data
+
+    Controller -> Controller: aggiungi a TableView
+
+end
+
+Controller -> Utente: Mostra dialog anteprima
+
+note right of Controller
+  TableView JavaFX:
+  - Colonne dinamiche (attributi)
+  - Righe (tuple)
+  - Scrollable
+  - Read-only
+end note
+
+deactivate Controller
+
+note bottom
+  Flusso Importazione Dati
+
+  Sorgenti supportate:
+  1. CSV File
+     - Formato standard: comma-separated
+     - Header obbligatorio (prima riga)
+     - Inferenza automatica tipi
+
+  2. Database
+     - JDBC connection
+     - Schema extraction da metadata
+     - SELECT * per dati completi
+     - Distinct values per attributi discreti
+
+  3. Esempio Embedded
+     - Dataset PlayTennis hardcoded
+     - Utile per demo e testing
+     - 14 tuple, 5 attributi
+
+  Validazione:
+  - Verifica colonne consistenti
+  - Gestione valori mancanti (null)
+  - Controllo tipi dati
+  - Limiti dimensionali (max 10000 tuple)
+
+  Gestione errori:
+  - IOException → File non leggibile
+  - SQLException → DB errore
+  - ParseException → Formato invalido
+  - Ogni errore mostrato con dialog
+
+  Pattern:
+  - Service Layer per business logic
+  - JavaFX Task per operazioni async
+  - ApplicationContext per stato globale
+  - Singleton per DbAccess
+end note
+
+@enduml

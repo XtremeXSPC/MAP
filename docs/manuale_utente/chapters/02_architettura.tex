@@ -1,0 +1,165 @@
+\chapter{Architettura del sistema}
+\label{chap:architettura}
+
+\section{Visione d'insieme}
+
+L'architettura del progetto e' pensata per separare il nucleo algoritmico dalle diverse
+modalita' di interazione offerte all'utente. Il backend, concentrato nel modulo
+\module{qtServer}, contiene infatti tutte le astrazioni di dominio necessarie a
+rappresentare un dataset, calcolare distanze, costruire cluster, interagire con un
+database relazionale e, se necessario, esporre tali funzionalita' su rete tramite socket
+TCP. Attorno a questo nucleo ruotano tre moduli complementari: \module{qtGUI}, che offre
+una interfaccia desktop per l'uso locale; \module{qtClient}, che agisce come terminale
+remoto nei confronti del server; e \module{qtExt}, destinato a test e utility.
+
+La presenza di piu' moduli non implica una duplicazione della logica. Al contrario, il
+progetto riusa sistematicamente le stesse classi di backend in contesti differenti. La
+GUI, ad esempio, non reimplementa il clustering, ma incorpora i package di
+\module{qtServer} nella propria build Maven e li invoca direttamente. Il client testuale,
+invece, non contiene logica di mining: inoltra richieste al server, che esegue il lavoro
+e restituisce l'output testuale o i file serializzati corrispondenti. Questa scelta rende
+il codice piu' coerente e riduce il rischio di divergenza tra interfacce diverse.
+
+\section{Il backend \module{qtServer}}
+
+\subsection{Package \module{data}: modellazione di attributi, tuple e dataset}
+
+Il package \module{data} costituisce il fondamento della rappresentazione interna dei
+dati. La classe \module{Data} e' il contenitore principale del dataset e supporta tre
+forme di costruzione: inizializzazione hardcoded del dataset \emph{PlayTennis},
+caricamento da file CSV e caricamento da tabella MySQL. Tale classe espone poi metodi per
+accedere al numero di tuple, al numero di attributi, ai valori elementari e alla
+conversione di una riga generica in oggetto \module{Tuple}.
+
+Una \module{Tuple} e' modellata come sequenza di \module{Item}. Gli \module{Item} si
+distinguono in due specializzazioni: discrete e continue. Nel caso discreto, la distanza
+e' una pura distanza di Hamming, quindi vale zero se i valori coincidono e uno in caso
+contrario. Nel caso continuo, la distanza viene ricondotta a un intervallo confrontabile
+con quella discreta mediante normalizzazione \emph{min-max}; il contributo del singolo
+attributo e' quindi il valore assoluto della differenza tra i valori scalati. La distanza
+finale tra due tuple e' la media dei contributi dei singoli attributi. Questa scelta e'
+cruciale per capire perche' la GUI vincoli il parametro \emph{radius} all'intervallo
+$[0,1]$: il backend lavora infatti su distanze normalizzate.
+
+Nel caricamento da CSV la classe \module{Data} esegue un parsing elementare ma rigoroso.
+E' richiesta una prima riga di intestazione, ogni riga successiva deve contenere lo
+stesso numero di colonne e le righe vuote vengono ignorate. L'inferenza del tipo degli
+attributi avviene per colonna: se tutti i valori non mancanti sono numerici e i valori
+distinti superano la soglia di cinque, l'attributo viene trattato come continuo; in caso
+contrario viene considerato discreto. Questa euristica permette di supportare rapidamente
+dataset misti, ma implica anche alcuni limiti pratici che verranno discussi nel
+Capitolo~\ref{chap:troubleshooting}, dedicato ai limiti operativi e ai problemi ricorrenti.
+
+\subsection{Package \module{mining}: costruzione dei cluster}
+
+L'algoritmo vero e proprio e' implementato in \module{QTMiner}. Il metodo
+\module{compute(Data)} salva un riferimento al dataset corrente, inizializza
+eventualmente una cache delle distanze e avvia una procedura iterativa di costruzione dei
+cluster. Finche' esistono tuple non ancora assegnate, il miner prova ogni tupla libera
+come potenziale centroide, costruisce il relativo cluster candidato raccogliendo tutte le
+tuple compatibili con il raggio dato, e conserva il cluster piu' popoloso. Le tuple
+selezionate vengono quindi marcate come clusterizzate e il procedimento continua sul
+sottoinsieme residuo.
+
+La classe \module{Cluster} conserva il centroide scelto e l'insieme degli identificativi
+delle tuple contenute, mentre \module{ClusterSet} funge da contenitore dei cluster
+risultanti. Dal punto di vista computazionale, la procedura e' molto piu' costosa di
+algoritmi che richiedono a priori il numero di cluster, ma garantisce una semantica
+semplice e leggibile: ogni cluster finale nasce da un centroide esplicito e contiene solo
+elementi la cui distanza dal centroide non supera il raggio specificato.
+
+Il backend include anche la classe \module{DistanceCache}, che puo' memorizzare distanze
+gia' calcolate. Tuttavia il costruttore usato di default nelle interfacce
+dell'applicazione e' quello base, che non abilita questa ottimizzazione in automatico. Da
+un punto di vista documentale, il parametro davvero determinante per l'utente resta
+quindi il \emph{radius}; eventuali altre ottimizzazioni restano dettagli implementativi
+secondari rispetto al flusso d'uso principale.
+
+\subsection{Package \module{database}: adattamento del modello relazionale}
+
+L'accesso a MySQL e' incapsulato nella classe \module{DbAccess}, che costruisce una
+connessione JDBC a partire da valori predefiniti o da parametri forniti dall'utente. Lo
+schema della tabella viene poi ispezionato da \module{TableSchema}, il quale traduce i
+tipi SQL in due sole classi concettuali: \emph{string} e \emph{number}. Una conseguenza
+importante di questo meccanismo e' che le colonne auto-increment, tipicamente
+l'identificativo \module{id}, vengono ignorate e non partecipano alla definizione del
+dataset di clustering.
+
+La classe \module{TableData} estrae le righe distinte della tabella e, per ciascuna
+colonna, ricava sia i valori distinti sia gli aggregati necessari a costruire attributi
+continui. Il dataset generato a partire dal database non coincide dunque con una copia
+ingenua della tabella SQL, ma con una sua proiezione strutturata secondo il modello
+interno del progetto. Questa osservazione e' utile sia per progettare tabelle
+compatibili, sia per interpretare correttamente le informazioni riportate poi nelle viste della GUI.
+
+\subsection{Package \module{server}: modalita' remota}
+
+Il package \module{server} rende disponibile il backend su rete. La classe
+\module{MultiServer} apre una \module{ServerSocket} e, per ogni nuova connessione,
+istanzia un thread \module{ServerOneClient}. Il modello scelto e' quindi quello
+\emph{thread-per-client}: ogni sessione mantiene il proprio stato interno, inclusi
+dataset corrente, ultimo \module{QTMiner} eseguito e nome della tabella caricata.
+
+Questo dettaglio e' essenziale per capire il comportamento del client testuale. Quando
+l'utente invoca il comando di salvataggio dei cluster, il server non chiede nuovamente il
+dataset: riusa lo stato accumulato nella stessa sessione. Analogamente, il caricamento di
+una tabella da database e la successiva esecuzione del clustering sono due fasi distinte
+ma dipendenti dalla stessa connessione logica verso il server.
+
+\section{La GUI \module{qtGUI}}
+
+\subsection{Avvio dell'applicazione}
+
+Il modulo grafico si appoggia a JavaFX. La classe \module{MainApp} estende
+\module{Application}, carica il file \filepath{/views/main.fxml}, costruisce la scena
+principale e delega al \module{ThemeManager} l'applicazione del tema e della dimensione
+dei font salvati in precedenza. L'eseguibile finale dell'uber JAR usa invece la classe
+\module{Launcher}, scelta per aggirare le note difficolta' di avvio delle applicazioni
+JavaFX impacchettate con lo \emph{shade plugin}.
+
+\subsection{Organizzazione interna}
+
+La GUI adotta una struttura vicina al pattern MVC. Le viste sono espresse in FXML, i
+controller raccolgono la logica di interazione e i servizi isolano il collegamento verso
+il backend. Un ruolo centrale e' svolto dal singleton \module{ApplicationContext}, che
+conserva tre servizi condivisi (\module{ClusteringService}, \module{DataImportService},
+\module{ExportService}) e due oggetti di stato, cioe' configurazione corrente e risultato
+dell'ultimo clustering. Grazie a questo contesto condiviso, il passaggio dalla schermata
+Home alla schermata di esecuzione e poi alla vista dei risultati avviene senza
+serializzazioni intermedie o ricostruzioni ridondanti dei dati.
+
+\subsection{Servizi applicativi}
+
+I servizi della GUI non implementano algoritmi nuovi, ma orchestrano il backend in modo
+coerente con l'interfaccia. \module{DataImportService} gestisce le quattro sorgenti dati
+esposte all'utente: \emph{PlayTennis}, \emph{Iris}, CSV e database.
+\module{ClusteringService} crea il \module{QTMiner}, esegue il clustering, salva
+risultati completi in formato \module{.dmp} e riapre file esistenti.
+\module{ExportService} si occupa invece delle esportazioni in CSV, report testuale e ZIP;
+il caso del PNG e' gestito dal sottosistema dei grafici, in particolare da
+\module{ChartViewer} e \module{ClusterScatterChart}.
+
+\section{Il client testuale \module{qtClient}}
+
+Il client testuale e' molto piu' snello della GUI. La classe \module{MainTest} apre una
+connessione socket verso il server, costruisce stream a oggetti per input e output e
+presenta un menu numerico all'utente. Ogni voce del menu corrisponde a un comando intero
+inviato al server, seguito dagli eventuali parametri aggiuntivi. Il client non esegue
+alcun clustering in locale e non mantiene strutture complesse di stato: il suo compito e'
+raccogliere input, validarlo in modo minimo e visualizzare la risposta testuale ricevuta dal server.
+
+Questa impostazione rende il client adatto a un uso didattico o amministrativo, ma meno
+espressivo rispetto alla GUI. Proprio per questo il manuale, nei capitoli successivi,
+trattera' in modo separato i due scenari: da un lato l'analisi locale assistita
+dall'interfaccia grafica, dall'altro l'interazione remota con il server e il database.
+
+\section{Il modulo \module{qtExt}}
+
+Il modulo \module{qtExt} completa l'architettura dal lato della verifica e della
+sperimentazione. I test presenti nella cartella \filepath{qtExt/tests} coprono il calcolo
+delle distanze, le operazioni sui cluster, il caricamento dati e l'algoritmo QT. La
+cartella \filepath{qtExt/utility} contiene invece utility per benchmark e generazione di
+dataset sintetici. Pur non essendo un modulo destinato all'utente finale, \module{qtExt}
+e' importante per la comprensione complessiva del progetto, poiche' documenta
+implicitamente i casi d'uso considerati rilevanti dagli sviluppatori e fornisce
+indicazioni sui limiti dimensionali del sistema.
