@@ -2,6 +2,8 @@ package gui.controllers;
 
 //===---------------------------------------------------------------------------===//
 // Importazioni Java standard.
+import data.Data;
+import data.Tuple;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,8 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import data.Data;
-import data.Tuple;
 import gui.charts.ChartViewer;
 import gui.dialogs.StatisticsDialog;
 import gui.models.ClusteringResult;
