@@ -1,0 +1,285 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      //===--------------- Debug Client (Default Localhost) ---------------===//
+      "name": "[[MAP]] Debug Client (localhost:8080)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "MainTest",
+      "projectName": "qtClient",
+      "args": ["localhost", "8080"],
+      "classPaths": ["qtClient/bin"],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Client Only"
+    },
+    {
+      //===-------------- Debug Client (Custom IP and Port) ---------------===//
+      "name": "[[MAP]] Debug Client (Custom IP/Port)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "MainTest",
+      "projectName": "qtClient",
+      "args": ["${input:serverIP}", "${input:serverPort}"],
+      "classPaths": ["qtClient/bin"],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Client Only"
+    },
+    {
+      //===------------------- Debug Server (Port 8080) -------------------===//
+      "name": "[[MAP]] Debug Server (Port 8080)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "server.MultiServer",
+      "projectName": "qtServer",
+      "args": ["8080"],
+      "classPaths": [
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Server Only"
+    },
+    {
+      //===------------------ Debug Server (Custom Port) ------------------===//
+      "name": "[[MAP]] Debug Server (Custom Port)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "server.MultiServer",
+      "projectName": "qtServer",
+      "args": ["${input:serverPort}"],
+      "classPaths": [
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Server Only"
+    },
+    {
+      //===---------------- Debug Active File (Standalone) ----------------===//
+      "name": "[[MAP]] Debug Active File",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "${fileBasenameNoExtension}",
+      "classPaths": ["${fileDirname}"],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Active File (Standalone)"
+    },
+    {
+      //===----------------- Debug Test Suite (All Tests) -----------------===//
+      "name": "[[Tests]] Debug All Test Suites",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "tests.TestRunner",
+      "projectName": "qtExt",
+      "classPaths": [
+        "qtExt/bin",
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Extensions Only"
+    },
+    {
+      //===--------------- Debug Individual Test: Distance ----------------===//
+      "name": "[[Tests]] Debug Distance Calculations",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "tests.TestDistanceCalculations",
+      "projectName": "qtExt",
+      "classPaths": [
+        "qtExt/bin",
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Extensions Only"
+    },
+    {
+      //===------------- Debug Individual Test: QT Algorithm --------------===//
+      "name": "[[Tests]] Debug QT Algorithm",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "tests.TestQTAlgorithm",
+      "projectName": "qtExt",
+      "classPaths": [
+        "qtExt/bin",
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Extensions Only"
+    },
+    {
+      //===---------- Debug Individual Test: Cluster Operations -----------===//
+      "name": "[[Tests]] Debug Cluster Operations",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "tests.TestClusterOperations",
+      "projectName": "qtExt",
+      "classPaths": [
+        "qtExt/bin",
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Extensions Only"
+    },
+    {
+      //===------------ Debug Individual Test: Data Operations ------------===//
+      "name": "[[Tests]] Debug Data Operations",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "tests.TestDataOperations",
+      "projectName": "qtExt",
+      "classPaths": [
+        "qtExt/bin",
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Extensions Only"
+    },
+    {
+      //===--------- Debug Individual Test: Continuous Attributes ---------===//
+      "name": "[[Tests]] Debug Continuous Attributes (Interactive)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "tests.TestContinuousAttributes",
+      "projectName": "qtExt",
+      "classPaths": [
+        "qtExt/bin",
+        "qtServer/bin",
+        "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+      ],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile Extensions Only"
+    },
+    {
+      //===----------------- Debug Client/Server Together -----------------===//
+      "name": "[[MAP]] Debug Client + Server (Compound)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "MainTest",
+      "projectName": "qtClient",
+      "args": ["localhost", "8080"],
+      "classPaths": ["qtClient/bin"],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile All (Client + Server + Extensions)",
+      "serverReadyAction": {
+        "pattern": "Server listening on port ([0-9]+)",
+        "uriFormat": "http://localhost:%s",
+        "action": "openExternally"
+      }
+    },
+    {
+      //===-------------- Cross-Platform Debug Configuration --------------===//
+      // Automatically adjusts paths and settings based on OS
+      "name": "[[MAP]] Debug (Cross-Platform)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "${input:mainClass}",
+      "args": ["${input:programArgs}"],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build: Compile All (Client + Server + Extensions)",
+
+      //===--------------- Platform-specific Configuration ----------------===//
+      "windows": {
+        "classPaths": [
+          "qtClient\\bin",
+          "qtServer\\bin",
+          "qtServer\\JDBC\\mysql-connector-java-9.5.0.jar"
+        ]
+      },
+      "linux": {
+        "classPaths": [
+          "qtClient/bin",
+          "qtServer/bin",
+          "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+        ]
+      },
+      "osx": {
+        "classPaths": [
+          "qtClient/bin",
+          "qtServer/bin",
+          "qtServer/JDBC/mysql-connector-java-9.5.0.jar"
+        ]
+      }
+    },
+    {
+      //===-------------------- Attach to Running JVM ---------------------===//
+      "name": "[[Debug]] Attach to Running Java Process",
+      "type": "java",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": "${input:debugPort}",
+      "timeout": 30000
+    },
+    {
+      //===---------------- Remote Debugging Configuration ----------------===//
+      "name": "[[Debug]] Remote Debug Server",
+      "type": "java",
+      "request": "attach",
+      "hostName": "${input:remoteHost}",
+      "port": "${input:remotePort}",
+      "timeout": 30000
+    }
+  ],
+  // Compound configurations for running multiple debug sessions
+  "compounds": [
+    {
+      "name": "[[MAP]] Debug Client + Server Simultaneously",
+      "configurations": [
+        "[[MAP]] Debug Server (Port 8080)",
+        "[[MAP]] Debug Client (localhost:8080)"
+      ],
+      "stopAll": true,
+      "preLaunchTask": "Build: Compile All (Client + Server + Extensions)"
+    }
+  ],
+  // Input prompts for dynamic configuration
+  "inputs": [
+    {
+      "id": "serverIP",
+      "type": "promptString",
+      "description": "Enter server IP address",
+      "default": "localhost"
+    },
+    {
+      "id": "serverPort",
+      "type": "promptString",
+      "description": "Enter server port number",
+      "default": "8080"
+    },
+    {
+      "id": "mainClass",
+      "type": "promptString",
+      "description": "Enter main class name (e.g., MainTest or server.MultiServer)",
+      "default": "MainTest"
+    },
+    {
+      "id": "programArgs",
+      "type": "promptString",
+      "description": "Enter program arguments (space-separated)",
+      "default": ""
+    },
+    {
+      "id": "debugPort",
+      "type": "promptString",
+      "description": "Enter debug port for attaching (default: 5005)",
+      "default": "5005"
+    },
+    {
+      "id": "remoteHost",
+      "type": "promptString",
+      "description": "Enter remote host IP address",
+      "default": "localhost"
+    },
+    {
+      "id": "remotePort",
+      "type": "promptString",
+      "description": "Enter remote debug port",
+      "default": "5005"
+    }
+  ]
+}

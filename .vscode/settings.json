@@ -1,0 +1,252 @@
+{
+  //===----------------  VS CODE SETTINGS FOR JAVA DEVELOPMENT  ----------------===//
+
+  //===------------- EDITOR CONFIGURATION -------------===//
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.wordWrap": "off",
+  "editor.minimap.enabled": false,
+  "editor.lineNumbers": "on",
+  "editor.rulers": [85, 120],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+
+  // Code suggestions optimized for Java development.
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "editor.acceptSuggestionOnCommitCharacter": true,
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.parameterHints.enabled": true,
+  "editor.inlayHints.enabled": "on",
+
+  //===----------- JAVA EXTENSION SETTINGS ------------===//
+  // Java project configuration.
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.project.referencedLibraries": [],
+
+  // Java compilation settings.
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.saveActions.organizeImports": false,
+  "java.import.gradle.enabled": false,
+  "java.import.maven.enabled": true,
+
+  // Java formatting (Google Style Guide).
+  "java.format.enabled": true,
+  "java.format.settings.url": ".vscode/eclipse-java-google-style.xml",
+  "java.format.settings.profile": "GoogleStyle",
+  "java.format.comments.enabled": false,
+
+  // Java code generation.
+  "java.codeGeneration.generateComments": true,
+  "java.codeGeneration.useBlocks": true,
+  "java.codeGeneration.insertionLocation": "afterCursor",
+  "java.codeGeneration.hashCodeEquals.useJava7Objects": true,
+  "java.codeGeneration.hashCodeEquals.useInstanceof": true,
+
+  // Java errors and warnings.
+  "java.errors.incompleteClasspath.severity": "warning",
+  "java.sources.organizeImports.staticStarThreshold": 5,
+  "java.sources.organizeImports.starThreshold": 5,
+
+  // Java runtime configuration.
+  "java.jdt.ls.java.home": "/Users/lcs-dev/.sdkman/candidates/java/current",
+  "java.configuration.runtimes": [],
+
+  //===---------- CODE RUNNER CONFIGURATION -----------===//
+  "code-runner.executorMap": {
+    "java": "cd $dir && javac -encoding UTF-8 $fileName && java $fileNameWithoutExt"
+  },
+  "code-runner.runInTerminal": true,
+  "code-runner.saveFileBeforeRun": true,
+  "code-runner.clearPreviousOutput": true,
+  "code-runner.preserveFocus": false,
+
+  //===------------ TERMINAL CONFIGURATION ------------===//
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.env.osx": {
+    "JAVA_TOOL_OPTIONS": "-Dfile.encoding=UTF-8"
+  },
+  "terminal.integrated.env.linux": {
+    "JAVA_TOOL_OPTIONS": "-Dfile.encoding=UTF-8"
+  },
+  "terminal.integrated.env.windows": {
+    "JAVA_TOOL_OPTIONS": "-Dfile.encoding=UTF-8"
+  },
+
+  //===---------- PROJECT-SPECIFIC WORKSPACE ----------===//
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 1000,
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+
+  //===-------- WORKSPACE LAYOUT OPTIMIZATION ---------===//
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.showTabs": "multiple",
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.sortOrder": "type",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.java": "${capture}.class",
+    "pom.xml": "pom-*.xml",
+    "Makefile": "*.mk"
+  },
+
+  //===------------- DEBUG CONFIGURATION --------------===//
+  "debug.console.fontSize": 13,
+  "debug.internalConsoleOptions": "openOnSessionStart",
+  "debug.openDebug": "openOnDebugBreak",
+  "debug.showBreakpointsInOverviewRuler": true,
+
+  //===--------------- FILES AND SEARCH ---------------===//
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/*.class": false,
+    "**/bin": false,
+    "**/.compiled": true,
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "**/bin": true,
+    "**/*.class": true,
+    "**/qtClient/bin": false,
+    "**/qtServer/bin": false,
+    "**/qtExt/bin": false,
+    "**/docs/javadoc": true,
+    "**/docs/uml/generated": true,
+    "**/dist": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/bin/**": true,
+    "**/*.class": true,
+    "**/docs/javadoc/**": true,
+    "**/docs/uml/generated/**": true,
+    "**/target": true
+  },
+
+  //===-------------- FILE ASSOCIATIONS ---------------===//
+  "files.associations": {
+    "Makefile": "makefile",
+    "*.mk": "makefile",
+    "*.java": "java",
+    "*.properties": "properties",
+    "*.xml": "xml",
+    "*.json": "jsonc",
+    "*.md": "markdown",
+    "*.puml": "plantuml",
+    "CLAUDE.md": "markdown",
+    "README.md": "markdown"
+  },
+
+  //===---------- LANGUAGE-SPECIFIC SETTINGS ----------===//
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.semanticHighlighting.enabled": true
+  },
+
+  "[xml]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+
+  //===------------- MAVEN CONFIGURATION --------------===//
+  "maven.executable.path": "/opt/homebrew/bin/mvn",
+  "maven.terminal.useJavaHome": true,
+  "maven.view": "hierarchical",
+
+  //===------------ PLANTUML CONFIGURATION ------------===//
+  "plantuml.exportFormat": "svg",
+  "plantuml.exportOutDir": "docs/uml/generated",
+  "plantuml.exportSubFolder": true,
+  "plantuml.diagramsRoot": "docs/uml",
+  "plantuml.render": "PlantUMLServer",
+
+  //===---------- GIT & GITHUB CONFIGURATION ----------===//
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.openRepositoryInParentFolders": "always",
+
+  //===----------- PROBLEM MATCHERS & TASKS -----------===//
+  "problems.decorations.enabled": true,
+  "problems.showCurrentInStatus": true,
+
+  //===--------- EXTENSION-SPECIFIC SETTINGS ----------===//
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false,
+    "cpp": true,
+    "ocaml": false,
+    "shellscript": true,
+    "java": true
+  },
+
+  // SonarLint configuration
+  "sonarlint.rules": {
+    "java:S106": {
+      "level": "off"
+    },
+    "java:S1192": {
+      "level": "info"
+    }
+  },
+
+  //===------------ RECOMMENDED EXTENSIONS ------------===//
+  "extensions.ignoreRecommendations": true,
+
+  //===------------ TASK & DEBUG TEMPLATES ------------===//
+  "tasks.quickOpen.detail": true,
+  "tasks.quickOpen.history": 10,
+
+  //===---------- PERFORMANCE OPTIMIZATIONS -----------===//
+  "java.maxConcurrentBuilds": 4,
+  "java.autobuild.enabled": true,
+  "java.trace.server": "off",
+  "java.silentNotification": false
+}

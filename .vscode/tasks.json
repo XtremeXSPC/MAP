@@ -1,0 +1,586 @@
+{
+  "version": "2.0.0",
+  "options": {
+    "shell": {
+      "executable": "/bin/bash",
+      "args": ["-c"]
+    },
+    "env": {
+      "JAVA_TOOL_OPTIONS": "-Dfile.encoding=UTF-8"
+    }
+  },
+  "tasks": [
+    //===------------------------ CORE BUILD TASKS ------------------------===//
+    {
+      "label": "Build: Compile All (Client + Server + Extensions)",
+      "type": "shell",
+      "command": "make",
+      "args": ["all"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Compiles all modules: qtClient, qtServer, qtExt using Makefile."
+    },
+    {
+      "label": "Build: Compile Client Only",
+      "type": "shell",
+      "command": "make",
+      "args": ["client"],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Compiles only qtClient module."
+    },
+    {
+      "label": "Build: Compile Server Only",
+      "type": "shell",
+      "command": "make",
+      "args": ["server"],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Compiles only qtServer module."
+    },
+    {
+      "label": "Build: Compile Extensions Only",
+      "type": "shell",
+      "command": "make",
+      "args": ["ext"],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Compiles only qtExt (test suite and utilities)."
+    },
+    {
+      "label": "Build: Compile GUI (Maven)",
+      "type": "shell",
+      "command": "make",
+      "args": ["gui"],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Compiles qtGUI using Maven."
+    },
+    //===-------------------- STANDALONE COMPILATION ----------------------===//
+    {
+      "label": "Build: Compile Active File (Standalone)",
+      "type": "shell",
+      "command": "javac",
+      "args": [
+        "-encoding",
+        "UTF-8",
+        "-d",
+        "${fileDirname}",
+        "-sourcepath",
+        "${fileDirname}",
+        "${file}"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "detail": "Compiles the currently active file standalone (for quick testing)."
+    },
+    {
+      "label": "Build: Compile Active File with Classpath (Server)",
+      "type": "shell",
+      "command": "javac",
+      "args": [
+        "-encoding",
+        "UTF-8",
+        "-d",
+        "qtServer/bin",
+        "-sourcepath",
+        "qtServer/src",
+        "-cp",
+        "qtServer/bin:qtServer/JDBC/mysql-connector-java-9.5.0.jar",
+        "${file}"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "detail": "Compiles active file with server classpath (including MySQL driver)."
+    },
+    //===------------------------ RUN & TEST TASKS ------------------------===//
+    {
+      "label": "Run: Client (Prompt for IP and Port)",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "run-client",
+        "IP=${input:serverIP}",
+        "PORT=${input:serverPort}"
+      ],
+      "dependsOn": "Build: Compile Client Only",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Compiles and runs qtClient. Prompts for server IP and port."
+    },
+    {
+      "label": "Run: Server (Prompt for Port)",
+      "type": "shell",
+      "command": "make",
+      "args": ["run-server", "PORT=${input:serverPort}"],
+      "dependsOn": "Build: Compile Server Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Compiles and runs qtServer. Prompts for port number."
+    },
+    {
+      "label": "Run: GUI (JavaFX)",
+      "type": "shell",
+      "command": "make",
+      "args": ["run-gui"],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "detail": "Runs qtGUI using Maven javafx:run."
+    },
+    {
+      "label": "Run: Client from JAR",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "run-client-jar",
+        "IP=${input:serverIP}",
+        "PORT=${input:serverPort}"
+      ],
+      "dependsOn": "JAR: Create Client JAR",
+      "group": "test",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Creates and runs client JAR. Prompts for server IP and port."
+    },
+    {
+      "label": "Run: Server from JAR",
+      "type": "shell",
+      "command": "make",
+      "args": ["run-server-jar", "PORT=${input:serverPort}"],
+      "dependsOn": "JAR: Create Server JAR",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Creates and runs server JAR. Prompts for port number."
+    },
+    {
+      "label": "Run: Active File (Standalone)",
+      "type": "shell",
+      "command": "java",
+      "args": ["-cp", "${fileDirname}", "${fileBasenameNoExtension}"],
+      "dependsOn": "Build: Compile Active File (Standalone)",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "clear": true
+      },
+      "detail": "Compiles and runs the currently active file standalone."
+    },
+    //===------------------------- TESTING TASKS --------------------------===//
+    {
+      "label": "Test: Run All Test Suites",
+      "type": "shell",
+      "command": "make",
+      "args": ["test"],
+      "dependsOn": "Build: Compile Extensions Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Runs complete test suite (distance, QT, cluster, data)."
+    },
+    {
+      "label": "Test: Distance Calculations",
+      "type": "shell",
+      "command": "make",
+      "args": ["test-distance"],
+      "dependsOn": "Build: Compile Extensions Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Tests distance calculation algorithms (Hamming, Euclidean)."
+    },
+    {
+      "label": "Test: QT Algorithm",
+      "type": "shell",
+      "command": "make",
+      "args": ["test-qt"],
+      "dependsOn": "Build: Compile Extensions Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Tests Quality Threshold clustering algorithm."
+    },
+    {
+      "label": "Test: Cluster Operations",
+      "type": "shell",
+      "command": "make",
+      "args": ["test-cluster"],
+      "dependsOn": "Build: Compile Extensions Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Tests cluster creation, modification, and analysis."
+    },
+    {
+      "label": "Test: Data Operations",
+      "type": "shell",
+      "command": "make",
+      "args": ["test-data"],
+      "dependsOn": "Build: Compile Extensions Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Tests data loading, parsing, and manipulation."
+    },
+    {
+      "label": "Test: Iterators and Comparators",
+      "type": "shell",
+      "command": "make",
+      "args": ["test-iterators"],
+      "dependsOn": "Build: Compile Extensions Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Tests custom iterators and comparators."
+    },
+    {
+      "label": "Test: Continuous Attributes (Interactive)",
+      "type": "shell",
+      "command": "make",
+      "args": ["test-continuous"],
+      "dependsOn": "Build: Compile Extensions Only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "detail": "Interactive test for continuous attribute handling."
+    },
+    //===----------------------- JAR CREATION TASKS -----------------------===//
+    {
+      "label": "JAR: Create All JARs",
+      "type": "shell",
+      "command": "make",
+      "args": ["jar"],
+      "dependsOn": "Build: Compile All (Client + Server + Extensions)",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Creates qtClient.jar, qtServer.jar, and qtGUI JAR."
+    },
+    {
+      "label": "JAR: Create Client JAR",
+      "type": "shell",
+      "command": "make",
+      "args": ["client-jar"],
+      "dependsOn": "Build: Compile Client Only",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Creates qtClient.jar executable."
+    },
+    {
+      "label": "JAR: Create Server JAR",
+      "type": "shell",
+      "command": "make",
+      "args": ["server-jar"],
+      "dependsOn": "Build: Compile Server Only",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Creates qtServer.jar executable."
+    },
+    {
+      "label": "JAR: Create GUI JAR (Maven)",
+      "type": "shell",
+      "command": "make",
+      "args": ["gui-jar"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Creates qtGUI JAR using Maven package."
+    },
+    //===---------------------- DOCUMENTATION TASKS -----------------------===//
+    {
+      "label": "Docs: Generate All JavaDoc",
+      "type": "shell",
+      "command": "make",
+      "args": ["javadoc"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Generates comprehensive JavaDoc for all modules."
+    },
+    {
+      "label": "Docs: Generate Client JavaDoc",
+      "type": "shell",
+      "command": "make",
+      "args": ["javadoc-client"],
+      "detail": "Generates JavaDoc for qtClient only."
+    },
+    {
+      "label": "Docs: Generate Server JavaDoc",
+      "type": "shell",
+      "command": "make",
+      "args": ["javadoc-server"],
+      "detail": "Generates JavaDoc for qtServer only."
+    },
+    {
+      "label": "Docs: Generate Extensions JavaDoc",
+      "type": "shell",
+      "command": "make",
+      "args": ["javadoc-ext"],
+      "detail": "Generates JavaDoc for qtExt only."
+    },
+    {
+      "label": "Docs: Generate GUI JavaDoc",
+      "type": "shell",
+      "command": "make",
+      "args": ["javadoc-gui"],
+      "detail": "Generates JavaDoc for qtGUI using Maven."
+    },
+    //===--------------------------- UML TASKS ----------------------------===//
+    {
+      "label": "UML: Generate All Diagrams (SVG + PNG)",
+      "type": "shell",
+      "command": "make",
+      "args": ["uml"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Generates all PlantUML diagrams in both SVG and PNG formats."
+    },
+    {
+      "label": "UML: Generate SVG Diagrams",
+      "type": "shell",
+      "command": "make",
+      "args": ["uml-svg"],
+      "detail": "Generates PlantUML diagrams in SVG format only."
+    },
+    {
+      "label": "UML: Generate PNG Diagrams",
+      "type": "shell",
+      "command": "make",
+      "args": ["uml-png"],
+      "detail": "Generates PlantUML diagrams in PNG format only."
+    },
+    {
+      "label": "UML: List All PlantUML Files",
+      "type": "shell",
+      "command": "make",
+      "args": ["list-uml"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Lists all .puml files found in the project."
+    },
+    //===--------------------- CLEANUP & MAINTENANCE ----------------------===//
+    {
+      "label": "Clean: Clean All Compiled Files",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Removes all compiled files, JARs, JavaDoc, and UML diagrams."
+    },
+    {
+      "label": "Clean: Clean Client Only",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean-client"],
+      "detail": "Removes qtClient compiled files only."
+    },
+    {
+      "label": "Clean: Clean Server Only",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean-server"],
+      "detail": "Removes qtServer compiled files only."
+    },
+    {
+      "label": "Clean: Clean Extensions Only",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean-ext"],
+      "detail": "Removes qtExt compiled files only."
+    },
+    {
+      "label": "Clean: Clean GUI (Maven)",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean-gui"],
+      "detail": "Cleans qtGUI build using Maven clean."
+    },
+    {
+      "label": "Clean: Clean JAR Files",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean-jar"],
+      "detail": "Removes all JAR files."
+    },
+    {
+      "label": "Clean: Clean JavaDoc",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean-javadoc"],
+      "detail": "Removes generated JavaDoc documentation."
+    },
+    {
+      "label": "Clean: Clean UML Diagrams",
+      "type": "shell",
+      "command": "make",
+      "args": ["clean-uml"],
+      "detail": "Removes generated UML diagrams."
+    },
+    {
+      "label": "Clean: Rebuild Project from Scratch",
+      "type": "shell",
+      "command": "make",
+      "args": ["rebuild"],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "clear": true
+      },
+      "detail": "Cleans and recompiles the entire project."
+    },
+    //===--------------------- VALIDATION & PACKAGING ---------------------===//
+    {
+      "label": "Validate: Check Project Structure",
+      "type": "shell",
+      "command": "make",
+      "args": ["validate"],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Validates project structure and checks for required tools."
+    },
+    {
+      "label": "Validate: Check Dependencies",
+      "type": "shell",
+      "command": "make",
+      "args": ["check-deps"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Verifies Java, javac, jar, and other dependencies."
+    },
+    {
+      "label": "Package: Create Distribution Package",
+      "type": "shell",
+      "command": "make",
+      "args": ["package"],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Creates complete distribution package with binaries, docs, and sources."
+    },
+    {
+      "label": "Info: Show Project Information",
+      "type": "shell",
+      "command": "make",
+      "args": ["info"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Displays comprehensive project information and status."
+    },
+    {
+      "label": "Info: List All Source Files",
+      "type": "shell",
+      "command": "make",
+      "args": ["list-sources"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Lists all Java source files in the project."
+    }
+  ],
+  // Input prompts for runtime configuration
+  "inputs": [
+    {
+      "id": "serverIP",
+      "type": "promptString",
+      "description": "Enter server IP address",
+      "default": "localhost"
+    },
+    {
+      "id": "serverPort",
+      "type": "promptString",
+      "description": "Enter server port number",
+      "default": "8080"
+    }
+  ]
+}
