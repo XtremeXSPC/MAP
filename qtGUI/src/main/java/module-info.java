@@ -35,6 +35,7 @@ module qtGUI {
     exports gui.utils;
     exports gui.charts;
     exports gui.dialogs;
+    exports com.map.stdgui;
 
     // Apertura pacchetti a JavaFX per l'iniezione dei controller FXML
     opens gui to javafx.fxml;
