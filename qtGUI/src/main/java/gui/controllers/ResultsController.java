@@ -4,7 +4,14 @@ package gui.controllers;
 // Importazioni Java standard.
 import data.Data;
 import data.Tuple;
+import com.map.stdgui.StdClipboard;
+import com.map.stdgui.StdDialog;
+import com.map.stdgui.StdFileDialog;
+import com.map.stdgui.StdTree;
+import com.map.stdgui.StdView;
+import com.map.stdgui.StdWindow;
 import java.io.File;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -21,9 +28,6 @@ import gui.utils.ApplicationContext;
 // Importazioni JavaFX.
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.stage.FileChooser;
 import mining.Cluster;
 import mining.ClusterSet;
 //===---------------------------------------------------------------------------===//
@@ -34,7 +38,7 @@ import mining.ClusterSet;
  * Questa classe gestisce:
  * <ul>
  *   <li>Caricamento dei risultati da {@link ApplicationContext}</li>
- *   <li>Costruzione dell'albero cluster/tuple con {@link TreeView}</li>
+ *   <li>Costruzione dell'albero cluster/tuple con {@link StdTree}</li>
  *   <li>Visualizzazione di riepiloghi e statistiche dettagliate</li>
  *   <li>Esportazione e salvataggio risultati</li>
  *   <li>Visualizzazione grafica e statistiche avanzate</li>
@@ -45,7 +49,6 @@ import mining.ClusterSet;
  *
  * @author Lombardi Costantino
  * @version 1.0.0
- * @since 1.0.0
  * @see gui.models.ClusteringResult
  * @see gui.services.ExportService
  */
@@ -61,6 +64,7 @@ public class ResultsController {
     private ClusterSet clusterSet;
     private Data data;
     private List<Cluster> clusterList; // Lista per accesso indicizzato.
+    private StdTree.Tree resultTree;
 
     //===---------------------------- FXML CONTROLS ----------------------------===//
 
@@ -155,11 +159,8 @@ public class ResultsController {
      * La selezione di un nodo aggiorna il pannello dei dettagli.
      */
     private void setupTreeView() {
-        clusterTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                handleClusterSelection(newValue);
-            }
-        });
+        resultTree = StdTree.bind(clusterTreeView);
+        resultTree.onSelect(this::handleClusterSelection);
     }
 
     /**
@@ -240,25 +241,23 @@ public class ResultsController {
         }
 
         // Costruisce albero cluster.
-        TreeItem<String> rootItem = new TreeItem<>("Risultati Clustering");
-        rootItem.setExpanded(true);
+        List<StdTree.Node> clusterNodes = new ArrayList<>();
 
         for (int i = 0; i < clusterList.size(); i++) {
             Cluster cluster = clusterList.get(i);
-            TreeItem<String> clusterItem = new TreeItem<>("Cluster " + (i + 1) + " (" + cluster.getSize() + " tuple)");
+            List<StdTree.Node> tupleNodes = new ArrayList<>();
 
             // Aggiungi tuple del cluster.
             int[] tupleIds = cluster.getTupleIDs();
             for (int tupleId : tupleIds) {
-                TreeItem<String> tupleItem = new TreeItem<>("Tupla " + tupleId);
-                clusterItem.getChildren().add(tupleItem);
+                tupleNodes.add(new StdTree.Node("Tupla " + tupleId));
             }
 
-            rootItem.getChildren().add(clusterItem);
+            clusterNodes.add(new StdTree.Node("Cluster " + (i + 1) + " (" + cluster.getSize() + " tuple)",
+                    tupleNodes));
         }
 
-        clusterTreeView.setRoot(rootItem);
-        clusterTreeView.setShowRoot(false);
+        resultTree.root(new StdTree.Node("Risultati Clustering", clusterNodes), false);
 
         if (numClusters > 0) {
             statusLabel.setText(numClusters + " cluster caricati con successo");
@@ -276,14 +275,13 @@ public class ResultsController {
      * Se viene selezionato un cluster, mostra riepilogo, tuple e statistiche.
      * Se viene selezionata una tupla, mostra i dettagli della singola tupla.
      *
-     * @param item elemento dell'albero selezionato
+     * @param value etichetta dell'albero selezionata
      */
-    private void handleClusterSelection(TreeItem<String> item) {
+    private void handleClusterSelection(String value) {
         if (clusterSet == null || data == null) {
             return;
         }
 
-        String value = item.getValue();
         logger.info("Elemento selezionato: {}", value);
 
         if (value.startsWith("Cluster ")) {
@@ -414,50 +412,20 @@ public class ResultsController {
      * Espande tutti i nodi dell'albero.
      */
     private void expandAllNodes() {
-        TreeItem<String> root = clusterTreeView.getRoot();
-        if (root != null) {
-            expandTreeView(root);
+        if (resultTree != null) {
+            resultTree.expandAll();
         }
         statusLabel.setText("Tutti i cluster espansi");
-    }
-
-    /**
-     * Espande ricorsivamente l'elemento dell'albero e i suoi figli.
-     *
-     * @param item elemento dell'albero da espandere
-     */
-    private void expandTreeView(TreeItem<String> item) {
-        if (item != null && !item.isLeaf()) {
-            item.setExpanded(true);
-            for (TreeItem<String> child : item.getChildren()) {
-                expandTreeView(child);
-            }
-        }
     }
 
     /**
      * Comprime tutti i nodi dell'albero.
      */
     private void collapseAllNodes() {
-        TreeItem<String> root = clusterTreeView.getRoot();
-        if (root != null) {
-            collapseTreeView(root);
+        if (resultTree != null) {
+            resultTree.collapseAll();
         }
         statusLabel.setText("Tutti i cluster compressi");
-    }
-
-    /**
-     * Comprime ricorsivamente l'elemento dell'albero e i suoi figli.
-     *
-     * @param item elemento dell'albero da comprimere
-     */
-    private void collapseTreeView(TreeItem<String> item) {
-        if (item != null && !item.isLeaf()) {
-            item.setExpanded(false);
-            for (TreeItem<String> child : item.getChildren()) {
-                collapseTreeView(child);
-            }
-        }
     }
 
     /**
@@ -513,12 +481,10 @@ public class ResultsController {
         try {
             // Controlla se ci sono almeno 2 attributi per la visualizzazione 2D.
             if (data.getNumberOfExplanatoryAttributes() < 2) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Visualizzazione Non Disponibile");
-                alert.setHeaderText("Dataset Insufficiente");
-                alert.setContentText("Sono necessari almeno 2 attributi per la visualizzazione 2D.\n"
-                        + "Il dataset corrente ha solo " + data.getNumberOfExplanatoryAttributes() + " attributo/i.");
-                alert.showAndWait();
+                StdDialog.warning("Visualizzazione Non Disponibile", "Dataset Insufficiente",
+                        "Sono necessari almeno 2 attributi per la visualizzazione 2D.\n"
+                                + "Il dataset corrente ha solo " + data.getNumberOfExplanatoryAttributes()
+                                + " attributo/i.");
                 return;
             }
 
@@ -550,31 +516,23 @@ public class ResultsController {
         }
 
         // Mostra dialog di scelta formato export.
-        ChoiceDialog<String> dialog = new ChoiceDialog<>("CSV", "CSV", "TXT (Report)", "ZIP (Completo)");
-        dialog.setTitle("Esporta Risultati");
-        dialog.setHeaderText("Scegli il formato di esportazione");
-        dialog.setContentText("Formato:");
-
-        Optional<String> result = dialog.showAndWait();
+        Optional<String> result = StdDialog.choose("Esporta Risultati", "Scegli il formato di esportazione", "Formato:",
+                "CSV", List.of("CSV", "TXT (Report)", "ZIP (Completo)"));
         result.ifPresent(format -> {
             try {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Salva Esportazione");
-                fileChooser.setInitialFileName(getDefaultExportFileName(format));
+                StdFileDialog.Filter filter = switch (format) {
+                    case "CSV" -> new StdFileDialog.Filter("File CSV", "*.csv");
+                    case "TXT (Report)" -> new StdFileDialog.Filter("File TXT", "*.txt");
+                    case "ZIP (Completo)" -> new StdFileDialog.Filter("File ZIP", "*.zip");
+                    default -> throw new IllegalArgumentException("Formato esportazione non supportato: " + format);
+                };
 
-                // Imposta estensione file.
-                if (format.equals("CSV")) {
-                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File CSV", "*.csv"));
-                } else if (format.equals("TXT (Report)")) {
-                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File TXT", "*.txt"));
-                } else if (format.equals("ZIP (Completo)")) {
-                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File ZIP", "*.zip"));
-                }
+                Path selectedPath =
+                        StdFileDialog.saveFile("Salva Esportazione", getDefaultExportFileName(format), filter)
+                                .orElse(null);
 
-                File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
-
-                if (file != null) {
-                    exportToFile(format, file);
+                if (selectedPath != null) {
+                    exportToFile(format, selectedPath.toFile());
                 }
             } catch (Exception e) {
                 logger.error("Errore durante esportazione", e);
@@ -658,12 +616,9 @@ public class ResultsController {
         }
 
         try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Salva Clustering");
-            fileChooser.setInitialFileName(getDefaultSaveFileName());
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File Clustering", "*.dmp"));
-
-            File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
+            Path selectedPath = StdFileDialog.saveFile("Salva Clustering", getDefaultSaveFileName(),
+                    new StdFileDialog.Filter("File Clustering", "*.dmp")).orElse(null);
+            File file = selectedPath == null ? null : selectedPath.toFile();
 
             if (file != null) {
                 // Rimuovi estensione .dmp dal percorso (QTMiner la aggiunge automaticamente).
@@ -710,23 +665,14 @@ public class ResultsController {
     private void handleNewAnalysis() {
         logger.info("Nuova Analisi cliccato");
 
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Nuova Analisi");
-        confirmAlert.setHeaderText("Avviare una nuova analisi di clustering?");
-        confirmAlert.setContentText("I risultati correnti saranno cancellati.");
+        if (StdDialog.confirm("Nuova Analisi", "Avviare una nuova analisi di clustering?",
+                "I risultati correnti saranno cancellati.")) {
+            logger.info("Utente ha confermato nuova analisi");
 
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                logger.info("Utente ha confermato nuova analisi");
-
-                // Reset context.
-                ApplicationContext.getInstance().setCurrentConfiguration(null);
-                ApplicationContext.getInstance().setCurrentResult(null);
-
-                // Naviga a home.
-                navigateToHome();
-            }
-        });
+            ApplicationContext.getInstance().setCurrentConfiguration(null);
+            ApplicationContext.getInstance().setCurrentResult(null);
+            navigateToHome();
+        }
     }
 
     /**
@@ -738,11 +684,7 @@ public class ResultsController {
         String content = summaryTextArea.getText();
 
         if (content != null && !content.isEmpty()) {
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            ClipboardContent clipboardContent = new ClipboardContent();
-            clipboardContent.putString(content);
-            clipboard.setContent(clipboardContent);
-
+            StdClipboard.putText(content);
             statusLabel.setText("Dettagli copiati negli appunti");
             logger.info("Dettagli cluster copiati negli appunti");
         }
@@ -755,17 +697,11 @@ public class ResultsController {
      */
     private void navigateToHome() {
         try {
-            // Carica la vista home e rimpiazza la scena corrente
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/main.fxml"));
-            javafx.scene.Parent root = loader.load();
-
-            javafx.scene.Scene currentScene = statusLabel.getScene();
-            currentScene.setRoot(root);
-
+            StdWindow.current().replaceRoot(StdView.load("/views/main.fxml"));
             statusLabel.setText("Ritorno alla schermata iniziale...");
             logger.info("Navigazione a home completata");
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Errore durante navigazione a home", e);
             showError("Errore", "Si è verificato un errore durante la navigazione: " + e.getMessage());
         }
@@ -780,11 +716,7 @@ public class ResultsController {
      * @param message messaggio di errore
      */
     private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.error(title, message);
     }
 
     /**
@@ -794,11 +726,7 @@ public class ResultsController {
      * @param message messaggio informativo
      */
     private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.info(title, message);
     }
 }
 

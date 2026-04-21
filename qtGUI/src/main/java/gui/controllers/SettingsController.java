@@ -7,19 +7,18 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import com.map.stdgui.StdAsync;
+import com.map.stdgui.StdDialog;
+import com.map.stdgui.StdFileDialog;
+import com.map.stdgui.StdStatus;
+import com.map.stdgui.StdTheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import database.DbAccess;
-import gui.utils.ThemeManager;
 // Importazioni JavaFX.
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.stage.DirectoryChooser;
-import javafx.util.Duration;
 //===---------------------------------------------------------------------------===//
 
 /**
@@ -39,8 +38,7 @@ import javafx.util.Duration;
  *
  * @author Lombardi Costantino
  * @version 1.0.0
- * @since 1.0.0
- * @see gui.utils.ThemeManager
+ * @see com.map.stdgui.StdTheme
  */
 public class SettingsController {
 
@@ -48,11 +46,14 @@ public class SettingsController {
     private static final Logger logger = LoggerFactory.getLogger(SettingsController.class);
     private static final String SETTINGS_FILE = "qtgui.properties";
 
+    private record ConnectionTestResult(boolean success, String errorMessage) {
+    }
+
     //===--------------------------- INSTANCE FIELDS ---------------------------===//
 
     // Proprietà delle impostazioni.
     private Properties settings;
-    private PauseTransition statusHideTimer;
+    private StdStatus status;
 
     //===---------------------------- FXML CONTROLS ----------------------------===//
 
@@ -144,6 +145,7 @@ public class SettingsController {
         logger.info("Inizializzazione SettingsController...");
 
         settings = new Properties();
+        status = StdStatus.of(statusFooter, statusMessageLabel);
 
         setupSpinners();
         setupButtons();
@@ -173,7 +175,7 @@ public class SettingsController {
         if (themeComboBox != null) {
             themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
-                    ThemeManager.getInstance().setThemeByName(newValue);
+                    StdTheme.getDefault().setTheme(newValue);
                     logger.info("Tema cambiato a: {}", newValue);
                 }
             });
@@ -183,7 +185,7 @@ public class SettingsController {
         if (fontSizeComboBox != null) {
             fontSizeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
-                    ThemeManager.getInstance().setFontSizeByName(newValue);
+                    StdTheme.getDefault().setFontSize(newValue);
                     logger.info("Dimensione font cambiata a: {}", newValue);
                 }
             });
@@ -299,18 +301,10 @@ public class SettingsController {
      * Gestisce il pulsante sfoglia directory esportazione.
      */
     private void handleBrowseExportDirectory() {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Seleziona Directory Esportazione");
-
         String currentDir = exportDirectoryField.getText();
-        if (currentDir != null && !currentDir.isEmpty()) {
-            File dir = new File(currentDir);
-            if (dir.exists() && dir.isDirectory()) {
-                directoryChooser.setInitialDirectory(dir);
-            }
-        }
-
-        File selectedDirectory = directoryChooser.showDialog(btnBrowseExportDir.getScene().getWindow());
+        File selectedDirectory = StdFileDialog.chooseDirectory("Seleziona Directory Esportazione",
+                currentDir == null || currentDir.isEmpty() ? null : new File(currentDir).toPath()).map(
+                        java.nio.file.Path::toFile).orElse(null);
         if (selectedDirectory != null) {
             exportDirectoryField.setText(selectedDirectory.getAbsolutePath());
             logger.info("Directory esportazione impostata a: {}", selectedDirectory.getAbsolutePath());
@@ -363,84 +357,51 @@ public class SettingsController {
         btnTestConnection.setDisable(true);
         btnTestConnection.setText("Test in corso...");
 
-        // Esegui test in background thread.
-        Task<Boolean> testTask = new Task<Boolean>() {
-            private String errorMessage = "";
+        StdAsync.submit("qtgui-db-test", () -> {
+            DbAccess db = null;
+            try {
+                logger.info("Tentativo connessione a: {}:{}/{} con utente: {}", host.trim(), port, dbName.trim(),
+                        username.trim());
 
-            @Override
-            protected Boolean call() {
-                DbAccess db = null;
-                try {
-                    logger.info("Tentativo connessione a: {}:{}/{} con utente: {}", host.trim(), port, dbName.trim(),
-                            username.trim());
+                db = new DbAccess(host.trim(), String.valueOf(port), dbName.trim(), username.trim(), password);
+                logger.info("Connessione database riuscita!");
+                return new ConnectionTestResult(true, "");
 
-                    db = new DbAccess(host.trim(), String.valueOf(port), dbName.trim(), username.trim(), password);
-
-                    // Se arriviamo qui, la connessione è riuscita.
-                    logger.info("Connessione database riuscita!");
-                    return true;
-
-                } catch (database.DatabaseConnectionException e) {
-                    errorMessage = e.getMessage();
-                    logger.error("Errore connessione database", e);
-                    return false;
-                } finally {
-                    if (db != null) {
-                        try {
-                            db.closeConnection();
-                        } catch (Exception e) {
-                            logger.warn("Errore chiusura connessione test", e);
-                        }
+            } catch (database.DatabaseConnectionException e) {
+                logger.error("Errore connessione database", e);
+                return new ConnectionTestResult(false, e.getMessage());
+            } finally {
+                if (db != null) {
+                    try {
+                        db.closeConnection();
+                    } catch (Exception e) {
+                        logger.warn("Errore chiusura connessione test", e);
                     }
                 }
             }
+        }).onSuccess(result -> {
+            btnTestConnection.setDisable(false);
+            btnTestConnection.setText("Test Connessione");
 
-            @Override
-            protected void succeeded() {
-                Platform.runLater(() -> {
-                    btnTestConnection.setDisable(false);
-                    btnTestConnection.setText("Test Connessione");
-
-                    if (getValue()) {
-                        // Connessione riuscita.
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Test Connessione");
-                        alert.setHeaderText("Connessione Riuscita");
-                        alert.setContentText("La connessione al database è stata stabilita con successo!\n\n"
-                                + "Configurazione:\n" + "Host: " + host + "\n" + "Porta: " + port + "\n" + "Database: "
-                                + dbName + "\n" + "Username: " + username);
-                        alert.showAndWait();
-                        showStatus("Connessione database riuscita", true);
-                    } else {
-                        // Connessione fallita.
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Test Connessione");
-                        alert.setHeaderText("Connessione Fallita");
-                        alert.setContentText("Impossibile connettersi al database.\n\n" + "Errore:\n" + errorMessage
-                                + "\n\n" + "Verifica i parametri di connessione e assicurati che:\n"
+            if (result.success()) {
+                StdDialog.info("Test Connessione", "Connessione Riuscita",
+                        "La connessione al database è stata stabilita con successo!\n\n" + "Configurazione:\n"
+                                + "Host: " + host + "\n" + "Porta: " + port + "\n" + "Database: " + dbName + "\n"
+                                + "Username: " + username);
+                showStatus("Connessione database riuscita", true);
+            } else {
+                StdDialog.error("Test Connessione", "Connessione Fallita",
+                        "Impossibile connettersi al database.\n\n" + "Errore:\n" + result.errorMessage() + "\n\n"
+                                + "Verifica i parametri di connessione e assicurati che:\n"
                                 + "- Il server MySQL sia in esecuzione\n" + "- Le credenziali siano corrette\n"
                                 + "- Il database esista\n" + "- Non ci siano firewall che bloccano la connessione");
-                        alert.showAndWait();
-                        showStatus("Connessione database fallita", false);
-                    }
-                });
+                showStatus("Connessione database fallita", false);
             }
-
-            @Override
-            protected void failed() {
-                Platform.runLater(() -> {
-                    btnTestConnection.setDisable(false);
-                    btnTestConnection.setText("Test Connessione");
-                    showError("Errore Test",
-                            "Errore imprevisto durante test connessione:\n" + getException().getMessage());
-                });
-            }
-        };
-
-        // Avvia task in background.
-        Thread testThread = new Thread(testTask);
-        testThread.setDaemon(true);
-        testThread.start();
+        }).onFailure(error -> {
+            btnTestConnection.setDisable(false);
+            btnTestConnection.setText("Test Connessione");
+            showError("Errore Test", "Errore imprevisto durante test connessione:\n" + error.getMessage());
+        });
     }
 
     /**
@@ -449,18 +410,13 @@ public class SettingsController {
     private void handleResetDefaults() {
         logger.info("Ripristina predefiniti cliccato");
 
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Ripristina Impostazioni");
-        confirmAlert.setHeaderText("Ripristinare tutte le impostazioni ai valori predefiniti?");
-        confirmAlert.setContentText("Questa azione non può essere annullata.");
-
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                applyDefaults();
-                showStatus("Impostazioni ripristinate ai valori predefiniti", true);
-                logger.info("Impostazioni ripristinate ai valori predefiniti");
-            }
-        });
+        if (StdDialog.confirm("Ripristina Impostazioni",
+                "Ripristinare tutte le impostazioni ai valori predefiniti?",
+                "Questa azione non può essere annullata.")) {
+            applyDefaults();
+            showStatus("Impostazioni ripristinate ai valori predefiniti", true);
+            logger.info("Impostazioni ripristinate ai valori predefiniti");
+        }
     }
 
     /**
@@ -581,22 +537,11 @@ public class SettingsController {
      * @param success true se successo, false se avviso
      */
     private void showStatus(String message, boolean success) {
-        statusMessageLabel.setText(message);
-        statusMessageLabel.getStyleClass().clear();
-        statusMessageLabel.getStyleClass().add(success ? "label-success" : "label-warning");
-        statusFooter.setVisible(true);
-        statusFooter.setManaged(true);
-
-        // Nasconde dopo 3 secondi.
-        if (statusHideTimer != null) {
-            statusHideTimer.stop();
+        if (success) {
+            status.success(message);
+        } else {
+            status.warning(message);
         }
-        statusHideTimer = new PauseTransition(Duration.seconds(3));
-        statusHideTimer.setOnFinished(event -> {
-            statusFooter.setVisible(false);
-            statusFooter.setManaged(false);
-        });
-        statusHideTimer.play();
     }
 
     /**
@@ -606,11 +551,7 @@ public class SettingsController {
      * @param message messaggio di errore
      */
     private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.error(title, message);
     }
 }
 

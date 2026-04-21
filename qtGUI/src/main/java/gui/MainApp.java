@@ -2,28 +2,32 @@ package gui;
 
 //===---------------------------------------------------------------------------===//
 // Importazioni JavaFX e utilita'.
+import com.map.stdgui.StdGui;
+import com.map.stdgui.StdShortcut;
+import com.map.stdgui.StdTheme;
+import com.map.stdgui.StdWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import gui.utils.ThemeManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 //===---------------------------------------------------------------------------===//
 
 /**
  * Applicazione JavaFX principale per la GUI QT Clustering.
  * <p>
+ * Questa classe rappresenta il confine di bootstrap JavaFX dell'applicazione:
+ * riceve lo {@link Stage} primario dal toolkit e collega la finestra principale
+ * alle astrazioni riutilizzabili in {@code com.map.stdgui}.
+ * <p>
  * Questa classe gestisce:
  * <ul>
  *   <li>Avvio della JavaFX Application e creazione dello stage principale</li>
  *   <li>Caricamento del layout FXML principale</li>
  *   <li>Inizializzazione della scena e dei shortcut globali</li>
- *   <li>Configurazione del tema tramite {@link ThemeManager}</li>
+ *   <li>Configurazione del tema tramite {@link StdTheme}</li>
  * </ul>
  *
  * @author Lombardi Costantino
@@ -77,14 +81,6 @@ public class MainApp extends Application {
             // Crea la scena.
             Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-            // Configura keyboard shortcuts globali.
-            setupKeyboardShortcuts(scene);
-
-            // Configura ThemeManager con la scena primaria.
-            // Questo applicherà automaticamente il tema e la dimensione del font salvati.
-            ThemeManager themeManager = ThemeManager.getInstance();
-            themeManager.setPrimaryScene(scene);
-
             // Configura lo stage.
             primaryStage.setTitle(APP_TITLE);
             primaryStage.setScene(scene);
@@ -93,6 +89,14 @@ public class MainApp extends Application {
 
             // Mostra lo stage.
             primaryStage.show();
+
+            StdWindow mainWindow = StdWindow.current();
+
+            // Applica tema e font salvati nascondendo i dettagli JavaFX in StdTheme.
+            StdTheme.getDefault().attach(mainWindow);
+
+            // Configura keyboard shortcuts globali.
+            setupKeyboardShortcuts(mainWindow);
 
             logger.info("Applicazione avviata con successo");
 
@@ -106,7 +110,10 @@ public class MainApp extends Application {
      * Restituisce lo stage primario dell'applicazione.
      *
      * @return stage primario
+     * @deprecated mantenuto solo per compatibilita' con eventuali client legacy;
+     *             il nuovo codice deve usare le astrazioni di {@code com.map.stdgui}.
      */
+    @Deprecated(since = "1.1.0", forRemoval = false)
     public Stage getPrimaryStage() {
         return primaryStage;
     }
@@ -126,53 +133,46 @@ public class MainApp extends Application {
     /**
      * Configura i keyboard shortcuts globali per l'applicazione.
      *
-     * @param scene la scena su cui registrare gli shortcuts
+     * @param window finestra su cui registrare gli shortcuts
      */
-    private void setupKeyboardShortcuts(Scene scene) {
+    private void setupKeyboardShortcuts(StdWindow window) {
         logger.info("Configurazione keyboard shortcuts...");
 
         // Ctrl+N - Nuova analisi.
-        KeyCombination ctrlN = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
-        scene.getAccelerators().put(ctrlN, () -> {
+        StdShortcut.register(window, "Ctrl+N", () -> {
             logger.debug("Shortcut Ctrl+N premuto");
             // L'azione sarà gestita dal MainController.
         });
 
         // Ctrl+O - Apri file.
-        KeyCombination ctrlO = new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN);
-        scene.getAccelerators().put(ctrlO, () -> {
+        StdShortcut.register(window, "Ctrl+O", () -> {
             logger.debug("Shortcut Ctrl+O premuto");
         });
 
         // Ctrl+S - Salva.
-        KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
-        scene.getAccelerators().put(ctrlS, () -> {
+        StdShortcut.register(window, "Ctrl+S", () -> {
             logger.debug("Shortcut Ctrl+S premuto");
         });
 
         // Ctrl+E - Export.
-        KeyCombination ctrlE = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
-        scene.getAccelerators().put(ctrlE, () -> {
+        StdShortcut.register(window, "Ctrl+E", () -> {
             logger.debug("Shortcut Ctrl+E premuto");
         });
 
         // Ctrl+Q - Esci.
-        KeyCombination ctrlQ = new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN);
-        scene.getAccelerators().put(ctrlQ, () -> {
+        StdShortcut.register(window, "Ctrl+Q", () -> {
             logger.debug("Shortcut Ctrl+Q premuto - Chiusura applicazione");
             stop();
-            javafx.application.Platform.exit();
+            StdGui.exit();
         });
 
         // F1 - Help.
-        KeyCombination f1 = new KeyCodeCombination(KeyCode.F1);
-        scene.getAccelerators().put(f1, () -> {
+        StdShortcut.register(window, "F1", () -> {
             logger.debug("Shortcut F1 premuto");
         });
 
         // F5 - Refresh/Ricarica.
-        KeyCombination f5 = new KeyCodeCombination(KeyCode.F5);
-        scene.getAccelerators().put(f5, () -> {
+        StdShortcut.register(window, "F5", () -> {
             logger.debug("Shortcut F5 premuto");
         });
 

@@ -3,8 +3,11 @@ package gui.controllers;
 //===---------------------------------------------------------------------------===//
 // Importazioni Java standard.
 import data.Data;
+import com.map.stdgui.StdView;
+import com.map.stdgui.StdWindow;
+import com.map.stdgui.StdDialog;
+import com.map.stdgui.StdFileDialog;
 import java.io.File;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import database.DbAccess;
@@ -15,15 +18,9 @@ import gui.utils.ApplicationContext;
 import gui.utils.DatasetLoader;
 // Importazioni JavaFX.
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 //===---------------------------------------------------------------------------===//
 
 /**
@@ -44,7 +41,6 @@ import javafx.stage.FileChooser;
  *
  * @author Lombardi Costantino
  * @version 1.0.0
- * @since 1.0.0
  * @see gui.models.ClusteringConfiguration
  * @see gui.utils.ApplicationContext
  */
@@ -376,11 +372,9 @@ public class HomeController {
      * Gestisce il clic del pulsante "Sfoglia" per file CSV.
      */
     private void handleBrowseFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleziona File CSV");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File CSV", "*.csv"));
-
-        File file = fileChooser.showOpenDialog(btnBrowseFile.getScene().getWindow());
+        File file =
+                StdFileDialog.openFile("Seleziona File CSV", new StdFileDialog.Filter("File CSV", "*.csv")).map(
+                        java.nio.file.Path::toFile).orElse(null);
         if (file != null) {
             selectedCsvFile = file;
             csvFilePathField.setText(file.getAbsolutePath());
@@ -623,25 +617,10 @@ public class HomeController {
      */
     private void navigateToClusteringView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/clustering.fxml"));
-            Parent clusteringView = loader.load();
-
-            // Ottieni la scena corrente e sostituisci il contenuto.
-            Scene currentScene = btnStartClustering.getScene();
-            Parent root = currentScene.getRoot();
-            Node contentArea = root.lookup("#contentArea");
-
-            // Sostituisci il contenuto con la vista clustering.
-            if (contentArea instanceof StackPane stackPane) {
-                stackPane.getChildren().setAll(clusteringView);
-            } else {
-                logger.warn("contentArea non trovato, fallback a setRoot");
-                currentScene.setRoot(clusteringView);
-            }
-
+            StdWindow.current().replaceRegion("contentArea", StdView.load("/views/clustering.fxml"));
             logger.info("Navigazione a vista clustering completata");
 
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             logger.error("Errore durante navigazione a vista clustering", e);
             showError("Errore Navigazione", "Impossibile caricare la vista clustering:\n" + e.getMessage());
         }
@@ -668,11 +647,7 @@ public class HomeController {
      * @param message messaggio di errore
      */
     private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.error(title, message);
     }
 }
 

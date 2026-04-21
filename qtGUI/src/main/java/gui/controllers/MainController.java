@@ -2,8 +2,14 @@ package gui.controllers;
 
 //===---------------------------------------------------------------------------===//
 // Importazioni Java standard.
+import com.map.stdgui.StdAsync;
+import com.map.stdgui.StdView;
+import com.map.stdgui.StdWindow;
+import java.nio.file.Path;
 import java.io.File;
-import java.io.IOException;
+import com.map.stdgui.StdDialog;
+import com.map.stdgui.StdFileDialog;
+import com.map.stdgui.StdGui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gui.dialogs.AboutDialog;
@@ -11,15 +17,10 @@ import gui.models.ClusteringResult;
 import gui.services.ClusteringService;
 import gui.utils.ApplicationContext;
 // Importazioni JavaFX.
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.stage.FileChooser;
 // Importazioni del backend di mining.
 import mining.QTMiner;
 //===---------------------------------------------------------------------------===//
@@ -42,7 +43,6 @@ import mining.QTMiner;
  *
  * @author MAP Project Team
  * @version 1.0.0
- * @since 1.0.0
  * @see gui.utils.ApplicationContext
  * @see gui.services.ClusteringService
  * @see gui.models.ClusteringResult
@@ -179,7 +179,7 @@ public class MainController {
      * @see Platform#runLater(Runnable)
      */
     public void updateStatus(String message) {
-        Platform.runLater(() -> statusLabel.setText(message));
+        StdGui.later(() -> statusLabel.setText(message == null ? "" : message));
     }
 
     /**
@@ -196,11 +196,12 @@ public class MainController {
      * @see Platform#runLater(Runnable)
      */
     public void updateProgress(String progress) {
-        Platform.runLater(() -> progressLabel.setText(progress));
+        StdGui.later(() -> progressLabel.setText(progress == null ? "" : progress));
     }
 
     /**
-     * Naviga verso una vista specifica caricando il relativo file FXML.
+     * Naviga verso una vista specifica caricando il relativo file FXML tramite
+     * {@link StdView}.
      * <p>
      * Questo metodo:
      * <ol>
@@ -223,20 +224,15 @@ public class MainController {
      * @param fxmlFile il nome del file FXML da caricare (es. "home.fxml").
      *                 Deve trovarsi nella cartella <code>/views/</code> del classpath.
      * @throws NullPointerException se {@code fxmlFile} è {@code null}
-     * @see FXMLLoader
+     * @see StdView
      * @see #showError(String, String)
      */
     public void navigateTo(String fxmlFile) {
         try {
             logger.info("Navigazione verso la vista: {}", fxmlFile);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/" + fxmlFile));
-            Parent view = loader.load();
-
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
-
+            StdWindow.current().replaceRegion("contentArea", StdView.load("/views/" + fxmlFile));
             updateStatus("Vista caricata: " + fxmlFile);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             logger.error("Impossibile caricare la vista: {}", fxmlFile, e);
             showError("Impossibile caricare la vista", "Impossibile caricare " + fxmlFile);
         }
@@ -352,11 +348,10 @@ public class MainController {
         logger.info("Apri cliccato");
 
         try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Apri Clustering");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(FILE_CLUSTERING, CLUSTERING_EXT));
-
-            File file = fileChooser.showOpenDialog(statusLabel.getScene().getWindow());
+            Path selectedPath =
+                    StdFileDialog.openFile("Apri Clustering", new StdFileDialog.Filter(FILE_CLUSTERING, CLUSTERING_EXT))
+                            .orElse(null);
+            File file = selectedPath == null ? null : selectedPath.toFile();
 
             if (file != null) {
                 updateStatus("Caricamento file: " + file.getName() + "...");
@@ -370,54 +365,33 @@ public class MainController {
                 }
                 final String sanitizedFilePath = filePath;
 
-                // Caricamento in background.
-                Task<QTMiner> loadTask = new Task<>() {
-                    @Override
-                    protected QTMiner call() throws Exception {
-                        return clusteringService.loadClusteringResults(sanitizedFilePath);
-                    }
-                };
+                StdAsync.submit("qtgui-load-clustering", () -> clusteringService.loadClusteringResults(sanitizedFilePath))
+                        .onSuccess(miner -> {
+                            if (miner.getData() != null) {
+                                ClusteringResult result =
+                                        new ClusteringResult(miner.getC(), miner.getData(), miner.getRadius(), 0, miner);
+                                ApplicationContext.getInstance().setCurrentResult(result);
 
-                // Gestori eventi per il task di caricamento.
-                loadTask.setOnSucceeded(event -> {
-                    QTMiner miner = loadTask.getValue();
+                                navigateTo("results.fxml");
+                                updateStatus("Clustering caricato: " + file.getName());
 
-                    if (miner.getData() != null) {
-                        ClusteringResult result =
-                                new ClusteringResult(miner.getC(), miner.getData(), miner.getRadius(), 0, miner);
-                        ApplicationContext.getInstance().setCurrentResult(result);
+                                logger.info("File clustering completo caricato: {} ({} cluster, radius={})",
+                                        file.getAbsolutePath(), result.getNumClusters(), result.getRadius());
 
-                        navigateTo("results.fxml");
-                        updateStatus("Clustering caricato: " + file.getName());
+                            } else {
+                                StdDialog.warning("Formato File Incompleto", "File in formato legacy",
+                                        "Il file " + file.getName() + " contiene solo i cluster (formato vecchio).\n\n"
+                                                + "Per visualizzare i risultati completi,\n"
+                                                + "salva nuovamente il clustering dopo averlo eseguito.");
 
-                        logger.info("File clustering completo caricato: {} ({} cluster, radius={})",
-                                file.getAbsolutePath(), result.getNumClusters(), result.getRadius());
-
-                    } else {
-                        Alert warningAlert = new Alert(Alert.AlertType.WARNING);
-                        warningAlert.setTitle("Formato File Incompleto");
-                        warningAlert.setHeaderText("File in formato legacy");
-                        warningAlert.setContentText(
-                                "Il file " + file.getName() + " contiene solo i cluster (formato vecchio).\n\n"
-                                        + "Per visualizzare i risultati completi,\n"
-                                        + "salva nuovamente il clustering dopo averlo eseguito.");
-                        warningAlert.showAndWait();
-
-                        logger.warn("Clustering caricato ma dataset non disponibile (file legacy)");
-                        updateStatus("File caricato (formato incompleto)");
-                    }
-                });
-
-                loadTask.setOnFailed(event -> {
-                    Throwable error = loadTask.getException();
-                    logger.error("Errore durante apertura file clustering", error);
-                    updateStatus(ERROR_LOADING);
-                    showError("Errore Caricamento", LOAD_ERROR_MSG + error.getMessage());
-                });
-
-                Thread thread = new Thread(loadTask);
-                thread.setDaemon(true);
-                thread.start();
+                                logger.warn("Clustering caricato ma dataset non disponibile (file legacy)");
+                                updateStatus("File caricato (formato incompleto)");
+                            }
+                        }).onFailure(error -> {
+                            logger.error("Errore durante apertura file clustering", error);
+                            updateStatus(ERROR_LOADING);
+                            showError("Errore Caricamento", LOAD_ERROR_MSG + error.getMessage());
+                        });
             }
 
         } catch (Exception e) {
@@ -452,12 +426,9 @@ public class MainController {
         }
 
         try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Salva Clustering");
-            fileChooser.setInitialFileName("clustering.dmp");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(FILE_CLUSTERING, CLUSTERING_EXT));
-
-            File file = fileChooser.showSaveDialog(statusLabel.getScene().getWindow());
+            Path selectedPath = StdFileDialog.saveFile("Salva Clustering", "clustering.dmp",
+                    new StdFileDialog.Filter(FILE_CLUSTERING, CLUSTERING_EXT)).orElse(null);
+            File file = selectedPath == null ? null : selectedPath.toFile();
 
             if (file != null) {
                 updateStatus("Salvataggio in corso...");
@@ -471,31 +442,19 @@ public class MainController {
 
                 ClusteringService clusteringService = ApplicationContext.getInstance().getClusteringService();
 
-                Task<Void> saveTask = new Task<>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        clusteringService.saveClusteringResults(sanitizedFilePath, result.getMiner());
-                        return null;
-                    }
-                };
-
-                saveTask.setOnSucceeded(event -> {
+                StdAsync.submit("qtgui-save-clustering", () -> {
+                    clusteringService.saveClusteringResults(sanitizedFilePath, result.getMiner());
+                    return null;
+                }).onSuccess(ignored -> {
                     updateStatus("Clustering salvato: " + file.getName());
                     showInfo("Salvataggio Completato",
                             "Clustering salvato con successo in:\n" + file.getAbsolutePath());
                     logger.info("Clustering salvato: {}", file.getAbsolutePath());
-                });
-
-                saveTask.setOnFailed(event -> {
-                    Throwable error = saveTask.getException();
+                }).onFailure(error -> {
                     logger.error(ERROR_SAVING, error);
                     updateStatus(ERROR_SAVING);
                     showError(ERROR_TITLE, SAVE_ERROR_MSG + error.getMessage());
                 });
-
-                Thread thread = new Thread(saveTask);
-                thread.setDaemon(true);
-                thread.start();
             }
 
         } catch (Exception e) {
@@ -529,7 +488,7 @@ public class MainController {
      */
     private void handleExit() {
         logger.info("Esci cliccato");
-        Platform.exit();
+        StdGui.exit();
     }
 
     /**
@@ -639,62 +598,45 @@ public class MainController {
     //===--------------------------- DIALOG HELPERS ----------------------------===//
 
     /**
-     * Mostra un dialogo informativo all'utente.
+     * Mostra un dialogo informativo all'utente tramite {@link StdDialog}.
      * <p>
-     * Crea e visualizza un {@link Alert} di tipo {@link Alert.AlertType#INFORMATION}
-     * con il titolo e il messaggio specificati.
+     * I dettagli JavaFX della finestra modale sono incapsulati nella libreria
+     * riutilizzabile.
      *
      * @param title il titolo della finestra di dialogo
      * @param message il messaggio da visualizzare
-     * @see Alert
-     * @see Alert.AlertType#INFORMATION
+     * @see StdDialog
      */
     private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.info(title, message);
     }
 
     /**
-     * Mostra un dialogo di errore all'utente.
+     * Mostra un dialogo di errore all'utente tramite {@link StdDialog}.
      * <p>
-     * Crea e visualizza un {@link Alert} di tipo {@link Alert.AlertType#ERROR}
-     * con il titolo e il messaggio specificati. Utilizzato per comunicare
-     * errori critici che richiedono l'attenzione dell'utente.
+     * Utilizzato per comunicare errori critici che richiedono l'attenzione
+     * dell'utente.
      *
      * @param title il titolo della finestra di dialogo
      * @param message il messaggio di errore dettagliato
-     * @see Alert
-     * @see Alert.AlertType#ERROR
+     * @see StdDialog
      */
     private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.error(title, message);
     }
 
     /**
-     * Mostra un dialogo di avviso all'utente.
+     * Mostra un dialogo di avviso all'utente tramite {@link StdDialog}.
      * <p>
-     * Crea e visualizza un {@link Alert} di tipo {@link Alert.AlertType#WARNING}
-     * con il titolo e il messaggio specificati. Utilizzato per situazioni
-     * che richiedono attenzione ma non sono errori critici.
+     * Utilizzato per situazioni che richiedono attenzione ma non sono errori
+     * critici.
      *
      * @param title il titolo della finestra di dialogo
      * @param message il messaggio di avviso
-     * @see Alert
-     * @see Alert.AlertType#WARNING
+     * @see StdDialog
      */
     private void showWarning(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.warning(title, message);
     }
 }
 
