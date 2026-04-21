@@ -16,8 +16,6 @@ import org.knowm.xchart.XYChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gui.models.ClusteringResult;
-// Importazione mantenuta per compatibilita' del metodo getStage().
-import javafx.stage.Stage;
 //===---------------------------------------------------------------------------===//
 
 /**
@@ -212,17 +210,6 @@ public class ChartViewer {
     public void show() {
         window.show();
         logger.info("ChartViewer mostrato");
-    }
-
-    /**
-     * Restituisce lo stage JavaFX utilizzato dal viewer.
-     *
-     * @return lo stage della finestra
-     * @deprecated mantenuto solo per compatibilita'; il viewer gestisce internamente la finestra
-     */
-    @Deprecated(since = "1.1.0", forRemoval = false)
-    public Stage getStage() {
-        return (Stage) window.nativeWindow();
     }
 }
 

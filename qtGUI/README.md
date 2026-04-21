@@ -138,8 +138,8 @@ Il modulo presenta due entry point strettamente collegati:
 - `gui.Launcher`, usato come punto di ingresso del JAR prodotto dal packaging.
 
 `MainApp` si occupa della creazione dello stage principale, del caricamento di
-`main.fxml`, dell'inizializzazione del `ThemeManager` e della registrazione degli
-acceleratori globali.
+`main.fxml`, della configurazione di `StdTheme` (dal modulo `stdgui`) e della
+registrazione degli acceleratori globali.
 
 ---
 
@@ -193,10 +193,13 @@ Tra le classi di supporto meritano particolare attenzione:
 | Utility              | Funzione                                                           |
 | -------------------- | ------------------------------------------------------------------ |
 | `ApplicationContext` | Stato applicativo condiviso e accesso ai servizi comuni            |
-| `ThemeManager`       | Gestione del tema e delle preferenze visive                        |
 | `DatasetLoader`      | Caricamento del dataset `Iris` dalle risorse                       |
 | `Point2D`            | Rappresentazione elementare dei punti usati nei grafici            |
 | `ColorPalette`       | Definizione di colori coerenti per la rappresentazione dei cluster |
+
+La gestione del tema e della dimensione dei font e' delegata a
+`com.map.stdgui.StdTheme`, configurato una volta in `MainApp` e agganciato alla
+finestra principale via `attach(StdWindow)`.
 
 ### Dialoghi e viste specializzate
 
@@ -383,9 +386,9 @@ Il modulo consente di configurare almeno i seguenti aspetti:
 ### Persistenza delle preferenze
 
 Le preferenze vengono salvate in un file di proprieta' (`qtgui.properties`) e ricaricate
-tramite i componenti di utilita', in particolare `ThemeManager` e i controller delle
-impostazioni. Questa persistenza consente alla GUI di presentarsi in modo coerente tra
-esecuzioni successive senza richiedere una riconfigurazione completa.
+tramite `com.map.stdgui.StdTheme` e i controller delle impostazioni. Questa persistenza
+consente alla GUI di presentarsi in modo coerente tra esecuzioni successive senza
+richiedere una riconfigurazione completa.
 
 ### Relazione con i file `.dmp`
 
