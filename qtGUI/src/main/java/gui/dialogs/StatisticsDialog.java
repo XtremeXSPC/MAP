@@ -6,24 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.map.stdgui.StdChart;
+import com.map.stdgui.StdDataView;
+import com.map.stdgui.StdView;
+import com.map.stdgui.StdWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import data.Data;
 import data.Tuple;
 import gui.models.ClusteringResult;
-// Importazioni JavaFX.
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mining.Cluster;
 import mining.ClusterSet;
 //===---------------------------------------------------------------------------===//
@@ -55,7 +46,7 @@ public class StatisticsDialog {
     //===--------------------------- INSTANCE FIELDS ---------------------------===//
 
     // Finestra del dialog.
-    private final Stage stage;
+    private final StdWindow window;
     private final ClusteringResult result;
 
     //===---------------------------- INNER CLASSES ----------------------------===//
@@ -95,9 +86,7 @@ public class StatisticsDialog {
         }
 
         this.result = result;
-        this.stage = new Stage();
-
-        initializeDialog();
+        this.window = createDialog();
     }
 
     //===--------------------------- PUBLIC METHODS ----------------------------===//
@@ -106,75 +95,33 @@ public class StatisticsDialog {
      * Mostra il dialog.
      */
     public void show() {
-        stage.show();
+        window.show();
     }
 
     //===--------------------------- PRIVATE METHODS ---------------------------===//
 
     /**
-     * Inizializza il dialog e costruisce l'interfaccia.
+     * Crea il dialog e costruisce l'interfaccia.
+     *
+     * @return finestra del dialog
      */
-    private void initializeDialog() {
-        stage.setTitle("Statistiche Clustering");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setWidth(900);
-        stage.setHeight(700);
-
-        BorderPane root = new BorderPane();
-        root.setPadding(new Insets(10));
-
-        // Crea tab pane con diverse viste.
-        TabPane tabPane = new TabPane();
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-
-        // Tab 1: Statistiche generali
-        Tab statsTab = new Tab("Statistiche Generali");
-        statsTab.setContent(createGeneralStatsPane());
-
-        // Tab 2: Distribuzione dimensioni.
-        Tab sizeDistTab = new Tab("Distribuzione Dimensioni");
-        sizeDistTab.setContent(createSizeDistributionChart());
-
-        // Tab 3: Distribuzione distanze.
-        Tab distDistTab = new Tab("Distribuzione Distanze");
-        distDistTab.setContent(createDistanceDistributionChart());
-
-        // Tab 4: Tabella cluster.
-        Tab tableTab = new Tab("Tabella Riepilogativa");
-        tableTab.setContent(createClusterTable());
-
-        tabPane.getTabs().addAll(statsTab, sizeDistTab, distDistTab, tableTab);
-
-        root.setCenter(tabPane);
-
-        // Bottoni.
-        Button closeButton = new Button("Chiudi");
-        closeButton.setOnAction(e -> stage.close());
-
-        VBox bottomBox = new VBox(10);
-        bottomBox.setPadding(new Insets(10, 0, 0, 0));
-        bottomBox.getChildren().add(closeButton);
-        root.setBottom(bottomBox);
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
+    private StdWindow createDialog() {
+        List<StdDataView.TabView> tabs = List.of(
+                new StdDataView.TabView("Statistiche Generali", createGeneralStatsView()),
+                new StdDataView.TabView("Distribuzione Dimensioni", createSizeDistributionChart()),
+                new StdDataView.TabView("Distribuzione Distanze", createDistanceDistributionChart()),
+                new StdDataView.TabView("Tabella Riepilogativa", createClusterTable()));
 
         logger.info("StatisticsDialog inizializzato");
+        return StdDataView.tabs("Statistiche Clustering", tabs, 900, 700, "Chiudi").modal(true);
     }
 
     /**
-     * Crea il pannello con le statistiche generali.
+     * Crea la vista con le statistiche generali.
      *
-     * @return pannello con statistiche globali
+     * @return vista con statistiche globali
      */
-    private VBox createGeneralStatsPane() {
-        VBox vbox = new VBox(15);
-        vbox.setPadding(new Insets(15));
-
-        // Titolo.
-        Label titleLabel = new Label("Statistiche Generali Clustering");
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
+    private StdView createGeneralStatsView() {
         // Calcola statistiche.
         ClusterSet clusterSet = result.getClusterSet();
         Data data = result.getData();
@@ -230,51 +177,42 @@ public class StatisticsDialog {
         double avgSize = numClusters > 0 ? (sumSize / numClusters) : 0.0;
         double globalAvgDist = totalDistances > 0 ? (globalSumDist / totalDistances) : 0.0;
 
-        // Crea griglia con statistiche.
-        GridPane grid = new GridPane();
-        grid.setHgap(20);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(10));
-
-        int row = 0;
+        List<List<String>> rows = new ArrayList<>();
 
         // Sezione: Informazioni Generali.
-        addStatsHeader(grid, row++, "Informazioni Generali");
-        addStatsRow(grid, row++, "Data/Ora:", result.getFormattedTimestamp());
-        addStatsRow(grid, row++, "Tempo Esecuzione:", result.getFormattedExecutionTime());
-        addStatsRow(grid, row++, "Radius:", String.format("%.6f", radius));
-
-        row++; // Spazio vuoto.
+        addStatsHeader(rows, "Informazioni Generali");
+        addStatsRow(rows, "Data/Ora:", result.getFormattedTimestamp());
+        addStatsRow(rows, "Tempo Esecuzione:", result.getFormattedExecutionTime());
+        addStatsRow(rows, "Radius:", String.format("%.6f", radius));
+        addStatsSpacer(rows);
 
         // Sezione: Cluster.
-        addStatsHeader(grid, row++, "Statistiche Cluster");
-        addStatsRow(grid, row++, "Numero Cluster:", String.valueOf(numClusters));
-        addStatsRow(grid, row++, "Numero Tuple Totali:", String.valueOf(numTuples));
+        addStatsHeader(rows, "Statistiche Cluster");
+        addStatsRow(rows, "Numero Cluster:", String.valueOf(numClusters));
+        addStatsRow(rows, "Numero Tuple Totali:", String.valueOf(numTuples));
         String avgSizeText = numClusters > 0 ? String.format("%.2f", avgSize) : "N/A";
         String maxSizeText = numClusters > 0 ? String.valueOf(maxSize) + " tuple" : "N/A";
         String minSizeText = numClusters > 0 ? String.valueOf(minSize) + " tuple" : "N/A";
 
-        addStatsRow(grid, row++, "Dimensione Media Cluster:", avgSizeText);
-        addStatsRow(grid, row++, "Cluster Più Grande:", maxSizeText);
-        addStatsRow(grid, row++, "Cluster Più Piccolo:", minSizeText);
-
-        row++; // Spazio vuoto.
+        addStatsRow(rows, "Dimensione Media Cluster:", avgSizeText);
+        addStatsRow(rows, "Cluster Più Grande:", maxSizeText);
+        addStatsRow(rows, "Cluster Più Piccolo:", minSizeText);
+        addStatsSpacer(rows);
 
         // Sezione: Distanze.
-        addStatsHeader(grid, row++, "Statistiche Distanze");
+        addStatsHeader(rows, "Statistiche Distanze");
         String avgDistText = totalDistances > 0 ? String.format("%.6f", globalAvgDist) : "N/A";
         String minDistText = totalDistances > 0 ? String.format("%.6f", globalMinDist) : "N/A";
         String maxDistText = totalDistances > 0 ? String.format("%.6f", globalMaxDist) : "N/A";
 
-        addStatsRow(grid, row++, "Distanza Media Globale:", avgDistText);
-        addStatsRow(grid, row++, "Distanza Minima:", minDistText);
-        addStatsRow(grid, row++, "Distanza Massima:", maxDistText);
-
-        row++; // Spazio vuoto.
+        addStatsRow(rows, "Distanza Media Globale:", avgDistText);
+        addStatsRow(rows, "Distanza Minima:", minDistText);
+        addStatsRow(rows, "Distanza Massima:", maxDistText);
+        addStatsSpacer(rows);
 
         // Sezione: Dataset.
-        addStatsHeader(grid, row++, "Informazioni Dataset");
-        addStatsRow(grid, row++, "Numero Attributi:", String.valueOf(data.getNumberOfExplanatoryAttributes()));
+        addStatsHeader(rows, "Informazioni Dataset");
+        addStatsRow(rows, "Numero Attributi:", String.valueOf(data.getNumberOfExplanatoryAttributes()));
 
         StringBuilder attrNames = new StringBuilder();
         for (int i = 0; i < data.getNumberOfExplanatoryAttributes(); i++) {
@@ -282,59 +220,35 @@ public class StatisticsDialog {
                 attrNames.append(", ");
             attrNames.append(data.getExplanatoryAttribute(i).getName());
         }
-        addStatsRow(grid, row++, "Attributi:", attrNames.toString());
+        addStatsRow(rows, "Attributi:", attrNames.toString());
 
-        vbox.getChildren().addAll(titleLabel, new Separator(), grid);
-
-        return vbox;
+        return StdDataView.tableView("Statistiche Generali Clustering",
+                new StdDataView.TableModel(List.of("Metrica", "Valore"), rows));
     }
 
     /**
      * Crea il grafico a barre per la distribuzione delle dimensioni dei cluster.
      *
-     * @return grafico a barre della dimensione cluster
+     * @return vista del grafico a barre della dimensione cluster
      */
-    private BarChart<String, Number> createSizeDistributionChart() {
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Cluster");
-
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Numero Tuple");
-
-        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
-        barChart.setTitle("Distribuzione Dimensioni Cluster");
-        barChart.setLegendVisible(false);
-
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Dimensione");
-
+    private StdView createSizeDistributionChart() {
+        List<StdChart.BarPoint> points = new ArrayList<>();
         int clusterIndex = 0;
         for (Cluster cluster : result.getClusterSet()) {
             clusterIndex++;
-            series.getData().add(new XYChart.Data<>("Cluster " + clusterIndex, cluster.getSize()));
+            points.add(new StdChart.BarPoint("Cluster " + clusterIndex, cluster.getSize()));
         }
 
-        barChart.getData().add(series);
-
-        return barChart;
+        return StdChart.barChartView("Distribuzione Dimensioni Cluster", "Cluster", "Numero Tuple",
+                List.of(new StdChart.BarSeries("Dimensione", points)));
     }
 
     /**
      * Crea l'istogramma per la distribuzione delle distanze intra-cluster.
      *
-     * @return istogramma delle distanze
+     * @return vista dell'istogramma delle distanze
      */
-    private BarChart<String, Number> createDistanceDistributionChart() {
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Range Distanza");
-
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Frequenza");
-
-        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
-        barChart.setTitle("Distribuzione Distanze dal Centroide");
-        barChart.setLegendVisible(false);
-
+    private StdView createDistanceDistributionChart() {
         // Raccogli tutte le distanze.
         List<Double> distances = new ArrayList<>();
         Data data = result.getData();
@@ -368,72 +282,25 @@ public class StatisticsDialog {
             histogram.put(bin, histogram.getOrDefault(bin, 0) + 1);
         }
 
-        // Aggiungi dati al grafico.
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Frequenza");
-
+        List<StdChart.BarPoint> points = new ArrayList<>();
         for (int i = 0; i < numBins; i++) {
             double binStart = minDist + i * binWidth;
             double binEnd = binStart + binWidth;
             String label = String.format("%.3f-%.3f", binStart, binEnd);
-            series.getData().add(new XYChart.Data<>(label, histogram.getOrDefault(i, 0)));
+            points.add(new StdChart.BarPoint(label, histogram.getOrDefault(i, 0)));
         }
 
-        barChart.getData().add(series);
-
-        return barChart;
+        return StdChart.barChartView("Distribuzione Distanze dal Centroide", "Range Distanza", "Frequenza",
+                List.of(new StdChart.BarSeries("Frequenza", points)));
     }
 
     /**
      * Crea la tabella riepilogativa dei cluster.
      *
-     * @return tabella con riepilogo cluster
+     * @return vista tabellare con riepilogo cluster
      */
-    private TableView<ClusterSummary> createClusterTable() {
-        TableView<ClusterSummary> tableView = new TableView<>();
-
-        // Colonna ID.
-        TableColumn<ClusterSummary, Integer> idCol = new TableColumn<>("Cluster ID");
-        idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().id));
-        idCol.setPrefWidth(100);
-
-        // Colonna Dimensione.
-        TableColumn<ClusterSummary, Integer> sizeCol = new TableColumn<>("Dimensione");
-        sizeCol.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().size));
-        sizeCol.setPrefWidth(100);
-
-        // Colonna Distanza Media.
-        TableColumn<ClusterSummary, String> avgDistCol = new TableColumn<>("Dist. Media");
-        avgDistCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                String.format("%.6f", data.getValue().avgDistance)));
-        avgDistCol.setPrefWidth(120);
-
-        // Colonna Distanza Min.
-        TableColumn<ClusterSummary, String> minDistCol = new TableColumn<>("Dist. Min");
-        minDistCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                String.format("%.6f", data.getValue().minDistance)));
-        minDistCol.setPrefWidth(120);
-
-        // Colonna Distanza Max.
-        TableColumn<ClusterSummary, String> maxDistCol = new TableColumn<>("Dist. Max");
-        maxDistCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
-                String.format("%.6f", data.getValue().maxDistance)));
-        maxDistCol.setPrefWidth(120);
-
-        // Colonna Centroide (abbreviato).
-        TableColumn<ClusterSummary, String> centroidCol = new TableColumn<>("Centroide");
-        centroidCol.setCellValueFactory(
-                data -> new javafx.beans.property.SimpleStringProperty(data.getValue().centroidPreview));
-        centroidCol.setPrefWidth(250);
-
-        tableView.getColumns().add(idCol);
-        tableView.getColumns().add(sizeCol);
-        tableView.getColumns().add(avgDistCol);
-        tableView.getColumns().add(minDistCol);
-        tableView.getColumns().add(maxDistCol);
-        tableView.getColumns().add(centroidCol);
-
-        // Popola tabella.
+    private StdView createClusterTable() {
+        List<List<String>> rows = new ArrayList<>();
         Data data = result.getData();
         int clusterId = 0;
 
@@ -469,42 +336,45 @@ public class StatisticsDialog {
 
             ClusterSummary summary =
                     new ClusterSummary(clusterId, cluster.getSize(), avgDist, minDist, maxDist, centroidPreview);
-
-            tableView.getItems().add(summary);
+            rows.add(List.of(String.valueOf(summary.id), String.valueOf(summary.size),
+                    String.format("%.6f", summary.avgDistance), String.format("%.6f", summary.minDistance),
+                    String.format("%.6f", summary.maxDistance), summary.centroidPreview));
         }
 
-        return tableView;
+        return StdDataView.tableView("Tabella Riepilogativa",
+                new StdDataView.TableModel(
+                        List.of("Cluster ID", "Dimensione", "Dist. Media", "Dist. Min", "Dist. Max", "Centroide"),
+                        rows));
     }
 
     /**
-     * Aggiunge un'intestazione di sezione alla griglia statistiche.
+     * Aggiunge un'intestazione di sezione alle righe statistiche.
      *
-     * @param grid griglia delle statistiche
-     * @param row indice riga
+     * @param rows righe delle statistiche
      * @param text testo intestazione
      */
-    private void addStatsHeader(GridPane grid, int row, String text) {
-        Label label = new Label(text);
-        label.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2196F3;");
-        grid.add(label, 0, row, 2, 1);
+    private void addStatsHeader(List<List<String>> rows, String text) {
+        rows.add(List.of(text, ""));
     }
 
     /**
-     * Aggiunge una riga di statistiche alla griglia.
+     * Aggiunge una riga di statistiche alla tabella.
      *
-     * @param grid griglia delle statistiche
-     * @param row indice riga
+     * @param rows righe delle statistiche
      * @param label etichetta della metrica
      * @param value valore formattato
      */
-    private void addStatsRow(GridPane grid, int row, String label, String value) {
-        Label keyLabel = new Label(label);
-        keyLabel.setStyle("-fx-font-weight: bold;");
+    private void addStatsRow(List<List<String>> rows, String label, String value) {
+        rows.add(List.of(label, value));
+    }
 
-        Label valueLabel = new Label(value);
-
-        grid.add(keyLabel, 0, row);
-        grid.add(valueLabel, 1, row);
+    /**
+     * Aggiunge una riga vuota per separare le sezioni.
+     *
+     * @param rows righe delle statistiche
+     */
+    private void addStatsSpacer(List<List<String>> rows) {
+        rows.add(List.of("", ""));
     }
 }
 

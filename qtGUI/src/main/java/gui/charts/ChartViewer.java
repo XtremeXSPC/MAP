@@ -2,25 +2,21 @@ package gui.charts;
 
 //===---------------------------------------------------------------------------===//
 // Importazioni Java standard.
+import com.map.stdgui.StdDialog;
+import com.map.stdgui.StdFileDialog;
+import com.map.stdgui.StdSwingView;
+import com.map.stdgui.StdToolWindow;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import java.util.Arrays;
+import java.util.List;
+import java.nio.file.Path;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gui.models.ClusteringResult;
-// Importazioni JavaFX.
-import javafx.embed.swing.SwingNode;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
+// Importazione mantenuta per compatibilita' del metodo getStage().
 import javafx.stage.Stage;
 //===---------------------------------------------------------------------------===//
 
@@ -29,10 +25,10 @@ import javafx.stage.Stage;
  * <p>
  * Questa classe gestisce:
  * <ul>
- *   <li>Creazione di un {@link Stage} con una {@link Scene} dedicata</li>
+ *   <li>Creazione di una finestra dedicata tramite StdToolWindow</li>
  *   <li>Selezione degli assi e aggiornamento del grafico</li>
  *   <li>Toggle della modalita' Convex Hull per i cluster</li>
- *   <li>Integrazione di XChart (Swing) tramite {@link SwingNode}</li>
+ *   <li>Integrazione di XChart tramite StdSwingView</li>
  *   <li>Esportazione del grafico in PNG (standard e HD)</li>
  * </ul>
  * <p>
@@ -42,7 +38,6 @@ import javafx.stage.Stage;
  * @version 1.0.0
  * @since 1.0.0
  * @see ClusterScatterChart
- * @see SwingNode
  */
 public class ChartViewer {
 
@@ -54,12 +49,8 @@ public class ChartViewer {
     // Risultati del clustering da visualizzare.
     private final ClusteringResult result;
     private final ClusterScatterChart chartManager;
-    private final Stage stage;
-
-    // Controlli UI.
-    private ComboBox<String> xAxisComboBox;
-    private ComboBox<String> yAxisComboBox;
-    private SwingNode chartNode;
+    private final StdSwingView chartView;
+    private final StdToolWindow window;
 
     //===--------------------------- PUBLIC METHODS ----------------------------===//
 
@@ -74,138 +65,77 @@ public class ChartViewer {
     public ChartViewer(ClusteringResult result) {
         this.result = result;
         this.chartManager = new ClusterScatterChart(result);
-        this.stage = new Stage();
+        this.chartView = StdSwingView.create("cluster-scatter-chart");
+        this.window = createWindow();
 
-        initializeUI();
+        updateChart();
     }
 
     //===-------------------------- UI INITIALIZATION --------------------------===//
 
     /**
-     * Inizializza l'interfaccia utente e configura stage, scene e layout.
+     * Crea la finestra e configura controlli, contenuto centrale e footer.
+     *
+     * @return finestra di visualizzazione
      */
-    private void initializeUI() {
-        stage.setTitle("Visualizzazione Cluster 2D");
-        stage.initModality(Modality.NONE);
-
-        BorderPane root = new BorderPane();
-
-        // Top: Toolbar con selezione assi.
-        VBox topPanel = createTopPanel();
-        root.setTop(topPanel);
-
-        // Center: Grafico.
-        chartNode = new SwingNode();
-        updateChart();
-        root.setCenter(chartNode);
-
-        // Bottom: Pulsanti azioni.
-        HBox bottomPanel = createBottomPanel();
-        root.setBottom(bottomPanel);
-
-        Scene scene = new Scene(root, 900, 700);
-        stage.setScene(scene);
+    private StdToolWindow createWindow() {
+        List<String> attributeNames = Arrays.asList(chartManager.getAttributeNames());
+        String footerText = String.format("Cluster: %d | Tuple: %d | Radius: %.3f", result.getNumClusters(),
+                result.getNumTuples(), result.getRadius());
 
         logger.info("ChartViewer inizializzato");
-    }
-
-    /**
-     * Crea il pannello superiore con i controlli per gli assi e le opzioni di visualizzazione.
-     *
-     * @return VBox contenente i controlli per selezione assi e opzioni
-     */
-    private VBox createTopPanel() {
-        VBox panel = new VBox(10);
-        panel.setPadding(new Insets(10));
-        panel.setStyle("-fx-background-color: #f0f0f0;");
-
-        Label titleLabel = new Label("Seleziona Attributi da Visualizzare:");
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
-        HBox axisSelectionBox = new HBox(15);
-        axisSelectionBox.setPadding(new Insets(5, 0, 0, 0));
-
-        // ComboBox per asse X.
-        Label xLabel = new Label("Asse X:");
-        xAxisComboBox = new ComboBox<>();
-        String[] attributeNames = chartManager.getAttributeNames();
-        xAxisComboBox.getItems().addAll(attributeNames);
-        xAxisComboBox.setValue(attributeNames[chartManager.getXAttributeIndex()]);
-        xAxisComboBox.setOnAction(e -> onAxisChanged());
-
-        // ComboBox per asse Y.
-        Label yLabel = new Label("Asse Y:");
-        yAxisComboBox = new ComboBox<>();
-        yAxisComboBox.getItems().addAll(attributeNames);
-        yAxisComboBox.setValue(attributeNames[chartManager.getYAttributeIndex()]);
-        yAxisComboBox.setOnAction(e -> onAxisChanged());
-
-        // Checkbox per convex hull.
-        CheckBox convexHullCheckBox = new CheckBox("Convex Hull");
-        convexHullCheckBox.setSelected(true); // Default: abilitato
-        convexHullCheckBox.setOnAction(e -> {
-            chartManager.setConvexHullMode(convexHullCheckBox.isSelected());
-            updateChart();
-        });
-
-        Button refreshButton = new Button("Aggiorna Grafico");
-        refreshButton.setOnAction(e -> updateChart());
-
-        axisSelectionBox.getChildren().addAll(xLabel, xAxisComboBox, yLabel, yAxisComboBox, convexHullCheckBox,
-                refreshButton);
-
-        panel.getChildren().addAll(titleLabel, axisSelectionBox);
-        return panel;
-    }
-
-    /**
-     * Crea il pannello inferiore con azioni di export e informazioni di riepilogo.
-     *
-     * @return HBox contenente pulsanti azione e label informativa
-     */
-    private HBox createBottomPanel() {
-        HBox panel = new HBox(10);
-        panel.setPadding(new Insets(10));
-        panel.setStyle("-fx-background-color: #f0f0f0;");
-
-        Button exportButton = new Button("Esporta PNG");
-        exportButton.setOnAction(e -> handleExport());
-
-        Button exportHDButton = new Button("Esporta PNG HD");
-        exportHDButton.setOnAction(e -> handleExportHD());
-
-        Button closeButton = new Button("Chiudi");
-        closeButton.setOnAction(e -> stage.close());
-
-        Label infoLabel = new Label(String.format("Cluster: %d | Tuple: %d | Radius: %.3f", result.getNumClusters(),
-                result.getNumTuples(), result.getRadius()));
-        infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-
-        // Spacer per allineare info a sinistra e pulsanti a destra.
-        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
-        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-
-        panel.getChildren().addAll(infoLabel, spacer, exportButton, exportHDButton, closeButton);
-
-        return panel;
+        return StdToolWindow.create("Visualizzazione Cluster 2D", "Seleziona Attributi da Visualizzare:",
+                List.of(
+                        new StdToolWindow.Choice("Asse X:", attributeNames, chartManager.getXAttributeIndex(),
+                                this::onXAxisChanged),
+                        new StdToolWindow.Choice("Asse Y:", attributeNames, chartManager.getYAttributeIndex(),
+                                this::onYAxisChanged)),
+                List.of(new StdToolWindow.Toggle("Convex Hull", true, enabled -> {
+                    chartManager.setConvexHullMode(enabled);
+                    updateChart();
+                })),
+                List.of(new StdToolWindow.Action("Aggiorna Grafico", this::updateChart)), chartView.view(), footerText,
+                List.of(new StdToolWindow.Action("Esporta PNG", this::handleExport),
+                        new StdToolWindow.Action("Esporta PNG HD", this::handleExportHD)),
+                "Chiudi", 900, 700);
     }
 
     //===--------------------------- EVENT HANDLERS ----------------------------===//
 
     /**
-     * Gestisce il cambio di selezione degli assi.
+     * Gestisce il cambio di selezione dell'asse X.
      * <p>
      * Aggiorna gli indici degli assi nel chart manager. L'aggiornamento
      * del grafico avviene tramite il pulsante di refresh o altri trigger.
+     *
+     * @param xIndex nuovo indice asse X
      */
-    private void onAxisChanged() {
-        int xIndex = xAxisComboBox.getSelectionModel().getSelectedIndex();
-        int yIndex = yAxisComboBox.getSelectionModel().getSelectedIndex();
+    private void onXAxisChanged(int xIndex) {
+        setAxes(xIndex, chartManager.getYAttributeIndex());
+    }
 
-        if (xIndex >= 0 && yIndex >= 0) {
-            chartManager.setAxes(xIndex, yIndex);
-            logger.info("Assi cambiati: X={}, Y={}", xIndex, yIndex);
+    /**
+     * Gestisce il cambio di selezione dell'asse Y.
+     *
+     * @param yIndex nuovo indice asse Y
+     */
+    private void onYAxisChanged(int yIndex) {
+        setAxes(chartManager.getXAttributeIndex(), yIndex);
+    }
+
+    /**
+     * Imposta gli assi del grafico quando gli indici sono validi.
+     *
+     * @param xIndex indice asse X
+     * @param yIndex indice asse Y
+     */
+    private void setAxes(int xIndex, int yIndex) {
+        if (xIndex < 0 || yIndex < 0) {
+            return;
         }
+
+        chartManager.setAxes(xIndex, yIndex);
+        logger.info("Assi cambiati: X={}, Y={}", xIndex, yIndex);
     }
 
     /**
@@ -214,12 +144,7 @@ public class ChartViewer {
     private void updateChart() {
         try {
             XYChart chart = chartManager.createChart();
-
-            // Crea pannello Swing e integra in JavaFX.
-            SwingUtilities.invokeLater(() -> {
-                JPanel chartPanel = new XChartPanel<>(chart);
-                chartNode.setContent(chartPanel);
-            });
+            chartView.setContent(() -> new XChartPanel<>(chart));
 
             logger.info("Grafico aggiornato");
 
@@ -253,21 +178,14 @@ public class ChartViewer {
      * @param height altezza in pixel
      */
     private void exportChart(int width, int height) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Salva Grafico");
-        fileChooser.setInitialFileName("cluster_chart.png");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini PNG", "*.png"));
-
-        File file = fileChooser.showSaveDialog(stage);
+        Path selectedPath = StdFileDialog.saveFile("Salva Grafico", "cluster_chart.png",
+                new StdFileDialog.Filter("Immagini PNG", "*.png")).orElse(null);
+        File file = selectedPath == null ? null : selectedPath.toFile();
         if (file != null) {
             try {
                 chartManager.saveAsPNG(file, width, height);
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Esportazione Completata");
-                alert.setHeaderText(null);
-                alert.setContentText("Grafico salvato con successo:\n" + file.getAbsolutePath());
-                alert.showAndWait();
+                StdDialog.info("Esportazione Completata", "Grafico salvato con successo:\n" + file.getAbsolutePath());
 
                 logger.info("Grafico esportato: {}", file.getAbsolutePath());
 
@@ -285,18 +203,14 @@ public class ChartViewer {
      * @param message messaggio di errore da visualizzare
      */
     private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        StdDialog.error(title, message);
     }
 
     /**
      * Mostra la finestra di visualizzazione.
      */
     public void show() {
-        stage.show();
+        window.show();
         logger.info("ChartViewer mostrato");
     }
 
@@ -304,9 +218,11 @@ public class ChartViewer {
      * Restituisce lo stage JavaFX utilizzato dal viewer.
      *
      * @return lo stage della finestra
+     * @deprecated mantenuto solo per compatibilita'; il viewer gestisce internamente la finestra
      */
+    @Deprecated(since = "1.1.0", forRemoval = false)
     public Stage getStage() {
-        return stage;
+        return (Stage) window.nativeWindow();
     }
 }
 
