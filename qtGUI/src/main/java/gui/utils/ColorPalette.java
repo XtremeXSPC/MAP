@@ -118,10 +118,18 @@ public class ColorPalette {
 
     /**
      * Converte un colore AWT in un colore JavaFX.
+     * <p>
+     * Metodo legacy mantenuto per compatibilita' con vecchio codice grafico. Il
+     * nuovo codice applicativo non dovrebbe dipendere direttamente da tipi
+     * JavaFX fuori dal package {@code com.map.stdgui}.
      *
      * @param awtColor colore AWT
      * @return colore JavaFX
+     * @deprecated evitare nuovi usi di tipi JavaFX in {@code gui.utils}; usare
+     *             {@link #toHexString(Color)} o una vista dedicata in
+     *             {@code com.map.stdgui}.
      */
+    @Deprecated(since = "1.1.0", forRemoval = false)
     public static javafx.scene.paint.Color toJavaFX(Color awtColor) {
         return javafx.scene.paint.Color.rgb(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue(),
                 awtColor.getAlpha() / 255.0);

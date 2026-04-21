@@ -14,6 +14,11 @@ import javafx.scene.Scene;
 /**
  * Gestisce i temi e le dimensioni del font dell'applicazione.
  * <p>
+ * <strong>Compatibilità legacy:</strong> la nuova astrazione riutilizzabile è
+ * {@link com.map.stdgui.StdTheme}. Questa classe resta esportata per non
+ * interrompere eventuali client esistenti che dipendono dal pacchetto
+ * {@code gui.utils}.
+ * <p>
  * Questa classe gestisce:
  * <ul>
  *   <li>Caricamento e persistenza delle preferenze tema/font</li>
@@ -26,7 +31,9 @@ import javafx.scene.Scene;
  * @author Lombardi Costantino
  * @version 1.0.0
  * @since 1.0.0
+ * @deprecated usare {@link com.map.stdgui.StdTheme} per il nuovo codice.
  */
+@Deprecated(since = "1.1.0", forRemoval = false)
 public class ThemeManager {
 
     //===------------------------------ CONSTANTS ------------------------------===//
