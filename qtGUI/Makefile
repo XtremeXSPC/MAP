@@ -13,6 +13,11 @@ include ../make/common.mk
 
 # Maven command.
 MVN ?= mvn
+MODULE_NAME = qtGUI
+STDGUI_MODULE = stdgui
+ROOT_POM = $(PROJECT_ROOT)/pom.xml
+REACTOR_MVN = $(MVN) -f $(ROOT_POM) -pl $(MODULE_NAME) -am
+STDGUI_MVN = $(MVN) -f $(ROOT_POM) -pl $(STDGUI_MODULE) -am
 
 # Directory.
 TARGET_DIR = target
@@ -43,6 +48,8 @@ help:
 	@printf "\n"
 	@printf "$(YELLOW)Note:$(NC)\n"
 	@printf "  Questo modulo richiede Maven e JavaFX.\n"
+	@printf "  I comandi Maven passano dal reactor root per includere stdgui.\n"
+	@printf "  Il target run installa prima stdgui nel repository Maven locale.\n"
 	@printf "\n"
 
 # ================================= COMPILAZIONE ================================== #
@@ -51,7 +58,7 @@ help:
 .PHONY: compile
 compile:
 	@printf "$(BLUE)→ Compilazione qtGUI (Maven)...$(NC)\n"
-	@$(MVN) compile -q
+	@$(REACTOR_MVN) compile -q
 	@printf "$(GREEN)✓ qtGUI compilato$(NC)\n"
 
 # ================================= CREAZIONE JAR ================================= #
@@ -60,7 +67,7 @@ compile:
 .PHONY: jar
 jar:
 	@printf "$(BLUE)→ Creazione qtGUI JAR (Maven package)...$(NC)\n"
-	@$(MVN) package -DskipTests -q
+	@$(REACTOR_MVN) package -DskipTests -q
 	@printf "$(GREEN)✓ qtGUI JAR creato in $(JAR_FILE)$(NC)\n"
 
 # ================================== ESECUZIONE =================================== #
@@ -69,6 +76,8 @@ jar:
 .PHONY: run
 run:
 	@printf "$(BLUE)→ Avvio qtGUI (JavaFX)...$(NC)\n"
+	@printf "$(BLUE)→ Aggiornamento dipendenza locale stdgui...$(NC)\n"
+	@$(STDGUI_MVN) clean install -DskipTests -q
 	@$(MVN) javafx:run
 
 # Esegui da JAR.
@@ -88,7 +97,7 @@ run-jar: jar
 .PHONY: javadoc
 javadoc:
 	@printf "$(BLUE)→ Generazione JavaDoc per qtGUI (Maven)...$(NC)\n"
-	@$(MVN) javadoc:javadoc \
+	@$(REACTOR_MVN) javadoc:javadoc \
 		-Dmaven.javadoc.failOnError=false \
 		-Dmaven.javadoc.failOnWarnings=false \
 		-q
@@ -109,7 +118,7 @@ javadoc:
 .PHONY: test
 test:
 	@printf "$(BLUE)→ Esecuzione test qtGUI (Maven)...$(NC)\n"
-	@$(MVN) test
+	@$(REACTOR_MVN) test
 
 # ==================================== PULIZIA ==================================== #
 
@@ -117,7 +126,7 @@ test:
 .PHONY: clean
 clean:
 	@printf "$(YELLOW)→ Pulizia qtGUI (Maven clean)...$(NC)\n"
-	@$(MVN) clean -q
+	@$(REACTOR_MVN) clean -q
 	@printf "$(GREEN)✓ qtGUI pulito$(NC)\n"
 
 # =================================== UTILITIES =================================== #
@@ -146,7 +155,7 @@ info:
 .PHONY: verify
 verify:
 	@printf "$(BLUE)→ Verifica dipendenze Maven...$(NC)\n"
-	@$(MVN) dependency:resolve -q
+	@$(REACTOR_MVN) dependency:resolve -q
 	@printf "$(GREEN)✓ Dipendenze verificate$(NC)\n"
 
 # ================================================================================= #

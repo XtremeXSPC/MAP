@@ -18,6 +18,8 @@ import javafx.scene.layout.VBox;
  */
 public final class StdView {
 
+    private static volatile Class<?> resourceAnchor = StdView.class;
+
     private final String id;
     private final Parent root;
     private final Object controller;
@@ -30,6 +32,15 @@ public final class StdView {
     }
 
     /**
+     * Configures the class used to resolve FXML resource paths.
+     *
+     * @param anchor class in the module or classpath that owns the FXML resources
+     */
+    public static void configureResourceAnchor(Class<?> anchor) {
+        resourceAnchor = Objects.requireNonNull(anchor, "anchor");
+    }
+
+    /**
      * Loads a view from an FXML resource path.
      *
      * @param resourcePath classpath resource path
@@ -38,7 +49,7 @@ public final class StdView {
     public static StdView load(String resourcePath) {
         Objects.requireNonNull(resourcePath, "resourcePath");
         return StdGui.callAndWait(() -> {
-            URL resource = StdView.class.getResource(resourcePath);
+            URL resource = resolveResource(resourcePath);
             if (resource == null) {
                 throw new IllegalArgumentException("FXML resource not found: " + resourcePath);
             }
@@ -109,6 +120,12 @@ public final class StdView {
     /* Gives stdgui internals access to the hidden root for composition. */
     Parent root() {
         return root;
+    }
+
+    /* Resolves FXML from the configured application anchor, falling back to stdgui. */
+    private static URL resolveResource(String resourcePath) {
+        URL resource = resourceAnchor.getResource(resourcePath);
+        return resource == null ? StdView.class.getResource(resourcePath) : resource;
     }
 
     /* Loads FXML and converts checked IO failures into library-level runtime failures. */

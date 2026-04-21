@@ -43,4 +43,6 @@ module qtGUI {
     opens gui to javafx.fxml;
     opens gui.controllers to javafx.fxml;
     opens gui.dialogs to javafx.fxml;
+    opens styles to com.map.stdgui;
+    opens views to com.map.stdgui;
 }

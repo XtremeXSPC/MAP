@@ -67,6 +67,21 @@ public final class HelloStdGui {
 Applications that already extend `javafx.application.Application` do not need
 to call `StdGui.init()` from `start(...)`; the JavaFX toolkit is already active.
 
+## FXML Resources
+
+If an application loads FXML through `StdView`, configure the class that owns
+those resources during startup:
+
+```java
+StdView.configureResourceAnchor(MyApplication.class);
+```
+
+In modular applications, open the resource package to `com.map.stdgui`:
+
+```java
+opens views to com.map.stdgui;
+```
+
 ## Themes
 
 The library bundles minimal default light and dark stylesheets. Applications can
@@ -78,4 +93,10 @@ StdTheme.configureDefault(
         MyApplication.class,
         "/styles/application.css",
         "/styles/dark-theme.css");
+```
+
+If those CSS files live in a named module, open their resource package too:
+
+```java
+opens styles to com.map.stdgui;
 ```

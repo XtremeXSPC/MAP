@@ -26,10 +26,10 @@ public final class StdTheme {
     public static final Path DEFAULT_SETTINGS_FILE = Path.of("stdgui.properties");
 
     /** Default light stylesheet bundled with the standalone library. */
-    public static final String DEFAULT_LIGHT_STYLESHEET = "/styles/application.css";
+    public static final String DEFAULT_LIGHT_STYLESHEET = "/com/map/stdgui/styles/application.css";
 
     /** Default dark stylesheet bundled with the standalone library. */
-    public static final String DEFAULT_DARK_STYLESHEET = "/styles/dark-theme.css";
+    public static final String DEFAULT_DARK_STYLESHEET = "/com/map/stdgui/styles/dark-theme.css";
 
     private static StdTheme defaultTheme;
 

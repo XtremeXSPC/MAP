@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import com.map.stdgui.StdGui;
 import com.map.stdgui.StdShortcut;
 import com.map.stdgui.StdTheme;
+import com.map.stdgui.StdView;
 import com.map.stdgui.StdWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,9 @@ public class MainApp extends Application {
 
         try {
             logger.info("Avvio applicazione GUI QT Clustering...");
+
+            // Configura le risorse FXML dell'applicazione per StdView.
+            StdView.configureResourceAnchor(MainApp.class);
 
             // Carica il layout FXML principale.
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/main.fxml"));
