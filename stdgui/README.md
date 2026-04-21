@@ -13,11 +13,20 @@ From the repository root:
 mvn -q -pl stdgui -am test-compile
 ```
 
+To install the library into your local Maven repository:
+
+```sh
+mvn -q -pl stdgui -am install
+```
+
 To build the GUI application together with the library:
 
 ```sh
 mvn -q -pl qtGUI -am test-compile
 ```
+
+The `stdgui` package build also attaches source and Javadoc JARs, so IDEs and
+downstream projects can browse the API documentation after installation.
 
 ## Use From Another Project
 
