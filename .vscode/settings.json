@@ -33,7 +33,6 @@
 
   // Java compilation settings.
   "java.compile.nullAnalysis.mode": "automatic",
-  "java.saveActions.organizeImports": false,
   "java.import.gradle.enabled": false,
   "java.import.maven.enabled": true,
 
@@ -161,7 +160,7 @@
     "editor.detectIndentation": false,
     "editor.formatOnSave": false,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
+      "source.organizeImports": "never"
     },
     "editor.semanticHighlighting.enabled": true
   },
