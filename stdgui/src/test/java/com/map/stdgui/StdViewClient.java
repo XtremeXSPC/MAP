@@ -1,7 +1,5 @@
 package com.map.stdgui;
 
-import gui.controllers.MainController;
-
 /**
  * Minimal client for {@link StdView}.
  */
@@ -13,12 +11,12 @@ public final class StdViewClient {
     public static void main(String[] args) {
         StdGui.init();
 
-        StdView fxmlView = StdView.load("/views/main.fxml");
-        MainController controller = fxmlView.controller(MainController.class);
+        StdView fxmlView = StdView.load("/stdgui/std-view-client.fxml");
+        StdViewClientController controller = fxmlView.controller(StdViewClientController.class);
         StdView textView = StdView.text("StdView", "Generated content");
 
         System.out.println("FXML view id: " + fxmlView.id());
-        System.out.println("FXML controller: " + controller.getClass().getName());
+        System.out.println("FXML controller: " + controller.message());
         System.out.println("Text view id: " + textView.id());
 
         StdGui.exit();

@@ -1,0 +1,13 @@
+.root {
+    -fx-base: #242833;
+    -fx-background-color: #242833;
+    -fx-text-fill: #f2f4f8;
+}
+
+.label-success {
+    -fx-text-fill: #6bd58a;
+}
+
+.label-warning {
+    -fx-text-fill: #ffc166;
+}

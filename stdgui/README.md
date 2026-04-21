@@ -1,0 +1,72 @@
+# StdGui
+
+`StdGui` is a small JavaFX utility library inspired by Sedgewick and Wayne's
+standard libraries. It hides common JavaFX plumbing behind compact APIs for
+runtime dispatch, windows, views, dialogs, file choosers, background work,
+themes, charts, tables, trees, status messages, shortcuts, and Swing embedding.
+
+## Build
+
+From the repository root:
+
+```sh
+mvn -q -pl stdgui -am test-compile
+```
+
+To build the GUI application together with the library:
+
+```sh
+mvn -q -pl qtGUI -am test-compile
+```
+
+## Use From Another Project
+
+After publishing or installing the artifact, add:
+
+```xml
+<dependency>
+    <groupId>com.map</groupId>
+    <artifactId>stdgui</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+For modular applications:
+
+```java
+requires com.map.stdgui;
+```
+
+## Minimal Client
+
+```java
+import com.map.stdgui.StdGui;
+import com.map.stdgui.StdView;
+import com.map.stdgui.StdWindow;
+
+public final class HelloStdGui {
+    public static void main(String[] args) {
+        StdGui.init();
+        new StdWindow("Hello")
+                .content(StdView.text("Hello", "StdGui is running."))
+                .size(360, 180)
+                .show();
+    }
+}
+```
+
+Applications that already extend `javafx.application.Application` do not need
+to call `StdGui.init()` from `start(...)`; the JavaFX toolkit is already active.
+
+## Themes
+
+The library bundles minimal default light and dark stylesheets. Applications can
+use their own resources by configuring the shared manager at startup:
+
+```java
+StdTheme.configureDefault(
+        Path.of("my-app.properties"),
+        MyApplication.class,
+        "/styles/application.css",
+        "/styles/dark-theme.css");
+```

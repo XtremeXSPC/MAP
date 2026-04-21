@@ -23,11 +23,20 @@ import javafx.scene.Scene;
 public final class StdTheme {
 
     /** Default application settings file used by the shared theme manager. */
-    public static final Path DEFAULT_SETTINGS_FILE = Path.of("qtgui.properties");
+    public static final Path DEFAULT_SETTINGS_FILE = Path.of("stdgui.properties");
+
+    /** Default light stylesheet bundled with the standalone library. */
+    public static final String DEFAULT_LIGHT_STYLESHEET = "/styles/application.css";
+
+    /** Default dark stylesheet bundled with the standalone library. */
+    public static final String DEFAULT_DARK_STYLESHEET = "/styles/dark-theme.css";
 
     private static StdTheme defaultTheme;
 
     private final Path settingsFile;
+    private final Class<?> resourceAnchor;
+    private final String lightStylesheet;
+    private final String darkStylesheet;
     private final Properties settings;
     private final List<StdWindow> windows;
 
@@ -39,16 +48,14 @@ public final class StdTheme {
      */
     public enum Theme {
         /** Light theme. */
-        LIGHT("Light", "/styles/application.css"),
+        LIGHT("Light"),
         /** Dark theme. */
-        DARK("Dark", "/styles/dark-theme.css");
+        DARK("Dark");
 
         private final String displayName;
-        private final String stylesheet;
 
-        Theme(String displayName, String stylesheet) {
+        Theme(String displayName) {
             this.displayName = displayName;
-            this.stylesheet = stylesheet;
         }
 
         /**
@@ -137,7 +144,22 @@ public final class StdTheme {
      * @param settingsFile properties file used for theme persistence
      */
     public StdTheme(Path settingsFile) {
+        this(settingsFile, StdTheme.class, DEFAULT_LIGHT_STYLESHEET, DEFAULT_DARK_STYLESHEET);
+    }
+
+    /**
+     * Creates a theme manager backed by the given properties file and stylesheets.
+     *
+     * @param settingsFile properties file used for theme persistence
+     * @param resourceAnchor class used to resolve stylesheet resources
+     * @param lightStylesheet classpath resource path for the light theme
+     * @param darkStylesheet classpath resource path for the dark theme
+     */
+    public StdTheme(Path settingsFile, Class<?> resourceAnchor, String lightStylesheet, String darkStylesheet) {
         this.settingsFile = Objects.requireNonNull(settingsFile, "settingsFile");
+        this.resourceAnchor = Objects.requireNonNull(resourceAnchor, "resourceAnchor");
+        this.lightStylesheet = normalizeStylesheet(lightStylesheet, DEFAULT_LIGHT_STYLESHEET);
+        this.darkStylesheet = normalizeStylesheet(darkStylesheet, DEFAULT_DARK_STYLESHEET);
         this.settings = new Properties();
         this.windows = new CopyOnWriteArrayList<>();
         loadSettings();
@@ -152,6 +174,21 @@ public final class StdTheme {
         if (defaultTheme == null) {
             defaultTheme = new StdTheme(DEFAULT_SETTINGS_FILE);
         }
+        return defaultTheme;
+    }
+
+    /**
+     * Replaces the shared theme manager with application-specific settings.
+     *
+     * @param settingsFile properties file used for theme persistence
+     * @param resourceAnchor class used to resolve stylesheet resources
+     * @param lightStylesheet classpath resource path for the light theme
+     * @param darkStylesheet classpath resource path for the dark theme
+     * @return configured default theme manager
+     */
+    public static synchronized StdTheme configureDefault(Path settingsFile, Class<?> resourceAnchor,
+            String lightStylesheet, String darkStylesheet) {
+        defaultTheme = new StdTheme(settingsFile, resourceAnchor, lightStylesheet, darkStylesheet);
         return defaultTheme;
     }
 
@@ -346,9 +383,10 @@ public final class StdTheme {
         scene.getStylesheets().removeIf(stylesheet -> stylesheet.contains("/styles/application.css")
                 || stylesheet.contains("/styles/dark-theme.css"));
 
-        URL stylesheet = StdTheme.class.getResource(currentTheme.stylesheet);
+        URL stylesheet = resourceAnchor.getResource(currentTheme == Theme.DARK ? darkStylesheet : lightStylesheet);
         if (stylesheet == null) {
-            throw new IllegalStateException("Theme stylesheet not found: " + currentTheme.stylesheet);
+            throw new IllegalStateException("Theme stylesheet not found: "
+                    + (currentTheme == Theme.DARK ? darkStylesheet : lightStylesheet));
         }
         scene.getStylesheets().add(stylesheet.toExternalForm());
     }
@@ -356,5 +394,11 @@ public final class StdTheme {
     /* Stores the global font size on the scene root as a CSS declaration. */
     private void applyFontSize(Scene scene) {
         scene.getRoot().setStyle("-fx-font-size: " + currentFontSize.getPixels() + "px;");
+    }
+
+    /* Keeps resource paths absolute so Class#getResource resolves them predictably. */
+    private static String normalizeStylesheet(String stylesheet, String fallback) {
+        String resolved = stylesheet == null || stylesheet.isBlank() ? fallback : stylesheet;
+        return resolved.startsWith("/") ? resolved : "/" + resolved;
     }
 }

@@ -3,6 +3,9 @@
  * Threshold Clustering.
  */
 module qtGUI {
+    // Libreria GUI riutilizzabile
+    requires com.map.stdgui;
+
     // Moduli JavaFX
     requires transitive javafx.graphics;
     requires javafx.controls;
@@ -35,7 +38,6 @@ module qtGUI {
     exports gui.utils;
     exports gui.charts;
     exports gui.dialogs;
-    exports com.map.stdgui;
 
     // Apertura pacchetti a JavaFX per l'iniezione dei controller FXML
     opens gui to javafx.fxml;

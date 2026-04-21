@@ -2,6 +2,7 @@ package gui;
 
 //===---------------------------------------------------------------------------===//
 // Importazioni JavaFX e utilita'.
+import java.nio.file.Path;
 import com.map.stdgui.StdGui;
 import com.map.stdgui.StdShortcut;
 import com.map.stdgui.StdTheme;
@@ -92,8 +93,9 @@ public class MainApp extends Application {
 
             StdWindow mainWindow = StdWindow.current();
 
-            // Applica tema e font salvati nascondendo i dettagli JavaFX in StdTheme.
-            StdTheme.getDefault().attach(mainWindow);
+            // Applica tema e font salvati usando le risorse CSS dell'applicazione.
+            StdTheme.configureDefault(Path.of("qtgui.properties"), MainApp.class,
+                    "/styles/application.css", "/styles/dark-theme.css").attach(mainWindow);
 
             // Configura keyboard shortcuts globali.
             setupKeyboardShortcuts(mainWindow);
