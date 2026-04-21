@@ -20,7 +20,11 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.image.WritableImage;
 
 /**
- * Reusable chart helpers that hide JavaFX chart construction and PNG export.
+ * The {@code StdChart} class provides static methods for displaying simple bar
+ * charts and scatter plots.
+ * <p>
+ * Chart data is described with immutable records. JavaFX axes, series, chart
+ * nodes, snapshots, and PNG export details are created internally.
  */
 public final class StdChart {
 
@@ -56,6 +60,7 @@ public final class StdChart {
     private static final double DEFAULT_WIDTH  = 900.0;
     private static final double DEFAULT_HEIGHT = 700.0;
 
+    /* This class provides only static methods. */
     private StdChart() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -189,6 +194,7 @@ public final class StdChart {
         });
     }
 
+    /* Preserves input order while grouping scatter points into named series. */
     private static Map<String, List<ScatterPoint>> groupBySeries(List<ScatterPoint> points) {
         Map<String, List<ScatterPoint>> grouped = new LinkedHashMap<>();
         for (ScatterPoint point : points) {

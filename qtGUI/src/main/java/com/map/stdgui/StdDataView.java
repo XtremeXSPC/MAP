@@ -22,7 +22,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- * Reusable structured-data views that hide JavaFX table, tree, and tab controls.
+ * The {@code StdDataView} class provides static methods for displaying
+ * tabular, hierarchical, and tabbed data.
+ * <p>
+ * Clients describe data with immutable records and receive {@link StdView} or
+ * {@link StdWindow} values. JavaFX table columns, tree items, tabs, and text
+ * areas are built inside this class.
  */
 public final class StdDataView {
 
@@ -50,6 +55,7 @@ public final class StdDataView {
         }
     }
 
+    /* This class provides only static methods. */
     private StdDataView() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -233,6 +239,7 @@ public final class StdDataView {
         });
     }
 
+    /* Builds a read-only text view used by map-based tab windows. */
     private static StdView textAreaView(String title, String text) {
         return StdGui.callAndWait(() -> {
             TextArea textArea = new TextArea(text == null ? "" : text);
@@ -242,6 +249,7 @@ public final class StdDataView {
         });
     }
 
+    /* Converts the logical table model into columns with safe row indexing. */
     private static TableView<List<String>> buildTable(TableModel model) {
         TableView<List<String>> table = new TableView<>();
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
@@ -261,6 +269,7 @@ public final class StdDataView {
         return table;
     }
 
+    /* Recursively converts immutable tree records into native tree items. */
     private static TreeItem<String> buildTree(TreeNode node) {
         TreeItem<String> item = new TreeItem<>(node.label());
         item.setExpanded(true);

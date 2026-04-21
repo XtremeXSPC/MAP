@@ -14,7 +14,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javafx.scene.Scene;
 
 /**
- * Reusable theme and font-size manager that hides JavaFX stylesheet details.
+ * The {@code StdTheme} class manages application theme and font-size settings.
+ * <p>
+ * A theme manager can be attached to one or more {@link StdWindow} instances.
+ * It persists simple properties, reloads them on demand, and applies styles
+ * without exposing JavaFX {@code Scene} or stylesheet mechanics to callers.
  */
 public final class StdTheme {
 
@@ -290,6 +294,7 @@ public final class StdTheme {
         setTheme(isDarkMode() ? Theme.LIGHT : Theme.DARK);
     }
 
+    /* Reads persisted settings and falls back to the documented defaults. */
     private synchronized void loadSettings() {
         settings.clear();
         if (Files.exists(settingsFile)) {
@@ -305,6 +310,7 @@ public final class StdTheme {
                 settings.getProperty("fontSize", FontSize.MEDIUM.getDisplayName()));
     }
 
+    /* Writes only the theme-related keys owned by this library class. */
     private synchronized void saveSettings() {
         settings.setProperty("theme", currentTheme.getDisplayName());
         settings.setProperty("fontSize", currentFontSize.getDisplayName());
@@ -316,12 +322,14 @@ public final class StdTheme {
         }
     }
 
+    /* Pushes the current theme state to every window registered with attach(). */
     private void applyToAttachedWindows() {
         for (StdWindow window : windows) {
             applyTo(window);
         }
     }
 
+    /* Applies both stylesheet and font size to one window on the GUI thread. */
     private void applyTo(StdWindow window) {
         StdGui.runAndWait(() -> {
             Scene scene = window.scene();
@@ -333,6 +341,7 @@ public final class StdTheme {
         });
     }
 
+    /* Replaces only the known theme stylesheets, preserving unrelated CSS. */
     private void applyTheme(Scene scene) {
         scene.getStylesheets().removeIf(stylesheet -> stylesheet.contains("/styles/application.css")
                 || stylesheet.contains("/styles/dark-theme.css"));
@@ -344,6 +353,7 @@ public final class StdTheme {
         scene.getStylesheets().add(stylesheet.toExternalForm());
     }
 
+    /* Stores the global font size on the scene root as a CSS declaration. */
     private void applyFontSize(Scene scene) {
         scene.getRoot().setStyle("-fx-font-size: " + currentFontSize.getPixels() + "px;");
     }

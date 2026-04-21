@@ -7,10 +7,16 @@ import java.util.concurrent.FutureTask;
 import javafx.application.Platform;
 
 /**
- * Explicit JavaFX runtime and thread-dispatch helpers.
+ * The {@code StdGui} class provides static methods for starting the GUI
+ * runtime and safely executing work on the GUI thread.
+ * <p>
+ * Use this class when a client program needs the JavaFX toolkit but should not
+ * know about {@code Platform.startup()}, {@code Platform.runLater()}, latches,
+ * or futures. Initialization is explicit: no static initializer starts JavaFX.
  */
 public final class StdGui {
 
+    /* This class provides only static methods. */
     private StdGui() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -104,6 +110,7 @@ public final class StdGui {
         return waitFor(task);
     }
 
+    /* Executes a callable already on the GUI thread while preserving unchecked failures. */
     private static <T> T callDirectly(java.util.concurrent.Callable<T> action) {
         try {
             return action.call();
@@ -114,6 +121,7 @@ public final class StdGui {
         }
     }
 
+    /* Waits for toolkit startup and restores the interrupt flag if interrupted. */
     private static void await(CountDownLatch latch) {
         try {
             latch.await();
@@ -123,6 +131,7 @@ public final class StdGui {
         }
     }
 
+    /* Unwraps a FutureTask so callers see the original application failure. */
     private static <T> T waitFor(FutureTask<T> task) {
         try {
             return task.get();

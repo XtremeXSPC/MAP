@@ -7,7 +7,13 @@ import javafx.scene.control.Labeled;
 import javafx.util.Duration;
 
 /**
- * Reusable temporary status-message presenter for FXML-owned status areas.
+ * The {@code StdStatus} class presents temporary status messages in an existing
+ * status area.
+ * <p>
+ * It is useful for FXML-owned footers or banners: the caller passes opaque
+ * handles once, then uses plain methods such as {@link #success(String)} and
+ * {@link #warning(String)}. Visibility, style classes, timers, and GUI-thread
+ * dispatching are internal details.
  */
 public final class StdStatus implements AutoCloseable {
 
@@ -25,6 +31,7 @@ public final class StdStatus implements AutoCloseable {
 
     private PauseTransition hideTimer;
 
+    /* Validates the opaque handles once so later status updates are simple. */
     private StdStatus(Object container, Object messageTarget) {
         this.container = requireNode(container, "container");
         this.messageTarget = requireLabeled(messageTarget, "messageTarget");
@@ -92,6 +99,7 @@ public final class StdStatus implements AutoCloseable {
         hide();
     }
 
+    /* Applies message text, visual state, and optional auto-hide on the GUI thread. */
     private void showOnUiThread(String message, String styleClass, long hideAfterMillis) {
         stopTimer();
         messageTarget.setText(message);
@@ -109,12 +117,14 @@ public final class StdStatus implements AutoCloseable {
         }
     }
 
+    /* Hides both visual and layout participation for the status area. */
     private void hideOnUiThread() {
         stopTimer();
         container.setVisible(false);
         container.setManaged(false);
     }
 
+    /* Cancels the previous auto-hide timer before a new status state is shown. */
     private void stopTimer() {
         if (hideTimer != null) {
             hideTimer.stop();
@@ -122,6 +132,7 @@ public final class StdStatus implements AutoCloseable {
         }
     }
 
+    /* Narrows an opaque caller handle to the internal node type we need. */
     private static Node requireNode(Object value, String name) {
         if (value instanceof Node node) {
             return node;
@@ -129,6 +140,7 @@ public final class StdStatus implements AutoCloseable {
         throw new IllegalArgumentException(name + " must be a JavaFX node managed by the library");
     }
 
+    /* Narrows an opaque caller handle to something that can display text. */
     private static Labeled requireLabeled(Object value, String name) {
         if (value instanceof Labeled labeled) {
             return labeled;

@@ -9,7 +9,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 /**
- * File and directory selection helpers that hide JavaFX chooser classes.
+ * The {@code StdFileDialog} class provides static methods for selecting files
+ * and directories.
+ * <p>
+ * The caller works with {@link Path} and {@link Optional}; JavaFX chooser
+ * objects, owner-window resolution, and GUI-thread coordination remain internal
+ * details.
  */
 public final class StdFileDialog {
 
@@ -30,6 +35,7 @@ public final class StdFileDialog {
         }
     }
 
+    /* This class provides only static methods. */
     private StdFileDialog() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -94,6 +100,7 @@ public final class StdFileDialog {
         });
     }
 
+    /* Converts the public filter records into native chooser extension filters. */
     private static void applyFilters(FileChooser chooser, Filter... filters) {
         if (filters == null) {
             return;
@@ -106,6 +113,7 @@ public final class StdFileDialog {
         }
     }
 
+    /* Finds a sensible owner window so native dialogs attach to the active UI. */
     private static Window resolveOwner() {
         Window fallback = null;
         for (Window window : Window.getWindows()) {

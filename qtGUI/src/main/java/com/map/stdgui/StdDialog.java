@@ -8,10 +8,16 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 
 /**
- * Standard dialogs that hide JavaFX alert and choice primitives.
+ * The {@code StdDialog} class provides static methods for displaying common
+ * message, confirmation, and choice dialogs.
+ * <p>
+ * All dialog construction and GUI-thread dispatching is hidden inside this
+ * class. Client code receives ordinary Java values such as {@code boolean} and
+ * {@link Optional} instead of JavaFX dialog objects.
  */
 public final class StdDialog {
 
+    /* This class provides only static methods. */
     private StdDialog() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -146,10 +152,12 @@ public final class StdDialog {
         });
     }
 
+    /* Shows one of the simple alert types and waits until the user closes it. */
     private static void show(Alert.AlertType type, String title, String header, String message) {
         StdGui.runAndWait(() -> buildAlert(type, title, header, message).showAndWait());
     }
 
+    /* Applies the shared title/header/content mapping for all alert variants. */
     private static Alert buildAlert(Alert.AlertType type, String title, String header, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

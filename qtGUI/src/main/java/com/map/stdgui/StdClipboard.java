@@ -4,10 +4,15 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
 /**
- * Clipboard helpers that hide JavaFX clipboard primitives.
+ * The {@code StdClipboard} class provides static methods for reading and
+ * writing text on the system clipboard.
+ * <p>
+ * It hides JavaFX clipboard objects and dispatches clipboard access to the GUI
+ * thread.
  */
 public final class StdClipboard {
 
+    /* This class provides only static methods. */
     private StdClipboard() {
         throw new AssertionError("Utility class - do not instantiate");
     }

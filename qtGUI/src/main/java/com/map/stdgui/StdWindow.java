@@ -12,7 +12,11 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
- * Reusable window wrapper that hides Stage and Scene setup.
+ * The {@code StdWindow} class represents a top-level application window.
+ * <p>
+ * It provides a small instance API for content, sizing, modality, stylesheets,
+ * and visibility while hiding JavaFX {@code Stage} and {@code Scene} details.
+ * All public methods dispatch to the GUI thread when needed.
  */
 public final class StdWindow {
 
@@ -28,6 +32,7 @@ public final class StdWindow {
         this(StdGui.callAndWait(Stage::new), title);
     }
 
+    /* Wraps either a newly created stage or an existing application stage. */
     private StdWindow(Stage stage, String title) {
         this.stage = stage;
         this.stylesheets = new ArrayList<>();
@@ -260,10 +265,12 @@ public final class StdWindow {
         return stage;
     }
 
+    /* Gives stdgui collaborators controlled access to the hidden scene. */
     Scene scene() {
         return StdGui.callAndWait(stage::getScene);
     }
 
+    /* Reapplies registered stylesheets when a scene is first created or replaced. */
     private void applyStylesheets() {
         Scene scene = stage.getScene();
         if (scene == null) {

@@ -10,7 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 /**
- * Wrapper around FXML-backed or programmatic views.
+ * The {@code StdView} class represents a reusable piece of GUI content.
+ * <p>
+ * A view may be loaded from FXML or built programmatically by another
+ * {@code stdgui} class. Callers can pass views to {@link StdWindow} without
+ * touching JavaFX {@code Parent} or {@code FXMLLoader} objects.
  */
 public final class StdView {
 
@@ -18,6 +22,7 @@ public final class StdView {
     private final Parent root;
     private final Object controller;
 
+    /* Stores the JavaFX root privately while exposing only the logical view handle. */
     private StdView(String id, Parent root, Object controller) {
         this.id = id;
         this.root = root;
@@ -95,15 +100,18 @@ public final class StdView {
         return controllerType.cast(controller);
     }
 
+    /* Lets other stdgui classes wrap programmatic JavaFX roots without making them public API. */
     static StdView of(String id, Parent root) {
         Objects.requireNonNull(root, "root");
         return new StdView(id == null ? "view" : id, root, null);
     }
 
+    /* Gives stdgui internals access to the hidden root for composition. */
     Parent root() {
         return root;
     }
 
+    /* Loads FXML and converts checked IO failures into library-level runtime failures. */
     private static Parent loadRoot(FXMLLoader loader, String resourcePath) {
         try {
             return loader.load();

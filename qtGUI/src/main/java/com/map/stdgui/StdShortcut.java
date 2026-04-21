@@ -6,10 +6,15 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 
 /**
- * Reusable keyboard shortcut registration that hides JavaFX accelerators.
+ * The {@code StdShortcut} class provides static methods for registering
+ * keyboard shortcuts on {@link StdWindow} instances.
+ * <p>
+ * Shortcut strings such as {@code Ctrl+Q} are converted to toolkit-specific key
+ * combinations internally.
  */
 public final class StdShortcut {
 
+    /* This class provides only static methods. */
     private StdShortcut() {
         throw new AssertionError("Utility class - do not instantiate");
     }

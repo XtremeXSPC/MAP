@@ -16,7 +16,11 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 /**
- * Reusable tool-style window with controls, central content, and footer actions.
+ * The {@code StdToolWindow} class builds reusable tool-style windows.
+ * <p>
+ * A tool window can contain choice controls, toggles, toolbar actions, central
+ * content, footer actions, and an optional close button. The layout and JavaFX
+ * controls are assembled internally from small public records.
  */
 public final class StdToolWindow {
 
@@ -48,6 +52,7 @@ public final class StdToolWindow {
     private final StdWindow window;
     private final BorderPane root;
 
+    /* Stores the window and root pane so later content replacement stays internal. */
     private StdToolWindow(StdWindow window, BorderPane root) {
         this.window = window;
         this.root = root;
@@ -136,6 +141,7 @@ public final class StdToolWindow {
         return window.nativeHandle();
     }
 
+    /* Builds the header and toolbar controls from the logical record inputs. */
     private static VBox buildTopPanel(String header, List<Choice> choices, List<Toggle> toggles,
             List<Action> toolbarActions) {
         VBox panel = new VBox(10);
@@ -181,6 +187,7 @@ public final class StdToolWindow {
         return panel;
     }
 
+    /* Builds the status/footer row and wires optional action buttons. */
     private static HBox buildFooter(String footerText, List<Action> footerActions, String closeLabel,
             Runnable closeAction) {
         HBox panel = new HBox(10);

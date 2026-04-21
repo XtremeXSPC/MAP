@@ -12,7 +12,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
- * Reusable informational window with sections, actions, and a close button.
+ * The {@code StdInfoWindow} class provides static factory methods for modal
+ * informational windows.
+ * <p>
+ * A caller supplies headings, sections, optional link actions, and footer text.
+ * The JavaFX labels, links, buttons, and layout panes are created internally.
  */
 public final class StdInfoWindow {
 
@@ -32,6 +36,7 @@ public final class StdInfoWindow {
         }
     }
 
+    /* This class provides only static methods. */
     private StdInfoWindow() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -59,6 +64,7 @@ public final class StdInfoWindow {
         return window;
     }
 
+    /* Composes all optional pieces into a single modal-friendly content view. */
     private static StdView view(String heading, String subheading, String body, List<Section> sections,
             List<Action> actions, String footer, String closeLabel, Runnable closeAction) {
         Objects.requireNonNull(sections, "sections");
@@ -122,6 +128,7 @@ public final class StdInfoWindow {
         });
     }
 
+    /* Renders a logical section as a vertical block with a bold title. */
     private static VBox sectionBox(Section section) {
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER_LEFT);

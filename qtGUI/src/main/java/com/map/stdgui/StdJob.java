@@ -3,7 +3,11 @@ package com.map.stdgui;
 import java.util.function.Consumer;
 
 /**
- * Handle for asynchronous work submitted through {@link StdAsync}.
+ * The {@code StdJob} interface is a handle for asynchronous work submitted
+ * through {@link StdAsync}.
+ * <p>
+ * It lets clients register lifecycle callbacks, observe progress, and request
+ * cancellation without depending on JavaFX task classes.
  *
  * @param <T> result type
  */

@@ -8,7 +8,11 @@ import javafx.embed.swing.SwingNode;
 import javafx.scene.layout.StackPane;
 
 /**
- * Reusable Swing content bridge that hides SwingNode and EDT coordination.
+ * The {@code StdSwingView} class embeds Swing content in a reusable
+ * {@link StdView}.
+ * <p>
+ * It hides JavaFX {@code SwingNode} creation and coordinates Swing component
+ * updates on the Swing event dispatch thread.
  */
 public final class StdSwingView {
 
@@ -16,6 +20,7 @@ public final class StdSwingView {
     private final SwingNode node;
     private final StdView view;
 
+    /* Keeps the SwingNode private while exposing only the stdgui view wrapper. */
     private StdSwingView(String id, SwingNode node, StdView view) {
         this.id = id;
         this.node = node;

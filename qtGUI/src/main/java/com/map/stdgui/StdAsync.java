@@ -9,7 +9,12 @@ import java.util.function.Consumer;
 import javafx.concurrent.Task;
 
 /**
- * Reusable background execution with UI-safe callbacks.
+ * The {@code StdAsync} class provides static methods for running background
+ * work and receiving GUI-safe callbacks.
+ * <p>
+ * Clients submit ordinary {@link Callable} instances or progress-reporting
+ * work. The JavaFX {@code Task}, worker thread, progress properties, and event
+ * handlers are encapsulated behind {@link StdJob}.
  */
 public final class StdAsync {
 
@@ -44,6 +49,7 @@ public final class StdAsync {
         T run(ProgressSink progress) throws Exception;
     }
 
+    /* This class provides only static methods. */
     private StdAsync() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -93,6 +99,7 @@ public final class StdAsync {
         return job;
     }
 
+    /* Adapts a JavaFX Task to the public StdJob callback interface. */
     private static final class TaskStdJob<T> implements StdJob<T> {
 
         private final Task<T> task;
@@ -104,6 +111,7 @@ public final class StdAsync {
         private final AtomicReference<Throwable> failureValue;
         private final AtomicReference<StdProgress> lastProgress;
 
+        /* Wires task lifecycle events into replayable callback lists. */
         private TaskStdJob(Task<T> task) {
             this.task = task;
             this.successCallbacks = new CopyOnWriteArrayList<>();
@@ -190,6 +198,7 @@ public final class StdAsync {
             return task.isDone();
         }
 
+        /* Captures the latest progress snapshot and forwards it to listeners. */
         private void fireProgress() {
             StdProgress progress = new StdProgress(task.getProgress(), task.getMessage());
             lastProgress.set(progress);

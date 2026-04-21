@@ -11,7 +11,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- * Reusable tree helpers that hide TreeItem wiring and recursive tree operations.
+ * The {@code StdTree} class provides static methods for displaying and
+ * controlling tree views.
+ * <p>
+ * Clients describe a tree with immutable {@link Node} records and receive a
+ * small {@link Tree} handle. JavaFX tree items, selection listeners, and
+ * recursive expand/collapse traversal are internal details.
  */
 public final class StdTree {
 
@@ -61,6 +66,7 @@ public final class StdTree {
         void collapseAll();
     }
 
+    /* This class provides only static methods. */
     private StdTree() {
         throw new AssertionError("Utility class - do not instantiate");
     }
@@ -126,10 +132,12 @@ public final class StdTree {
         });
     }
 
+    /* Binds the public Tree operations to one hidden JavaFX TreeView. */
     private static final class FxTree implements Tree {
 
         private final TreeView<String> treeView;
 
+        /* Keeps the native tree local to the adapter. */
         private FxTree(TreeView<String> treeView) {
             this.treeView = treeView;
         }
@@ -164,6 +172,7 @@ public final class StdTree {
             StdGui.runAndWait(() -> collapse(treeView.getRoot()));
         }
 
+        /* Converts logical nodes to native items while expanding by default. */
         private static TreeItem<String> toTreeItem(Node node) {
             TreeItem<String> item = new TreeItem<>(node.label());
             item.setExpanded(true);
@@ -173,6 +182,7 @@ public final class StdTree {
             return item;
         }
 
+        /* Recursively opens every branch below the given native item. */
         private static void expand(TreeItem<String> item) {
             if (item != null && !item.isLeaf()) {
                 item.setExpanded(true);
@@ -182,6 +192,7 @@ public final class StdTree {
             }
         }
 
+        /* Recursively closes every branch below the given native item. */
         private static void collapse(TreeItem<String> item) {
             if (item != null && !item.isLeaf()) {
                 item.setExpanded(false);
