@@ -166,7 +166,7 @@ public final class StdTheme {
     }
 
     /**
-     * Returns the shared theme manager backed by {@value #DEFAULT_SETTINGS_FILE}.
+     * Returns the shared theme manager backed by {@link #DEFAULT_SETTINGS_FILE}.
      *
      * @return default theme manager
      */
@@ -202,6 +202,23 @@ public final class StdTheme {
         Objects.requireNonNull(window, "window");
         windows.add(window);
         applyTo(window);
+        return this;
+    }
+
+    /**
+     * Detaches a previously attached window from this theme manager.
+     * <p>
+     * Detached windows keep whatever stylesheets and font size are already
+     * applied but no longer receive future theme updates. Callers that close
+     * short-lived windows should invoke this method to avoid leaking stage
+     * references.
+     *
+     * @param window window previously passed to {@link #attach(StdWindow)}
+     * @return this theme manager for chaining
+     */
+    public StdTheme detach(StdWindow window) {
+        Objects.requireNonNull(window, "window");
+        windows.remove(window);
         return this;
     }
 
@@ -353,7 +370,7 @@ public final class StdTheme {
         settings.setProperty("fontSize", currentFontSize.getDisplayName());
 
         try (OutputStream output = Files.newOutputStream(settingsFile)) {
-            settings.store(output, "QT Clustering GUI Settings - Theme");
+            settings.store(output, "stdgui theme settings");
         } catch (IOException e) {
             throw new IllegalStateException("Unable to save theme settings to " + settingsFile, e);
         }
@@ -378,17 +395,22 @@ public final class StdTheme {
         });
     }
 
-    /* Replaces only the known theme stylesheets, preserving unrelated CSS. */
+    /* Replaces only the configured theme stylesheets, preserving unrelated CSS. */
     private void applyTheme(Scene scene) {
-        scene.getStylesheets().removeIf(stylesheet -> stylesheet.contains("/styles/application.css")
-                || stylesheet.contains("/styles/dark-theme.css"));
+        String lightUrl = resolveStylesheet(lightStylesheet);
+        String darkUrl  = resolveStylesheet(darkStylesheet);
 
-        URL stylesheet = resourceAnchor.getResource(currentTheme == Theme.DARK ? darkStylesheet : lightStylesheet);
-        if (stylesheet == null) {
-            throw new IllegalStateException("Theme stylesheet not found: "
-                    + (currentTheme == Theme.DARK ? darkStylesheet : lightStylesheet));
+        scene.getStylesheets().removeAll(lightUrl, darkUrl);
+        scene.getStylesheets().add(currentTheme == Theme.DARK ? darkUrl : lightUrl);
+    }
+
+    /* Resolves a configured classpath stylesheet to its external-form URL. */
+    private String resolveStylesheet(String resourcePath) {
+        URL resource = resourceAnchor.getResource(resourcePath);
+        if (resource == null) {
+            throw new IllegalStateException("Theme stylesheet not found: " + resourcePath);
         }
-        scene.getStylesheets().add(stylesheet.toExternalForm());
+        return resource.toExternalForm();
     }
 
     /* Stores the global font size on the scene root as a CSS declaration. */

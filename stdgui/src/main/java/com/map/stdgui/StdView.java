@@ -41,7 +41,7 @@ public final class StdView {
     }
 
     /**
-     * Loads a view from an FXML resource path.
+     * Loads a view from an FXML resource path, using the configured resource anchor.
      *
      * @param resourcePath classpath resource path
      * @return loaded view
@@ -50,6 +50,32 @@ public final class StdView {
         Objects.requireNonNull(resourcePath, "resourcePath");
         return StdGui.callAndWait(() -> {
             URL resource = resolveResource(resourcePath);
+            if (resource == null) {
+                throw new IllegalArgumentException("FXML resource not found: " + resourcePath);
+            }
+
+            FXMLLoader loader = new FXMLLoader(resource);
+            Parent root = loadRoot(loader, resourcePath);
+            return new StdView(resourcePath, root, loader.getController());
+        });
+    }
+
+    /**
+     * Loads a view from an FXML resource path resolved against an explicit anchor.
+     * <p>
+     * Use this overload when a single application needs to load views from
+     * multiple modules or classloaders and setting a single global anchor via
+     * {@link #configureResourceAnchor(Class)} is not sufficient.
+     *
+     * @param anchor class whose module or classpath owns the FXML resource
+     * @param resourcePath classpath resource path
+     * @return loaded view
+     */
+    public static StdView load(Class<?> anchor, String resourcePath) {
+        Objects.requireNonNull(anchor, "anchor");
+        Objects.requireNonNull(resourcePath, "resourcePath");
+        return StdGui.callAndWait(() -> {
+            URL resource = anchor.getResource(resourcePath);
             if (resource == null) {
                 throw new IllegalArgumentException("FXML resource not found: " + resourcePath);
             }

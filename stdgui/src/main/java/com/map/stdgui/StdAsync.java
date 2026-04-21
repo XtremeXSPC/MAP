@@ -1,5 +1,6 @@
 package com.map.stdgui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -9,12 +10,12 @@ import java.util.function.Consumer;
 import javafx.concurrent.Task;
 
 /**
- * The {@code StdAsync} class provides static methods for running background
- * work and receiving GUI-safe callbacks.
+ * The {@code StdAsync} class provides static methods for running background work
+ * and receiving GUI-safe callbacks.
  * <p>
- * Clients submit ordinary {@link Callable} instances or progress-reporting
- * work. The JavaFX {@code Task}, worker thread, progress properties, and event
- * handlers are encapsulated behind {@link StdJob}.
+ * Clients submit ordinary {@link Callable} instances or progress-reporting work.
+ * The JavaFX {@code Task}, worker thread, progress properties, and event handlers
+ * are encapsulated behind {@link StdJob}.
  */
 public final class StdAsync {
 
@@ -102,56 +103,55 @@ public final class StdAsync {
     /* Adapts a JavaFX Task to the public StdJob callback interface. */
     private static final class TaskStdJob<T> implements StdJob<T> {
 
+        /* Terminal lifecycle state used to replay callbacks registered after completion. */
+        private enum Terminal { NONE, SUCCEEDED, FAILED, CANCELLED }
+
         private final Task<T> task;
+        private final Object lock;
         private final List<Consumer<T>> successCallbacks;
         private final List<Consumer<Throwable>> failureCallbacks;
         private final List<Runnable> cancelCallbacks;
         private final List<Consumer<StdProgress>> progressCallbacks;
-        private final AtomicReference<T> successValue;
-        private final AtomicReference<Throwable> failureValue;
         private final AtomicReference<StdProgress> lastProgress;
+
+        /* Guarded by {@code lock}; {@code volatile} so unsynchronized reads are safe. */
+        private volatile Terminal terminal;
+        private T terminalValue;
+        private Throwable terminalError;
 
         /* Wires task lifecycle events into replayable callback lists. */
         private TaskStdJob(Task<T> task) {
             this.task = task;
-            this.successCallbacks = new CopyOnWriteArrayList<>();
-            this.failureCallbacks = new CopyOnWriteArrayList<>();
-            this.cancelCallbacks = new CopyOnWriteArrayList<>();
+            this.lock = new Object();
+            this.successCallbacks = new ArrayList<>();
+            this.failureCallbacks = new ArrayList<>();
+            this.cancelCallbacks = new ArrayList<>();
             this.progressCallbacks = new CopyOnWriteArrayList<>();
-            this.successValue = new AtomicReference<>();
-            this.failureValue = new AtomicReference<>();
             this.lastProgress = new AtomicReference<>(new StdProgress(task.getProgress(), task.getMessage()));
+            this.terminal = Terminal.NONE;
 
             task.progressProperty().addListener((obs, oldValue, newValue) -> fireProgress());
             task.messageProperty().addListener((obs, oldValue, newValue) -> fireProgress());
-            task.setOnSucceeded(event -> {
-                T value = task.getValue();
-                successValue.set(value);
-                for (Consumer<T> callback : successCallbacks) {
-                    callback.accept(value);
-                }
-            });
-            task.setOnFailed(event -> {
-                Throwable error = task.getException();
-                failureValue.set(error);
-                for (Consumer<Throwable> callback : failureCallbacks) {
-                    callback.accept(error);
-                }
-            });
-            task.setOnCancelled(event -> {
-                for (Runnable callback : cancelCallbacks) {
-                    callback.run();
-                }
-            });
+            task.setOnSucceeded(event -> handleSucceeded());
+            task.setOnFailed(event -> handleFailed());
+            task.setOnCancelled(event -> handleCancelled());
         }
 
         @Override
         public StdJob<T> onSuccess(Consumer<T> action) {
             Objects.requireNonNull(action, "action");
-            successCallbacks.add(action);
-            T value = successValue.get();
-            if (value != null) {
-                StdGui.later(() -> action.accept(value));
+            boolean replay = false;
+            T value = null;
+            synchronized (lock) {
+                switch (terminal) {
+                    case NONE      -> successCallbacks.add(action);
+                    case SUCCEEDED -> { replay = true; value = terminalValue; }
+                    case FAILED, CANCELLED -> { /* onSuccess never fires for non-success terminals */ }
+                }
+            }
+            if (replay) {
+                T captured = value;
+                StdGui.later(() -> action.accept(captured));
             }
             return this;
         }
@@ -159,10 +159,18 @@ public final class StdAsync {
         @Override
         public StdJob<T> onFailure(Consumer<Throwable> action) {
             Objects.requireNonNull(action, "action");
-            failureCallbacks.add(action);
-            Throwable error = failureValue.get();
-            if (error != null) {
-                StdGui.later(() -> action.accept(error));
+            boolean replay = false;
+            Throwable error = null;
+            synchronized (lock) {
+                switch (terminal) {
+                    case NONE   -> failureCallbacks.add(action);
+                    case FAILED -> { replay = true; error = terminalError; }
+                    case SUCCEEDED, CANCELLED -> { /* onFailure never fires for non-failed terminals */ }
+                }
+            }
+            if (replay) {
+                Throwable captured = error;
+                StdGui.later(() -> action.accept(captured));
             }
             return this;
         }
@@ -170,8 +178,15 @@ public final class StdAsync {
         @Override
         public StdJob<T> onCancel(Runnable action) {
             Objects.requireNonNull(action, "action");
-            cancelCallbacks.add(action);
-            if (task.isCancelled()) {
+            boolean replay = false;
+            synchronized (lock) {
+                switch (terminal) {
+                    case NONE      -> cancelCallbacks.add(action);
+                    case CANCELLED -> replay = true;
+                    case SUCCEEDED, FAILED -> { /* onCancel never fires for non-cancelled terminals */ }
+                }
+            }
+            if (replay) {
                 StdGui.later(action);
             }
             return this;
@@ -196,6 +211,49 @@ public final class StdAsync {
         @Override
         public boolean isDone() {
             return task.isDone();
+        }
+
+        /* Latches the success terminal state, then dispatches the snapshot of callbacks. */
+        private void handleSucceeded() {
+            T value = task.getValue();
+            List<Consumer<T>> snapshot;
+            synchronized (lock) {
+                terminal = Terminal.SUCCEEDED;
+                terminalValue = value;
+                snapshot = new ArrayList<>(successCallbacks);
+                successCallbacks.clear();
+            }
+            for (Consumer<T> callback : snapshot) {
+                callback.accept(value);
+            }
+        }
+
+        /* Latches the failure terminal state, then dispatches the snapshot of callbacks. */
+        private void handleFailed() {
+            Throwable error = task.getException();
+            List<Consumer<Throwable>> snapshot;
+            synchronized (lock) {
+                terminal = Terminal.FAILED;
+                terminalError = error;
+                snapshot = new ArrayList<>(failureCallbacks);
+                failureCallbacks.clear();
+            }
+            for (Consumer<Throwable> callback : snapshot) {
+                callback.accept(error);
+            }
+        }
+
+        /* Latches the cancelled terminal state, then dispatches the snapshot of callbacks. */
+        private void handleCancelled() {
+            List<Runnable> snapshot;
+            synchronized (lock) {
+                terminal = Terminal.CANCELLED;
+                snapshot = new ArrayList<>(cancelCallbacks);
+                cancelCallbacks.clear();
+            }
+            for (Runnable callback : snapshot) {
+                callback.run();
+            }
         }
 
         /* Captures the latest progress snapshot and forwards it to listeners. */

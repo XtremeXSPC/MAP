@@ -34,7 +34,6 @@ public final class StdToolWindowClient {
 
         window.replaceContent(StdView.text("Tool Content", "Replacement content"));
         System.out.println("Wrapped window visible: " + window.window().isShowing());
-        System.out.println("Native handle: " + window.nativeWindow().getClass().getName());
         window.show();
         window.close();
 

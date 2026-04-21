@@ -180,6 +180,12 @@ public final class StdChart {
                 throw new IllegalStateException("Window has no chart content to export");
             }
 
+            // Ensure CSS and layout are applied before snapshotting so exports
+            // produce a correctly styled, laid-out image even when the window
+            // has not yet been shown.
+            scene.getRoot().applyCss();
+            scene.getRoot().layout();
+
             WritableImage image = new WritableImage(width, height);
             scene.getRoot().snapshot(new SnapshotParameters(), image);
             try {

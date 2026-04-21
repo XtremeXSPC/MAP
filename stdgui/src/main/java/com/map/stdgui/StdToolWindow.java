@@ -130,17 +130,6 @@ public final class StdToolWindow {
         return window;
     }
 
-    /**
-     * Returns the native window handle for legacy compatibility.
-     *
-     * @return native window handle
-     * @deprecated exposes the underlying toolkit object and should only be used by legacy adapters
-     */
-    @Deprecated
-    public Object nativeWindow() {
-        return window.nativeHandle();
-    }
-
     /* Builds the header and toolbar controls from the logical record inputs. */
     private static VBox buildTopPanel(String header, List<Choice> choices, List<Toggle> toggles,
             List<Action> toolbarActions) {

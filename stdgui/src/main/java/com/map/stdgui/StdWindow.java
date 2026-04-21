@@ -20,6 +20,9 @@ import javafx.stage.Window;
  */
 public final class StdWindow {
 
+    /* Cache key stored in Stage.getProperties() so current() returns the same wrapper. */
+    private static final Object WRAPPER_KEY = new Object();
+
     private final Stage stage;
     private final List<String> stylesheets;
 
@@ -40,38 +43,53 @@ public final class StdWindow {
             if (title != null) {
                 stage.setTitle(title);
             }
+            // Cache this wrapper on the stage so subsequent current() calls
+            // see the same instance (preserving stylesheets and other state).
+            stage.getProperties().put(WRAPPER_KEY, this);
         });
     }
 
     /**
      * Returns a wrapper for the currently focused application window.
+     * <p>
+     * Repeated calls for the same underlying stage return the same wrapper
+     * instance, so stylesheet and content configuration persist across calls.
      *
      * @return wrapper for the current window
      */
     public static StdWindow current() {
         return StdGui.callAndWait(() -> {
-            Stage currentStage = null;
-            Stage fallbackStage = null;
-
-            for (Window window : Window.getWindows()) {
-                if (!(window instanceof Stage stage) || !window.isShowing()) {
-                    continue;
-                }
-                if (window.isFocused()) {
-                    currentStage = stage;
-                    break;
-                }
-                if (fallbackStage == null) {
-                    fallbackStage = stage;
-                }
-            }
-
-            Stage resolved = currentStage != null ? currentStage : fallbackStage;
+            Stage resolved = resolveCurrentStage();
             if (resolved == null) {
                 throw new IllegalStateException("No active JavaFX window available");
             }
+            Object cached = resolved.getProperties().get(WRAPPER_KEY);
+            if (cached instanceof StdWindow existing) {
+                return existing;
+            }
             return new StdWindow(resolved, resolved.getTitle());
         });
+    }
+
+    /* Picks the focused visible stage, falling back to the first visible one. */
+    private static Stage resolveCurrentStage() {
+        Stage currentStage = null;
+        Stage fallbackStage = null;
+
+        for (Window window : Window.getWindows()) {
+            if (!(window instanceof Stage stage) || !window.isShowing()) {
+                continue;
+            }
+            if (window.isFocused()) {
+                currentStage = stage;
+                break;
+            }
+            if (fallbackStage == null) {
+                fallbackStage = stage;
+            }
+        }
+
+        return currentStage != null ? currentStage : fallbackStage;
     }
 
     /**
@@ -136,13 +154,20 @@ public final class StdWindow {
 
     /**
      * Configures whether the window is modal.
+     * <p>
+     * Modality must be initialised before the window is first shown. Once the
+     * window has been shown, calling this method has no effect rather than
+     * raising an exception from the underlying toolkit.
      *
      * @param enabled true for application modal
      * @return this window for chaining
      */
     public StdWindow modal(boolean enabled) {
         StdGui.runAndWait(() -> {
-            if (enabled && stage.getModality() == Modality.NONE) {
+            if (!enabled || stage.isShowing()) {
+                return;
+            }
+            if (stage.getModality() == Modality.NONE) {
                 stage.initModality(Modality.APPLICATION_MODAL);
             }
         });
@@ -182,15 +207,7 @@ public final class StdWindow {
      * @param view replacement view
      */
     public void replaceRoot(StdView view) {
-        Objects.requireNonNull(view, "view");
-        StdGui.runAndWait(() -> {
-            if (stage.getScene() == null) {
-                stage.setScene(new Scene(view.root()));
-                applyStylesheets();
-            } else {
-                stage.getScene().setRoot(view.root());
-            }
-        });
+        content(view);
     }
 
     /**
@@ -250,19 +267,6 @@ public final class StdWindow {
      */
     public boolean isShowing() {
         return StdGui.callAndWait(stage::isShowing);
-    }
-
-    /**
-     * Returns the native window handle for legacy compatibility.
-     * <p>
-     * New code should use StdWindow methods instead of casting this handle.
-     *
-     * @return native window handle
-     * @deprecated exposes the underlying toolkit object and should only be used by legacy adapters
-     */
-    @Deprecated
-    public Object nativeHandle() {
-        return stage;
     }
 
     /* Gives stdgui collaborators controlled access to the hidden scene. */
