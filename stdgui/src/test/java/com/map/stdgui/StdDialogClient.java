@@ -18,8 +18,7 @@ public final class StdDialogClient {
         StdDialog.error("StdDialog", "Error", "Error dialog test");
         boolean confirmed = StdDialog.confirm("StdDialog", "Confirm", "Press OK to confirm");
         System.out.println("Confirmed: " + confirmed);
-        System.out.println("Choice: "
-                + StdDialog.choose("StdDialog", "Choose", "Pick one option", "A", List.of("A", "B", "C")));
+        System.out.println("Choice: " + StdDialog.choose("StdDialog", "Choose", "Pick one option", "A", List.of("A", "B", "C")));
 
         StdGui.exit();
     }

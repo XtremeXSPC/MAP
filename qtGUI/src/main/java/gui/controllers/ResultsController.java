@@ -697,7 +697,7 @@ public class ResultsController {
      */
     private void navigateToHome() {
         try {
-            StdWindow.current().replaceRoot(StdView.load("/views/main.fxml"));
+            StdWindow.current().replaceContent(StdView.load("/views/main.fxml"));
             statusLabel.setText("Ritorno alla schermata iniziale...");
             logger.info("Navigazione a home completata");
 

@@ -6,7 +6,7 @@ module com.map.stdgui {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.swing;
-    requires java.desktop;
+    requires transitive java.desktop;
 
     exports com.map.stdgui;
 }

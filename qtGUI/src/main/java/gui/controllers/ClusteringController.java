@@ -545,7 +545,7 @@ public class ClusteringController {
         logger.info("Visualizza risultati cliccato");
 
         try {
-            StdWindow.current().replaceRoot(StdView.load("/views/results.fxml"));
+            StdWindow.current().replaceContent(StdView.load("/views/results.fxml"));
             logger.info("Navigazione a vista results completata");
 
         } catch (RuntimeException e) {
