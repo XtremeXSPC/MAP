@@ -7,7 +7,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -58,7 +60,7 @@ public final class StdInfoWindow {
      */
     public static StdWindow window(String title, String heading, String subheading, String body, List<Section> sections,
             List<Action> actions, String footer, double width, double height, String closeLabel) {
-        StdWindow window = new StdWindow(title).size(width, height).resizable(false).modal(true);
+        StdWindow window = new StdWindow(title).size(width, height).minSize(420, 320).resizable(true).modal(true);
         window.content(view(heading, subheading, body, sections, actions, footer,
                 closeLabel == null || closeLabel.isBlank() ? "Close" : closeLabel, window::close));
         return window;
@@ -71,48 +73,64 @@ public final class StdInfoWindow {
         Objects.requireNonNull(actions, "actions");
 
         return StdGui.callAndWait(() -> {
-            VBox root = new VBox(15);
-            root.setPadding(new Insets(20));
-            root.setAlignment(Pos.CENTER);
+            BorderPane root = new BorderPane();
+
+            VBox content = new VBox(15);
+            content.setPadding(new Insets(20));
+            content.setAlignment(Pos.TOP_CENTER);
+
+            ScrollPane scrollPane = new ScrollPane(content);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setPannable(true);
+            root.setCenter(scrollPane);
 
             Label headingLabel = new Label(heading == null ? "" : heading);
+            headingLabel.setWrapText(true);
+            headingLabel.setMaxWidth(Double.MAX_VALUE);
+            headingLabel.setAlignment(Pos.CENTER);
             headingLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-            root.getChildren().add(headingLabel);
+            content.getChildren().add(headingLabel);
 
             if (subheading != null && !subheading.isBlank()) {
                 Label subheadingLabel = new Label(subheading);
+                subheadingLabel.setWrapText(true);
+                subheadingLabel.setMaxWidth(Double.MAX_VALUE);
+                subheadingLabel.setAlignment(Pos.CENTER);
                 subheadingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: gray;");
-                root.getChildren().add(subheadingLabel);
+                content.getChildren().add(subheadingLabel);
             }
 
             if (body != null && !body.isBlank()) {
-                root.getChildren().add(new Separator());
+                content.getChildren().add(new Separator());
                 Label bodyLabel = new Label(body);
                 bodyLabel.setWrapText(true);
-                bodyLabel.setMaxWidth(450);
+                bodyLabel.setMaxWidth(Double.MAX_VALUE);
                 bodyLabel.setAlignment(Pos.CENTER);
                 bodyLabel.setStyle("-fx-text-alignment: center;");
-                root.getChildren().add(bodyLabel);
+                content.getChildren().add(bodyLabel);
             }
 
             for (Section section : sections) {
-                root.getChildren().add(new Separator());
-                root.getChildren().add(sectionBox(section));
+                content.getChildren().add(new Separator());
+                content.getChildren().add(sectionBox(section));
             }
 
             if (!actions.isEmpty()) {
-                root.getChildren().add(new Separator());
+                content.getChildren().add(new Separator());
                 for (Action action : actions) {
                     Hyperlink link = new Hyperlink(action.label());
                     link.setOnAction(event -> action.action().run());
-                    root.getChildren().add(link);
+                    content.getChildren().add(link);
                 }
             }
 
             if (footer != null && !footer.isBlank()) {
                 Label footerLabel = new Label(footer);
+                footerLabel.setWrapText(true);
+                footerLabel.setMaxWidth(Double.MAX_VALUE);
+                footerLabel.setAlignment(Pos.CENTER);
                 footerLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
-                root.getChildren().add(footerLabel);
+                content.getChildren().add(footerLabel);
             }
 
             Button closeButton = new Button(closeLabel);
@@ -121,8 +139,8 @@ public final class StdInfoWindow {
 
             HBox buttonBox = new HBox(closeButton);
             buttonBox.setAlignment(Pos.CENTER);
-            buttonBox.setPadding(new Insets(10, 0, 0, 0));
-            root.getChildren().add(buttonBox);
+            buttonBox.setPadding(new Insets(10, 20, 20, 20));
+            root.setBottom(buttonBox);
 
             return StdView.of("info:" + (heading == null ? "" : heading), root);
         });
@@ -133,13 +151,18 @@ public final class StdInfoWindow {
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER_LEFT);
         box.setPadding(new Insets(10));
+        box.setMaxWidth(Double.MAX_VALUE);
 
         Label title = new Label(section.title());
+        title.setWrapText(true);
         title.setStyle("-fx-font-weight: bold;");
         box.getChildren().add(title);
 
         for (String line : section.lines()) {
-            box.getChildren().add(new Label(line));
+            Label label = new Label(line);
+            label.setWrapText(true);
+            label.setMaxWidth(Double.MAX_VALUE);
+            box.getChildren().add(label);
         }
 
         return box;

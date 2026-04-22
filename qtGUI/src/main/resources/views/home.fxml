@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -18,27 +17,15 @@
 
         <!-- Header -->
         <VBox spacing="10" alignment="CENTER">
-            <Label text="Nuova Analisi di Clustering" styleClass="title-label">
-                <font>
-                    <Font name="System Bold" size="28" />
-                </font>
-            </Label>
-            <Label text="Configura dataset e parametri di clustering">
-                <font>
-                    <Font size="14" />
-                </font>
-            </Label>
+            <Label text="Nuova Analisi di Clustering" styleClass="title-label" />
+            <Label text="Configura dataset e parametri di clustering" styleClass="subtitle-label" />
         </VBox>
 
         <Separator />
 
         <!-- Dataset Selection Section -->
         <VBox spacing="15" styleClass="card">
-            <Label text="Selezione Dataset" styleClass="form-label">
-                <font>
-                    <Font name="System Bold" size="16" />
-                </font>
-            </Label>
+            <Label text="Selezione Dataset" styleClass="form-label" />
 
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Sorgente:" minWidth="120" />
@@ -98,32 +85,21 @@
 
         <!-- Clustering Parameters Section -->
         <VBox spacing="15" styleClass="card">
-            <Label text="Parametri di Clustering" styleClass="form-label">
-                <font>
-                    <Font name="System Bold" size="16" />
-                </font>
-            </Label>
+            <Label text="Parametri di Clustering" styleClass="form-label" />
 
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Radius:" minWidth="120" />
                 <TextField fx:id="radiusField" prefWidth="150" promptText="es., 0.5" />
-                <Label fx:id="radiusValidationLabel" text="" styleClass="label-error" />
+                <Label fx:id="radiusValidationLabel" text="" styleClass="label-error" wrapText="true" HBox.hgrow="ALWAYS" />
             </HBox>
 
-            <Label text="Il radius definisce la distanza massima per i punti nello stesso cluster." wrapText="true">
-                <font>
-                    <Font size="12" />
-                </font>
-            </Label>
+            <Label text="Il radius definisce la distanza massima per i punti nello stesso cluster."
+                   styleClass="field-hint" wrapText="true" />
         </VBox>
 
         <!-- Options Section -->
         <VBox spacing="15" styleClass="card">
-            <Label text="Opzioni" styleClass="form-label">
-                <font>
-                    <Font name="System Bold" size="16" />
-                </font>
-            </Label>
+            <Label text="Opzioni" styleClass="form-label" />
 
             <CheckBox fx:id="enableCachingCheckBox" text="Abilita caching distanze (più veloce per dataset grandi)" selected="true" />
             <CheckBox fx:id="verboseLoggingCheckBox" text="Logging dettagliato" selected="false" />

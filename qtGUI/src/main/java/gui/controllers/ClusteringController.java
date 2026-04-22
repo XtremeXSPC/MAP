@@ -23,6 +23,7 @@ import gui.services.DataImportService;
 import gui.utils.ApplicationContext;
 // Importazioni JavaFX.
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 // Importazioni del backend di mining.
@@ -444,7 +445,7 @@ public class ClusteringController {
         }
 
         statusMessageLabel.setText("Clustering completato con successo!");
-        statusMessageLabel.setStyle("-fx-text-fill: #27ae60;");
+        applyStatusStyle(statusMessageLabel, "label-success");
         statusFooter.setVisible(true);
         statusFooter.setManaged(true);
 
@@ -475,7 +476,7 @@ public class ClusteringController {
         }
 
         statusMessageLabel.setText("Clustering fallito: " + error.getMessage());
-        statusMessageLabel.setStyle("-fx-text-fill: #e74c3c;");
+        applyStatusStyle(statusMessageLabel, "label-error");
         statusFooter.setVisible(true);
         statusFooter.setManaged(true);
 
@@ -484,7 +485,7 @@ public class ClusteringController {
 
         if (chartPlaceholder != null) {
             chartPlaceholder.setText("Clustering fallito.");
-            chartPlaceholder.setStyle("-fx-text-fill: #e74c3c;");
+            applyStatusStyle(chartPlaceholder, "label-error");
         }
 
         showError("Clustering Fallito",
@@ -505,7 +506,7 @@ public class ClusteringController {
         }
 
         statusMessageLabel.setText("Clustering annullato dall'utente");
-        statusMessageLabel.setStyle("-fx-text-fill: #f39c12;");
+        applyStatusStyle(statusMessageLabel, "label-warning");
         statusFooter.setVisible(true);
         statusFooter.setManaged(true);
 
@@ -513,6 +514,7 @@ public class ClusteringController {
 
         if (chartPlaceholder != null) {
             chartPlaceholder.setText("Clustering annullato.");
+            applyStatusStyle(chartPlaceholder, "label-warning");
         }
     }
 
@@ -562,6 +564,19 @@ public class ClusteringController {
         if (elapsedTimeJob != null && !elapsedTimeJob.isDone()) {
             elapsedTimeJob.cancel();
         }
+    }
+
+    private static final List<String> STATUS_STYLE_CLASSES = List.of("label-success", "label-warning", "label-error");
+
+    /**
+     * Swap the status state style class on a node so colours follow the active theme.
+     */
+    private void applyStatusStyle(Node node, String styleClass) {
+        if (node == null) {
+            return;
+        }
+        node.getStyleClass().removeAll(STATUS_STYLE_CLASSES);
+        node.getStyleClass().add(styleClass);
     }
 
     /**

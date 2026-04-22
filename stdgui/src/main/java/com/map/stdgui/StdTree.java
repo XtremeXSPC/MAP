@@ -169,7 +169,20 @@ public final class StdTree {
 
         @Override
         public void collapseAll() {
-            StdGui.runAndWait(() -> collapse(treeView.getRoot()));
+            StdGui.runAndWait(() -> {
+                TreeItem<String> root = treeView.getRoot();
+                if (root == null) {
+                    return;
+                }
+                if (treeView.isShowRoot()) {
+                    collapse(root);
+                    return;
+                }
+                root.setExpanded(true);
+                for (TreeItem<String> child : root.getChildren()) {
+                    collapse(child);
+                }
+            });
         }
 
         /* Converts logical nodes to native items while expanding by default. */

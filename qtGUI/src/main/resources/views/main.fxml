@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -52,18 +51,14 @@
     <!-- Center: Content Area (will be dynamically replaced) -->
     <center>
         <StackPane fx:id="contentArea">
-            <VBox alignment="CENTER" spacing="20">
-                <Label text="QT Clustering GUI" styleClass="title-label">
-                    <font>
-                        <Font name="System Bold" size="32" />
-                    </font>
-                </Label>
-                <Label text="Algoritmo di Clustering Quality Threshold">
-                    <font>
-                        <Font size="18" />
-                    </font>
-                </Label>
-                <Label text="Benvenuto in QT Clustering&#10;Il tuo strumento avanzato per l'analisi dei dati.&#10;&#10;Inizia una nuova analisi o apri un progetto esistente per scoprire pattern nascosti nei tuoi dati." textAlignment="CENTER" wrapText="true" />
+            <VBox alignment="CENTER" spacing="16">
+                <padding>
+                    <Insets top="40" right="60" bottom="40" left="60" />
+                </padding>
+                <Label text="QT Clustering" styleClass="title-label" />
+                <Label text="Algoritmo di Clustering Quality Threshold" styleClass="subtitle-label" />
+                <Label text="Benvenuto in QT Clustering.&#10;Il tuo strumento per l'analisi dei dati.&#10;&#10;Inizia una nuova analisi o apri un progetto esistente per scoprire pattern nascosti nei tuoi dati."
+                       textAlignment="CENTER" wrapText="true" />
             </VBox>
         </StackPane>
     </center>

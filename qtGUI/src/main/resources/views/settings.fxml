@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -17,31 +16,20 @@
 
     <!-- Header -->
     <VBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Impostazioni" styleClass="title-label">
-            <font>
-                <Font name="System Bold" size="28" />
-            </font>
-        </Label>
-        <Label text="Configura preferenze e impostazioni predefinite dell'applicazione">
-            <font>
-                <Font size="14" />
-            </font>
-        </Label>
+        <Label text="Impostazioni" styleClass="title-label" />
+        <Label text="Configura preferenze e impostazioni predefinite dell'applicazione"
+               styleClass="subtitle-label" />
     </VBox>
 
     <Separator />
 
     <!-- Settings Sections -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="edge-to-edge">
         <VBox spacing="20">
 
             <!-- Appearance Section -->
             <VBox spacing="15" styleClass="card">
-                <Label text="Aspetto" styleClass="form-label">
-                    <font>
-                        <Font name="System Bold" size="16" />
-                    </font>
-                </Label>
+                <Label text="Aspetto" styleClass="form-label" />
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Tema:" minWidth="150" />
@@ -74,18 +62,14 @@
 
             <!-- Performance Section -->
             <VBox spacing="15" styleClass="card">
-                <Label text="Prestazioni" styleClass="form-label">
-                    <font>
-                        <Font name="System Bold" size="16" />
-                    </font>
-                </Label>
+                <Label text="Prestazioni" styleClass="form-label" />
 
                 <CheckBox fx:id="enableCachingCheckBox" text="Abilita caching distanze (consigliato per dataset grandi)" selected="true" />
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Dimensione Thread Pool:" minWidth="180" />
                     <Spinner fx:id="threadPoolSpinner" prefWidth="100" editable="true" />
-                    <Label text="(1-16 thread)" />
+                    <Label text="(1-16 thread)" styleClass="field-hint" />
                 </HBox>
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
@@ -98,11 +82,7 @@
 
             <!-- Clustering Defaults Section -->
             <VBox spacing="15" styleClass="card">
-                <Label text="Impostazioni Clustering Predefinite" styleClass="form-label">
-                    <font>
-                        <Font name="System Bold" size="16" />
-                    </font>
-                </Label>
+                <Label text="Impostazioni Clustering Predefinite" styleClass="form-label" />
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Radius Predefinito:" minWidth="180" />
@@ -127,11 +107,7 @@
 
             <!-- Export Section -->
             <VBox spacing="15" styleClass="card">
-                <Label text="Impostazioni Esportazione" styleClass="form-label">
-                    <font>
-                        <Font name="System Bold" size="16" />
-                    </font>
-                </Label>
+                <Label text="Impostazioni Esportazione" styleClass="form-label" />
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Formato Esportazione Predefinito:" minWidth="220" />
@@ -158,11 +134,7 @@
 
             <!-- Database Section -->
             <VBox spacing="15" styleClass="card">
-                <Label text="Configurazione Database" styleClass="form-label">
-                    <font>
-                        <Font name="System Bold" size="16" />
-                    </font>
-                </Label>
+                <Label text="Configurazione Database" styleClass="form-label" />
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Host:" minWidth="150" />

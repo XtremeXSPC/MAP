@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
     xmlns:fx="http://javafx.com/fxml/1"
@@ -18,16 +17,8 @@
     <!-- Header -->
     <HBox spacing="20" alignment="CENTER_LEFT">
       <VBox spacing="5" HBox.hgrow="ALWAYS">
-        <Label text="Risultati Clustering" styleClass="title-label">
-            <font>
-              <Font name="System Bold" size="24" />
-            </font>
-        </Label>
-        <Label fx:id="summaryLabel" text="Il riepilogo verrà visualizzato qui">
-            <font>
-              <Font size="12" />
-            </font>
-        </Label>
+        <Label text="Risultati Clustering" styleClass="title-label" />
+        <Label fx:id="summaryLabel" text="Il riepilogo verrà visualizzato qui" styleClass="subtitle-label" />
       </VBox>
 
       <!-- Action Buttons -->
@@ -44,35 +35,33 @@
     <!-- Statistics Panel -->
     <HBox spacing="15" styleClass="card">
       <VBox spacing="8" HBox.hgrow="ALWAYS">
-        <Label text="Statistiche" styleClass="form-label">
-            <font>
-              <Font name="System Bold" size="14" />
-            </font>
-        </Label>
+        <Label text="Statistiche" styleClass="form-label" />
 
-        <GridPane hgap="15" vgap="8">
+        <GridPane hgap="12" vgap="8" styleClass="stats-grid">
             <columnConstraints>
-              <ColumnConstraints halignment="RIGHT" />
-              <ColumnConstraints hgrow="ALWAYS" />
+              <ColumnConstraints halignment="RIGHT" minWidth="175" prefWidth="175" />
+              <ColumnConstraints halignment="LEFT" minWidth="70" prefWidth="90" />
+              <ColumnConstraints halignment="RIGHT" minWidth="210" prefWidth="210" />
+              <ColumnConstraints halignment="LEFT" minWidth="70" prefWidth="90" />
             </columnConstraints>
 
-            <Label text="Cluster Totali:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="form-label" />
-            <Label fx:id="totalClustersLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Label text="Cluster Totali:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="stat-label" />
+            <Label fx:id="totalClustersLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="stat-value" />
 
-            <Label text="Tuple Totali:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="form-label" />
-            <Label fx:id="totalTuplesLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="Tuple Totali:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="stat-label" />
+            <Label fx:id="totalTuplesLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="stat-value" />
 
-            <Label text="Raggio:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="form-label" />
-            <Label fx:id="radiusLabel" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="Raggio:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="stat-label" />
+            <Label fx:id="radiusLabel" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="stat-value" />
 
-            <Label text="Dimensione Media Cluster:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="form-label" />
-            <Label fx:id="avgClusterSizeLabel" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="Dimensione Media Cluster:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="stat-label" />
+            <Label fx:id="avgClusterSizeLabel" text="0.0" GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="stat-value" />
 
-            <Label text="Cluster Più Grande:" GridPane.columnIndex="0" GridPane.rowIndex="4" styleClass="form-label" />
-            <Label fx:id="largestClusterLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label text="Cluster Più Grande:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="stat-label" />
+            <Label fx:id="largestClusterLabel" text="0" GridPane.columnIndex="3" GridPane.rowIndex="1" styleClass="stat-value" />
 
-            <Label text="Cluster Più Piccolo:" GridPane.columnIndex="0" GridPane.rowIndex="5" styleClass="form-label" />
-            <Label fx:id="smallestClusterLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label text="Cluster Più Piccolo:" GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="stat-label" />
+            <Label fx:id="smallestClusterLabel" text="0" GridPane.columnIndex="3" GridPane.rowIndex="2" styleClass="stat-value" />
         </GridPane>
       </VBox>
     </HBox>
@@ -86,11 +75,7 @@
             <Insets top="5" right="5" bottom="5" left="5" />
         </padding>
 
-        <Label text="Cluster" styleClass="form-label">
-            <font>
-              <Font name="System Bold" size="14" />
-            </font>
-        </Label>
+        <Label text="Cluster" styleClass="form-label" />
 
         <TreeView fx:id="clusterTreeView" VBox.vgrow="ALWAYS" />
 
@@ -107,11 +92,7 @@
         </padding>
 
         <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Dettagli Cluster" styleClass="form-label">
-              <font>
-                <Font name="System Bold" size="14" />
-              </font>
-            </Label>
+            <Label text="Dettagli Cluster" styleClass="form-label" />
             <Region HBox.hgrow="ALWAYS" />
             <Button fx:id="btnCopyDetails" text="Copia" prefWidth="80" />
         </HBox>

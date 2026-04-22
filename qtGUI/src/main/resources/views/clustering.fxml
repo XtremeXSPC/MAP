@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -22,16 +21,9 @@
 
         <!-- Header -->
         <VBox spacing="15" alignment="CENTER">
-            <Label text="Clustering in Corso" styleClass="title-label">
-                <font>
-                    <Font name="System Bold" size="28" />
-                </font>
-            </Label>
-            <Label text="Attendere mentre l'algoritmo Quality Threshold elabora i dati...">
-                <font>
-                    <Font size="14" />
-                </font>
-            </Label>
+            <Label text="Clustering in Corso" styleClass="title-label" />
+            <Label text="Attendere mentre l'algoritmo Quality Threshold elabora i dati..."
+                   styleClass="subtitle-label" />
         </VBox>
 
         <!-- Progress Section -->
@@ -81,7 +73,7 @@
                 <Separator orientation="VERTICAL" />
 
                 <!-- Right: Chart Container -->
-                <VBox fx:id="chartContainer" spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS" prefHeight="200">
+                <VBox fx:id="chartContainer" spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS" minHeight="200">
                     <Label text="Distribuzione Cluster" styleClass="form-label" />
                     <!-- Chart will be injected here -->
                     <Label text="(In attesa di risultati...)" styleClass="label-warning" fx:id="chartPlaceholder"/>
@@ -112,11 +104,7 @@
 
         <!-- Status Footer -->
         <HBox fx:id="statusFooter" spacing="10" alignment="CENTER" visible="false" managed="false">
-            <Label fx:id="statusMessageLabel" text="" styleClass="label-success">
-                <font>
-                    <Font name="System Bold" size="14" />
-                </font>
-            </Label>
+            <Label fx:id="statusMessageLabel" text="" styleClass="label-success" />
         </HBox>
 
     </VBox>

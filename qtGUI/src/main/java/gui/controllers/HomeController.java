@@ -241,27 +241,38 @@ public class HomeController {
      */
     private boolean validateRadius(String value) {
         if (value == null || value.trim().isEmpty()) {
-            radiusValidationLabel.setText("Il radius è obbligatorio");
+            markRadiusInvalid("Il radius è obbligatorio");
             return false;
         }
 
-        // Controlla se è un numero valido.
         try {
             double radius = Double.parseDouble(value.trim());
             if (radius < 0) {
-                radiusValidationLabel.setText("Il radius deve essere non negativo");
+                markRadiusInvalid("Il radius deve essere non negativo");
                 return false;
             }
             if (radius > 1.0) {
-                radiusValidationLabel.setText("Il radius deve essere <= 1.0 (distanza normalizzata)");
+                markRadiusInvalid("Il radius deve essere <= 1.0 (distanza normalizzata)");
                 return false;
             }
-            radiusValidationLabel.setText("");
+            markRadiusValid();
             return true;
         } catch (NumberFormatException e) {
-            radiusValidationLabel.setText("Formato numero non valido");
+            markRadiusInvalid("Formato numero non valido");
             return false;
         }
+    }
+
+    private void markRadiusInvalid(String message) {
+        radiusValidationLabel.setText(message);
+        if (!radiusField.getStyleClass().contains("invalid")) {
+            radiusField.getStyleClass().add("invalid");
+        }
+    }
+
+    private void markRadiusValid() {
+        radiusValidationLabel.setText("");
+        radiusField.getStyleClass().remove("invalid");
     }
 
     /**
