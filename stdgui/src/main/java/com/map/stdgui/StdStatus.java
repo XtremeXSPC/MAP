@@ -30,6 +30,7 @@ public final class StdStatus implements AutoCloseable {
     private final Labeled messageTarget;
 
     private PauseTransition hideTimer;
+    private String appliedStyleClass;
 
     /* Validates the opaque handles once so later status updates are simple. */
     private StdStatus(Object container, Object messageTarget) {
@@ -103,9 +104,10 @@ public final class StdStatus implements AutoCloseable {
     private void showOnUiThread(String message, String styleClass, long hideAfterMillis) {
         stopTimer();
         messageTarget.setText(message);
-        messageTarget.getStyleClass().clear();
-        if (styleClass != null && !styleClass.isBlank()) {
-            messageTarget.getStyleClass().add(styleClass);
+        removeStatusStyleClasses(styleClass);
+        appliedStyleClass = normalizedStyleClass(styleClass);
+        if (appliedStyleClass != null && !messageTarget.getStyleClass().contains(appliedStyleClass)) {
+            messageTarget.getStyleClass().add(appliedStyleClass);
         }
         container.setVisible(true);
         container.setManaged(true);
@@ -130,6 +132,23 @@ public final class StdStatus implements AutoCloseable {
             hideTimer.stop();
             hideTimer = null;
         }
+    }
+
+    /* Removes only transient status classes while preserving caller/FXML styling. */
+    private void removeStatusStyleClasses(String nextStyleClass) {
+        messageTarget.getStyleClass().removeAll(STYLE_SUCCESS, STYLE_WARNING);
+        if (appliedStyleClass != null) {
+            messageTarget.getStyleClass().remove(appliedStyleClass);
+        }
+        String normalizedNext = normalizedStyleClass(nextStyleClass);
+        if (normalizedNext != null) {
+            messageTarget.getStyleClass().remove(normalizedNext);
+        }
+    }
+
+    /* Treats blank style names as absent to avoid adding empty CSS classes. */
+    private static String normalizedStyleClass(String styleClass) {
+        return styleClass == null || styleClass.isBlank() ? null : styleClass;
     }
 
     /* Narrows an opaque caller handle to the internal node type we need. */

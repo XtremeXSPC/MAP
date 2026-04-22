@@ -135,7 +135,7 @@ public final class StdToolWindow {
             List<Action> toolbarActions) {
         VBox panel = new VBox(10);
         panel.setPadding(new Insets(10));
-        panel.setStyle("-fx-background-color: #f0f0f0;");
+        panel.getStyleClass().add("std-tool-window-header");
 
         if (header != null && !header.isBlank()) {
             Label titleLabel = new Label(header);
@@ -181,10 +181,10 @@ public final class StdToolWindow {
             Runnable closeAction) {
         HBox panel = new HBox(10);
         panel.setPadding(new Insets(10));
-        panel.setStyle("-fx-background-color: #f0f0f0;");
+        panel.getStyleClass().add("std-tool-window-footer");
 
         Label infoLabel = new Label(footerText == null ? "" : footerText);
-        infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        infoLabel.getStyleClass().add("std-tool-window-footer-label");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

@@ -1,6 +1,6 @@
 /**
  * The {@code com.map.stdgui} package provides small, reusable GUI utilities for
- * QT Clustering clients.
+ * JavaFX applications.
  * <p>
  * Its classes follow the spirit of Sedgewick and Wayne's standard libraries:
  * callers use compact static helpers where no persistent state is needed

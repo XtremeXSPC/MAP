@@ -32,6 +32,9 @@ public final class StdClipboard {
 
     /**
      * Returns true if the system clipboard currently contains text.
+     * <p>
+     * This method blocks until the clipboard query has run on the JavaFX
+     * Application Thread.
      *
      * @return true when clipboard text is present
      */
@@ -41,6 +44,9 @@ public final class StdClipboard {
 
     /**
      * Returns the current clipboard text, or an empty string when absent.
+     * <p>
+     * This method blocks until the clipboard query has run on the JavaFX
+     * Application Thread.
      *
      * @return clipboard text or empty string
      */

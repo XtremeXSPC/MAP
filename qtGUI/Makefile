@@ -78,7 +78,7 @@ run:
 	@printf "$(BLUE)→ Avvio qtGUI (JavaFX)...$(NC)\n"
 	@printf "$(BLUE)→ Aggiornamento dipendenza locale stdgui...$(NC)\n"
 	@$(STDGUI_MVN) clean install -DskipTests -q
-	@$(MVN) javafx:run
+	@$(MVN) -f $(ROOT_POM) -pl $(MODULE_NAME) javafx:run
 
 # Esegui da JAR.
 .PHONY: run-jar

@@ -28,10 +28,11 @@ public final class StdGui {
         CountDownLatch startupLatch = new CountDownLatch(1);
         try {
             Platform.startup(startupLatch::countDown);
-            await(startupLatch);
         } catch (IllegalStateException ignored) {
             // Toolkit already started by Application.launch() or a previous init().
+            return;
         }
+        await(startupLatch);
     }
 
     /**

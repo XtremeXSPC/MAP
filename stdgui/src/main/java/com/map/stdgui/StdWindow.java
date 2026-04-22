@@ -164,11 +164,12 @@ public final class StdWindow {
      */
     public StdWindow modal(boolean enabled) {
         StdGui.runAndWait(() -> {
-            if (!enabled || stage.isShowing()) {
+            if (stage.isShowing()) {
                 return;
             }
-            if (stage.getModality() == Modality.NONE) {
-                stage.initModality(Modality.APPLICATION_MODAL);
+            Modality modality = enabled ? Modality.APPLICATION_MODAL : Modality.NONE;
+            if (stage.getModality() != modality) {
+                stage.initModality(modality);
             }
         });
         return this;
@@ -203,11 +204,15 @@ public final class StdWindow {
 
     /**
      * Replaces the current scene root with the given view.
+     * <p>
+     * Prefer {@link #replaceContent(StdView)}, which describes the same
+     * operation without exposing JavaFX scene-root terminology.
      *
      * @param view replacement view
      */
+    @Deprecated(since = "1.0.0", forRemoval = false)
     public void replaceRoot(StdView view) {
-        content(view);
+        replaceContent(view);
     }
 
     /**

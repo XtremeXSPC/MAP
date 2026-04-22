@@ -11,3 +11,12 @@
 .label-warning {
     -fx-text-fill: #ffc166;
 }
+
+.std-tool-window-header,
+.std-tool-window-footer {
+    -fx-background-color: derive(-fx-base, -6%);
+}
+
+.std-tool-window-footer-label {
+    -fx-font-size: 12px;
+}
