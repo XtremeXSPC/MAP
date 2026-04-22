@@ -123,9 +123,9 @@ public final class StdAsync {
         private TaskStdJob(Task<T> task) {
             this.task = task;
             this.lock = new Object();
-            this.successCallbacks = new ArrayList<>();
-            this.failureCallbacks = new ArrayList<>();
-            this.cancelCallbacks = new ArrayList<>();
+            this.successCallbacks  = new ArrayList<>();
+            this.failureCallbacks  = new ArrayList<>();
+            this.cancelCallbacks   = new ArrayList<>();
             this.progressCallbacks = new CopyOnWriteArrayList<>();
             this.lastProgress = new AtomicReference<>(new StdProgress(task.getProgress(), task.getMessage()));
             this.terminal = Terminal.NONE;

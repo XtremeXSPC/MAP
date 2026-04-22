@@ -201,7 +201,7 @@ public class ClusteringController {
         }
 
         progress.update(0.0, "Inizializzazione clustering...");
-        appendLog("# ====== INIZIO CLUSTERING ====== #");
+        appendLog("# ============= INIZIO CLUSTERING ============== #");
         appendLog("Configurazione:");
         appendLog("  Sorgente: " + config.getDataSource());
         appendLog("  Radius: " + config.getRadius());
@@ -317,9 +317,7 @@ public class ClusteringController {
             progress.update(1.0, "Clustering completato con successo");
 
             appendLog("");
-            appendLog("# ============================================== #");
-            appendLog("# ----- CLUSTERING COMPLETATO CON SUCCESSO ----- #");
-            appendLog("# ============================================== #");
+            appendLog("# ===== CLUSTERING COMPLETATO CON SUCCESSO ===== #");
 
         } catch (Exception e) {
             appendLog("");

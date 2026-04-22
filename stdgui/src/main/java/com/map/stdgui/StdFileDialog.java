@@ -108,7 +108,7 @@ public final class StdFileDialog {
         for (Filter filter : filters) {
             if (filter != null) {
                 chooser.getExtensionFilters()
-                        .add(new FileChooser.ExtensionFilter(filter.description(), filter.patterns()));
+                       .add(new FileChooser.ExtensionFilter(filter.description(), filter.patterns()));
             }
         }
     }
