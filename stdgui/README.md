@@ -5,6 +5,9 @@ standard libraries. It hides common JavaFX plumbing behind compact APIs for
 runtime dispatch, windows, views, dialogs, file choosers, background work,
 themes, charts, tables, trees, status messages, shortcuts, and Swing embedding.
 
+For a deeper walkthrough of the public API, design rationale, JPMS resource
+rules, threading model, and extension patterns, see [USER_GUIDE.md](USER_GUIDE.md).
+
 ## Build
 
 From the repository root:
